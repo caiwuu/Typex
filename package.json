@@ -1,0 +1,26 @@
+{
+  "name": "editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config config/webpack.config.prod.js",
+    "dev": "webpack-dev-server  --config config/webpack.config.dev.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "html-webpack-plugin": "^5.4.0",
+    "webpack": "^5.59.1",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.3.1",
+    "webpack-merge": "^5.8.0",
+    "webpackbar": "^5.0.0-3"
+  },
+  "dependencies": {
+    "emoji-regex": "^10.0.0",
+    "mitt": "^3.0.0"
+  }
+}
