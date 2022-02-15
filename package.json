@@ -12,6 +12,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/core": "^7.17.2",
+    "@babel/plugin-syntax-jsx": "^7.16.7",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/types": "^7.17.0",
+    "babel-loader": "^8.2.3",
     "html-webpack-plugin": "^5.4.0",
     "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1",
