@@ -1,1 +1,2 @@
-console.log(1)
+import elementVNode from '../core/model/elementVNode'
+console.log(elementVNode)

@@ -1,19 +1,21 @@
 import Vnode from './Vnode'
-export class textVNode extends Vnode {
+export default class textVNode extends Vnode {
+  type = 'textNode'
   tagName = 'text'
   constructor(context) {
+    super()
     this.context = context
   }
-  delete (offset, count) {
+  delete(offset, count) {
     const start = offset - count <= 0 ? 0 : offset - count
     const context = this.context.slice(0, start) + this.context.slice(offset)
     this.setContext(context)
   }
-  setContext (context) {
+  setContext(context) {
     this.context = context
     this.ele.data = target.context
   }
-  splitNode (index) {
+  splitNode(index) {
     console.log('splitNode')
     if (index === 0) {
       return index
@@ -28,11 +30,11 @@ export class textVNode extends Vnode {
     this.parentNode.insert(splited, index + 1)
     return splited
   }
-  get length () {
+  get length() {
     console.log('length')
     return this.context.length
   }
-  get isEmpty () {
+  get isEmpty() {
     console.log('isEmpty')
     return this.length === 0
   }
