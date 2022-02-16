@@ -14,3 +14,23 @@ const treeExample = {
     },
   ],
 }
+
+class myCom extends Editor.Components {
+  render () {
+    return (
+      <div>
+        <span>不可编辑文本</span>
+        <context>
+          <span>可编辑文本</span>
+        </context>
+        <p>
+          <span>不可编辑图标</span>
+          <context>
+            一段内容
+          </context>
+        </p>
+
+      </div>
+    )
+  }
+}
