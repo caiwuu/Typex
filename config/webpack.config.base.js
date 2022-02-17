@@ -4,7 +4,7 @@ const testPlugin = function ({ types: t }) {
   return {
     name: 'add-debug-information',
     visitor: {
-      CallExpression(path) {
+      CallExpression (path) {
         if (t.isIdentifier(path.node.callee, { name: 'myFunction' }) && path.node.arguments.length > 1) {
           path.pushContainer('arguments', t.identifier('__filename'))
         }
@@ -28,17 +28,17 @@ module.exports = {
       //     loader: path.resolve(__dirname, '../loader/css-loader.js'),
       //   },
       // },
-      {
-        test: /\.js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env'], //最新JS语法后向兼容
-            // plugins: [testPlugin], //JSX编译
-          },
-        },
-        exclude: '/node_modules/',
-      },
+      // {
+      //   test: /\.js$/,
+      //   use: {
+      //     loader: 'babel-loader',
+      //     options: {
+      //       presets: ['@babel/preset-env'], //最新JS语法后向兼容
+      //       // plugins: [testPlugin], //JSX编译
+      //     },
+      //   },
+      //   exclude: '/node_modules/',
+      // },
     ],
   },
   plugins: [new WebpackBar()],

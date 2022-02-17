@@ -13,7 +13,7 @@ const devConfig = merge(baseConfig, {
       directory: path.join(__dirname, '../dist'),
     },
     client: {
-      logging: 'none',
+      logging: 'error',
     },
     hot: true,
     compress: true,
