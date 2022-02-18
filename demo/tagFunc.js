@@ -20,7 +20,9 @@
 //   margin: 0.5rem;
 // `
 
-let mySet = new Set([1, 2, 3, 55])
-for (let item of mySet.keys()) console.log(item);
-for (let item of mySet.keys()) console.log(item);
-for (let [key, value] of mySet.entries()) console.log(value);
+function tagFunc(...args) {
+  console.log(args)
+}
+const age = 12
+const name1 = 'hhhh'
+tagFunc`aaaa${age}bbbb${name1}   ${age}cccc`

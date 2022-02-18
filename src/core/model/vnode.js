@@ -1,4 +1,4 @@
-export default class Vnode {
+export default class VNode {
   attrs = {}
   data = {}
   static = true
@@ -15,7 +15,10 @@ export default class Vnode {
   styles = []
   classes = []
   listeners = null
-  insert (vnode, index) {
+  constructor() {
+    this.path = [this]
+  }
+  insert(vnode, index) {
     console.log('insert')
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
@@ -30,16 +33,16 @@ export default class Vnode {
     this.children.splice(index, 0, vnode)
     this.reArrangement()
   }
-  repalce () {
+  repalce() {
     console.log('replace')
   }
-  delete (index, count) {
+  delete(index, count) {
     console.log('delete')
     const start = index - count <= 0 ? 0 : index - count
     this.children.splice(start, index - start).forEach((vnode) => vnode.ele.remove())
     this.reArrangement()
   }
-  moveTo (target, index) {
+  moveTo(target, index) {
     console.log('moveTo')
     const removeNodes = this.parentNode.children.splice(this.index, 1)
     this.parentNode.reArrangement()
@@ -47,7 +50,7 @@ export default class Vnode {
       target.insert(vnode, index)
     })
   }
-  remove () {
+  remove() {
     console.log('remove')
     this.parentNode.children.splice(this.index, 1).forEach((i) => {
       i.removed = true
@@ -55,10 +58,12 @@ export default class Vnode {
     })
     this.reArrangement(this.parentNode)
   }
-  reArrangement () {
+  reArrangement() {
     if (this.children) {
       this.children.forEach((item, index) => {
         const oldPosition = item.position
+        item.isRoot = false
+        item.path = [...this.path, item]
         item.index = index
         item.parentNode = this
         item.position = this.position + '-' + index
@@ -66,11 +71,11 @@ export default class Vnode {
       })
     }
   }
-  appendChild (...vnodes) {
+  appendChild(...vnodes) {
     vnodes && this.children.push(...vnodes)
     this.reArrangement()
   }
-  get isEmpty () {
+  get isEmpty() {
     if (this.children && this.children.length) {
       return vnode.children.every((item) => this.isEmpty(item))
     } else {
@@ -83,7 +88,7 @@ export default class Vnode {
       }
     }
   }
-  get length () {
+  get length() {
     console.log('length')
     if (this.type === 'atom') {
       return -1
@@ -91,8 +96,10 @@ export default class Vnode {
       return this.children.filter((ele) => ele.type !== 'placeholder').length
     }
   }
-  render () {
+  render() {
     const dom = document.createElement(this.tagName)
+    this.ele = dom
+    dom.vnode = this
     // set style
     this.styles.forEach((value, key) => {
       dom.style[key] = value
@@ -100,6 +107,10 @@ export default class Vnode {
     // set class
     this.classes.forEach((className) => {
       dom.classList.add(className)
+    })
+    // set listeners
+    this.listeners.forEach((value, key) => {
+      dom.addEventListener(key, value)
     })
     return dom
   }

@@ -1,30 +1,16 @@
-import Vnode from './Vnode'
-import textVNode from './textVNode'
-export default class elementVNode extends Vnode {
+import VNode from './vnode'
+import { type, typeValidate } from '../share/utils'
+export default class elementVNode extends VNode {
   type = 'elementNode'
-  static createElement (tagName, attrs, children = []) {
-    if (typeof tagName === 'function') {
-      return tagName({
-        ...attrs,
-        children,
-      })
-    }
-    if (typeof attrs === 'string') {
+  constructor(tagName, attrs = {}, children = []) {
+    if (tagName._isVnode) return tagName
+    if (type(attrs) !== 'object') {
       children = [attrs]
       attrs = {}
+    } else {
+      children = [children]
     }
-    const vnode = new elementVNode(tagName, attrs)
-    children.forEach((ch) => {
-      if (ch instanceof elementVNode) {
-        vnode.appendChild(ch)
-      } else if (!!ch) {
-        vnode.appendChild(new textVNode(String(ch)))
-      }
-    })
-    return vnode
-  }
-  constructor(tagName, attrs, children = []) {
-    attrs = attrs || {}
+    typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
     super()
     this.tagName = tagName
     // set style
@@ -54,17 +40,17 @@ export default class elementVNode extends Vnode {
     Reflect.deleteProperty(attrs, 'class')
 
     // set listeners
-    this.listeners = {}
+    this.listeners = new Map()
     Object.keys(attrs).forEach((key) => {
       if (/^on[A-Z]/.test(key)) {
-        this.listeners[key.replace(/^on/, '').toLowerCase()] = attrs[key]
+        this.listeners.set(key.replace(/^on/, '').toLowerCase(), attrs[key])
       } else {
         this.attrs[key] = attrs[key]
       }
     })
-    children && children.length && this.appendChild(...children)
+    children && children.flat().length && this.appendChild(...children.flat())
   }
-  splitNode (index) {
+  splitNode(index) {
     if (index === 0) {
       return index
     }

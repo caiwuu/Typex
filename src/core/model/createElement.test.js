@@ -1,5 +1,4 @@
-import elementVNode from './elementVNode'
-const createElement = elementVNode.createElement
+import { createElement } from './index'
 
 describe('参数缺省测试', () => {
   it('缺省ops', () => {
