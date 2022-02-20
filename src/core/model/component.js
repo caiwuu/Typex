@@ -3,18 +3,21 @@ export default class Component {
   static isConstructor = true
   name = ''
   constructor(props) {
-    if (props.onRef && typeof props.onRef === 'function') {
-      props.onRef(this)
-    }
     this[propsKey] = props
   }
-  get props() {
+  get props () {
     return this[propsKey]
   }
-  set props(k) {
+  set props (k) {
     throw Error('props is readonly')
   }
-  render() {
+  get dom () {
+    return this.vnode.ele
+  }
+  set dom (k) {
+    throw Error('dom is readonly')
+  }
+  render () {
     throw Error('Component does not implement a required interface "render"')
   }
 }

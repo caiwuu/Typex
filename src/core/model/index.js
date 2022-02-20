@@ -3,7 +3,7 @@ import Component from './component'
 import textVNode from './textVNode'
 import VNode from './vnode'
 import { type, typeValidate } from '../share/utils'
-function createElement(tagName, attrs = {}, children = []) {
+function createElement (tagName, attrs = {}, children = []) {
   if (tagName instanceof VNode) return tagName
   if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele))
   if (type(attrs) !== 'object') {
@@ -14,19 +14,22 @@ function createElement(tagName, attrs = {}, children = []) {
   }
   typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
   if (typeof tagName === 'function') {
+    const mergedAttrs = {
+      ...attrs,
+      children: children.flat(),
+    }
     if (tagName.isConstructor) {
-      const vm = new tagName({
-        ...attrs,
-        children: children.flat(),
-      })
+      const ref = mergedAttrs.ref
+      ref && delete mergedAttrs.ref
+      const vm = new tagName(mergedAttrs)
+      ref && (ref.current = vm)
       const vn = vm.render(createElement)
-      console.log(vn)
+      vm.vnode = vn
+      vn.vm = vm
+      // beforeMounted
       return vn
     } else {
-      return tagName({
-        ...attrs,
-        children: children.flat(),
-      })
+      return tagName(mergedAttrs)
     }
   }
   if (tagName === 'text') {
@@ -43,18 +46,32 @@ function createElement(tagName, attrs = {}, children = []) {
     return vnode
   }
 }
-function render(vnode, root) {
+function render (vnode, root) {
   const dom = [vnode].flat().map((i) => renderDom(i))
-  dom.forEach((e) => root.appendChild(e))
+  dom.forEach((e) => {
+    root.appendChild(e.dom)
+    e.vm && e.vm.componentDidMount && e.vm.componentDidMount()
+  })
 }
-function renderDom(vnode) {
+function renderDom (vnode) {
+  // console.log(vnode.vm);
   const dom = vnode.render()
   if (vnode.children) {
     vnode.children.forEach((vn) => {
-      const child = renderDom(vn)
+      const { dom: child, vm } = renderDom(vn)
       dom.appendChild(child)
+      vm && vm.componentDidMount && vm.componentDidMount()
     })
   }
-  return dom
+  if (vnode.attrs.ref) {
+    vnode.attrs.ref.current = dom
+    delete vnode.attrs.ref
+  }
+  const vm = vnode.vm
+  vm && delete vnode.vm
+  return { dom, vm }
 }
-export { render, createElement, Component }
+function createRef () {
+  return { current: null }
+}
+export { render, createElement, Component, createRef }

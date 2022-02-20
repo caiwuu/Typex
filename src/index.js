@@ -8,8 +8,5 @@ const vn = h(
   },
   ['this is a text', h('ul', [h('li', 'list')]), h(Paragraph, { age: 12, ChildParagraph: ChildParagraph, child: () => [1, 2, 3].map((e) => h('span', e)) }, h(ChildParagraph))]
 )
-
-// const vn = h(Paragraph, { age: 12, child: () => [1, 2, 3, 6].map((e) => h('span', e)) })
-// console.log(h('text', 'h(text)'))
 console.log(vn)
 render(vn, document.getElementById('editor-root'))
