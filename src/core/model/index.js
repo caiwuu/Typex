@@ -1,35 +1,47 @@
 import elementVNode from './elementVNode'
 import Component from './component'
 import textVNode from './textVNode'
+import VNode from './vnode'
 import { type, typeValidate } from '../share/utils'
 function createElement(tagName, attrs = {}, children = []) {
-  if (tagName._isVnode) return tagName
+  if (tagName instanceof VNode) return tagName
+  if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele))
   if (type(attrs) !== 'object') {
     children = [attrs]
     attrs = {}
   } else {
-    children = [children]
+    children = [children].flat()
   }
   typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
   if (typeof tagName === 'function') {
-    console.log(tagName.isConstructor)
-    return tagName.isConstructor
-      ? new tagName(attrs).render(createElement)
-      : tagName({
-          ...attrs,
-          children: children.flat(),
-        })
-  }
-  const vnode = new elementVNode(tagName, attrs)
-  debugger
-  children.flat().forEach((ch) => {
-    if (ch instanceof elementVNode) {
-      vnode.appendChild(ch)
-    } else if (!!ch) {
-      vnode.appendChild(new textVNode(String(ch)))
+    if (tagName.isConstructor) {
+      const vm = new tagName({
+        ...attrs,
+        children: children.flat(),
+      })
+      const vn = vm.render(createElement)
+      console.log(vn)
+      return vn
+    } else {
+      return tagName({
+        ...attrs,
+        children: children.flat(),
+      })
     }
-  })
-  return vnode
+  }
+  if (tagName === 'text') {
+    return new textVNode(String(children[0] ?? ''))
+  } else {
+    const vnode = new elementVNode(tagName, attrs)
+    children.flat().forEach((ch) => {
+      if (ch instanceof VNode) {
+        vnode.appendChild(ch)
+      } else if (!!String(ch)) {
+        vnode.appendChild(new textVNode(String(ch)))
+      }
+    })
+    return vnode
+  }
 }
 function render(vnode, root) {
   const dom = [vnode].flat().map((i) => renderDom(i))

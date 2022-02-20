@@ -3,12 +3,15 @@ export default class Component {
   static isConstructor = true
   name = ''
   constructor(props) {
+    if (props.onRef && typeof props.onRef === 'function') {
+      props.onRef(this)
+    }
     this[propsKey] = props
   }
   get props() {
     return this[propsKey]
   }
-  set props(v) {
+  set props(k) {
     throw Error('props is readonly')
   }
   render() {
