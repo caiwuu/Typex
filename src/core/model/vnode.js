@@ -1,7 +1,6 @@
 export default class VNode {
   attrs = {}
   data = {}
-  static = true
   position = '0'
   path = []
   index = 0
@@ -100,6 +99,16 @@ export default class VNode {
     const dom = document.createElement(this.tagName)
     this.ele = dom
     dom.vnode = this
+    switch (this.tagName) {
+      case 'a':
+        dom.href = this.attrs.href ?? ''
+        Reflect.deleteProperty(this.attrs, 'href')
+        break
+      case 'img':
+        dom.src = this.attrs.src ?? ''
+        Reflect.deleteProperty(this.attrs, 'src')
+        break
+    }
     // set style
     this.styles.forEach((value, key) => {
       dom.style[key] = value

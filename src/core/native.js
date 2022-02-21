@@ -1,0 +1,1 @@
+const nativeSelection = document.getSelection()

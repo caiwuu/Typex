@@ -1,2 +1,3 @@
 export { Paragraph } from './paragraph'
-export { ChildParagraph } from './paragraph'
+export { Static } from './static'
+export { Block } from './block'

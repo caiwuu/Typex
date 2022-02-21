@@ -3,11 +3,11 @@ import Component from './component'
 import textVNode from './textVNode'
 import VNode from './vnode'
 import { type, typeValidate } from '../share/utils'
-function createElement (tagName, attrs = {}, children = []) {
+function createElement(tagName, attrs = {}, children = []) {
   if (tagName instanceof VNode) return tagName
-  if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele))
-  if (type(attrs) !== 'object') {
-    children = [attrs]
+  if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele, attrs))
+  if (type(attrs) !== 'object' || attrs instanceof VNode) {
+    children = [attrs].flat()
     attrs = {}
   } else {
     children = [children].flat()
@@ -16,7 +16,13 @@ function createElement (tagName, attrs = {}, children = []) {
   if (typeof tagName === 'function') {
     const mergedAttrs = {
       ...attrs,
-      children: children.flat(),
+      children: children.flat().map((ele) => {
+        if (type(ele) === 'string' || type(ele) === 'number') {
+          return new textVNode(String(ele))
+        } else {
+          return ele
+        }
+      }),
     }
     if (tagName.isConstructor) {
       const ref = mergedAttrs.ref
@@ -29,7 +35,7 @@ function createElement (tagName, attrs = {}, children = []) {
       // beforeMounted
       return vn
     } else {
-      return tagName(mergedAttrs)
+      return tagName(createElement, mergedAttrs)
     }
   }
   if (tagName === 'text') {
@@ -46,15 +52,14 @@ function createElement (tagName, attrs = {}, children = []) {
     return vnode
   }
 }
-function render (vnode, root) {
-  const dom = [vnode].flat().map((i) => renderDom(i))
-  dom.forEach((e) => {
+function render(vnode, root) {
+  const doms = [vnode].flat().map((i) => renderDom(i))
+  doms.forEach((e) => {
     root.appendChild(e.dom)
     e.vm && e.vm.componentDidMount && e.vm.componentDidMount()
   })
 }
-function renderDom (vnode) {
-  // console.log(vnode.vm);
+function renderDom(vnode) {
   const dom = vnode.render()
   if (vnode.children) {
     vnode.children.forEach((vn) => {
@@ -71,7 +76,7 @@ function renderDom (vnode) {
   vm && delete vnode.vm
   return { dom, vm }
 }
-function createRef () {
+function createRef() {
   return { current: null }
 }
 export { render, createElement, Component, createRef }

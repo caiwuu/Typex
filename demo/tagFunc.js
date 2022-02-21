@@ -20,9 +20,7 @@
 //   margin: 0.5rem;
 // `
 
-function tagFunc(...args) {
-  console.log(args)
+function tagFunc(tag, attr, ...children) {
+  console.log(tag, attr, children)
 }
-const age = 12
-const name1 = 'hhhh'
-tagFunc`aaaa${age}bbbb${name1}   ${age}cccc`
+tagFunc('p', 1)
