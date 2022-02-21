@@ -6,7 +6,7 @@ export class Paragraph extends Component {
     this.comIns = createRef()
     this.domIns = createRef()
   }
-  render(h) {
+  render (h) {
     return h(
       'p',
       {
@@ -16,7 +16,7 @@ export class Paragraph extends Component {
       '一个段落...'
     )
   }
-  componentDidMount() {
-    console.log(this.dom)
+  componentDidMount () {
+    // console.log(this.dom)
   }
 }
