@@ -1,3 +1,4 @@
+import { update } from './render'
 const propsKey = Symbol('props')
 const insKey = Symbol('key')
 export default class Component {
@@ -11,22 +12,24 @@ export default class Component {
     this[propsKey] = Object.freeze({ ...props })
     Component[insKey]++
   }
-  get props() {
+  get props () {
     return this[propsKey]
   }
-  set props(k) {
+  set props (k) {
     throw Error('props is readonly')
   }
-  get dom() {
+  get dom () {
     return this.vnode.ele
   }
-  set dom(k) {
+  set dom (k) {
     throw Error('dom is readonly')
   }
-  setState(state) {
+  setState (state) {
     this.state = Object.assign(this.state, state)
+    // 这里暂时同步更新，不做优化
+    update(this)
   }
-  render() {
+  render () {
     throw Error('Component does not implement a required interface "render"')
   }
 }
