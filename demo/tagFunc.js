@@ -20,7 +20,48 @@
 //   margin: 0.5rem;
 // `
 
-function tagFunc(tag, attr, ...children) {
-  console.log(tag, attr, children)
+class Interval {
+  style = {
+    color: '',
+    fontFamily: '',
+    fontSize: '',
+    bold: false,
+    italic: false,
+    underLine: false,
+    delete: false,
+    background: '#fff',
+  }
+  start = 0
+  end = 0
+  constructor(start, end) {
+    this.start = start
+    this.end = end
+  }
+  setRange(start, end) {
+    this.start = start
+    this.end = end
+  }
+  clone() {
+    const clone = new Interval()
+    clone.style = { ...this.style }
+    return clone
+  }
 }
-tagFunc('p', 1)
+class Con {
+  link = []
+  interval = []
+  constructor(con) {
+    this.con = con
+  }
+  fork(count) {
+    let start = 0
+    if (this.link.length) {
+      start = this.link[this.link.length - 1].end
+    }
+    this.link.push({ start, end: count + start, content: this.con.slice(start, count + start) })
+  }
+}
+const con = new Con('1234567890')
+con.fork(3)
+con.fork(4)
+console.log(con.link)

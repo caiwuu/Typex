@@ -5,7 +5,7 @@ import VNode from './vnode'
 import { type, typeValidate } from '../share/utils'
 function createElement(tagName, attrs = {}, children = []) {
   if (tagName instanceof VNode) return tagName
-  if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele, attrs))
+  // if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele, attrs))
   if (type(attrs) !== 'object' || attrs instanceof VNode) {
     children = [attrs].flat()
     attrs = {}
@@ -79,4 +79,4 @@ function renderDom(vnode) {
 function createRef() {
   return { current: null }
 }
-export { render, createElement, Component, createRef }
+export { render, createElement, Component, createRef, renderDom }

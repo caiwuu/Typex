@@ -1,4 +1,7 @@
 import Editor from './editor/index'
 const editor = new Editor()
-console.log(editor);
+editor.setTools([
+  { label: '加粗', command: 'bold' },
+  { label: '倾斜', command: 'italic' },
+])
 editor.mount('editor-root')

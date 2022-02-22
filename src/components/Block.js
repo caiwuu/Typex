@@ -1,7 +1,7 @@
 import { Component, createRef } from '../core/model/index'
 
 export class Block extends Component {
-  render (h) {
+  render(h) {
     return h(
       'div',
       {
@@ -10,7 +10,7 @@ export class Block extends Component {
       this.props.children.length ? this.props.children : h('p', '一个块...')
     )
   }
-  componentDidMount () {
-    // console.log(this.dom)
+  componentDidMount() {
+    console.log(this)
   }
 }
