@@ -57,7 +57,7 @@ export default class elementVNode extends VNode {
     if (index === this.length + 1) {
       return index + 1
     }
-    const splited = elementVNode.createElement(this.tagName, { styles: this.styles, classes: this.classes, events: this.events })
+    const splited = elementVNode.createElement(this.tagName, { styles: this.styles, classes: this.classes, ...this.listeners })
     this.children.slice(index).forEach((ele) => ele.moveTo(splited))
     this.parentNode.insert(splited, index + 1)
     return splited

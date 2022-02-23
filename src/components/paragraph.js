@@ -1,22 +1,13 @@
 import { Component, createRef } from '../core/model/index'
 
 export class Paragraph extends Component {
-  constructor(props) {
-    super(props)
-    this.comIns = createRef()
-    this.domIns = createRef()
-  }
   render(h) {
     return h(
-      'p',
+      'div',
       {
-        // style: 'color:#666;background:#eee;padding:10px;margin:16px',
-        ref: this.domIns,
+        style: 'color:#666;;padding:10px 20px;margin-bottom:16px;',
       },
-      '一个段落...'
+      this.props.children.length ? this.props.children : '一个段落'
     )
-  }
-  componentDidMount() {
-    console.log(this)
   }
 }
