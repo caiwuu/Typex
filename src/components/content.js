@@ -7,6 +7,7 @@ export class Content extends Component {
     this.domIns = createRef()
   }
   render(h) {
+    console.log(this.props.children)
     return h(this.props.children)
   }
   componentDidMount() {

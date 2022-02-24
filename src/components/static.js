@@ -9,7 +9,7 @@ export class Static extends Component {
     return h(...children)
   }
   staticTravel(vnode) {
-    vnode.static = true
+    vnode.editable = true
     if (vnode.children) {
       vnode.children.forEach((vn) => this.staticTravel(vn))
     }

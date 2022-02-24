@@ -16,7 +16,7 @@ const treeExample = {
 }
 
 class myCom extends Editor.Components {
-  render () {
+  render() {
     return (
       <div>
         <span>不可编辑文本</span>
@@ -25,12 +25,12 @@ class myCom extends Editor.Components {
         </context>
         <p>
           <span>不可编辑图标</span>
-          <context>
-            一段内容
-          </context>
+          <context>一段内容</context>
         </p>
-
       </div>
     )
   }
 }
+
+;`dom-->vnode---{ele,vm:{state}}`
+;`vm:{state}->vnode--dom`
