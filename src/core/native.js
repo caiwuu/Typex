@@ -1,1 +1,1 @@
-const nativeSelection = document.getSelection()
+export const nativeSelection = document.getSelection()

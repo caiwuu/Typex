@@ -1,6 +1,5 @@
 import VNode from './vnode'
 export default class textVNode extends VNode {
-  type = 'textNode'
   tagName = 'text'
   constructor(context) {
     super()
@@ -41,6 +40,7 @@ export default class textVNode extends VNode {
   render () {
     const dom = document.createTextNode(this.context)
     this.ele = dom
+    dom.vnode = this
     return dom
   }
 }

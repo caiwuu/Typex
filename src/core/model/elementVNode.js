@@ -1,7 +1,6 @@
 import VNode from './vnode'
 import { type, typeValidate } from '../share/utils'
 export default class elementVNode extends VNode {
-  type = 'elementNode'
   constructor(tagName, attrs = {}, children = []) {
     if (tagName._isVnode) return tagName
     if (type(attrs) !== 'object') {
@@ -50,7 +49,7 @@ export default class elementVNode extends VNode {
     })
     children && children.flat().length && this.appendChild(...children.flat())
   }
-  splitNode(index) {
+  splitNode (index) {
     if (index === 0) {
       return index
     }

@@ -1,6 +1,5 @@
 export default class VNode {
   attrs = {}
-  data = {}
   position = '0'
   path = []
   index = 0
@@ -9,7 +8,6 @@ export default class VNode {
   ele = null
   isRoot = true
   tagName = null
-  type = 'node'
   children = []
   styles = []
   classes = []
@@ -17,7 +15,35 @@ export default class VNode {
   constructor() {
     this.path = [this]
   }
-  insert(vnode, index) {
+  get type () {
+    switch (this.tagName) {
+      case 'div':
+      case 'p':
+      case 'ul':
+      case 'li':
+      case 'ol':
+        return 'block'
+      case 'span':
+      case 'a':
+      case 'sub':
+      case 'sup':
+      case 'code':
+      case 'string':
+      case 'u':
+      case 'del':
+      case 'em':
+        return 'inline'
+      case 'text':
+        return 'text'
+      case 'br':
+        return 'softBreak'
+      case 'img':
+        return 'img'
+      default:
+        return 'inline'
+    }
+  }
+  insert (vnode, index) {
     console.log('insert')
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
@@ -32,16 +58,16 @@ export default class VNode {
     this.children.splice(index, 0, vnode)
     this.reArrangement()
   }
-  repalce() {
+  repalce () {
     console.log('replace')
   }
-  delete(index, count) {
+  delete (index, count) {
     console.log('delete')
     const start = index - count <= 0 ? 0 : index - count
     this.children.splice(start, index - start).forEach((vnode) => vnode.ele.remove())
     this.reArrangement()
   }
-  moveTo(target, index) {
+  moveTo (target, index) {
     console.log('moveTo')
     const removeNodes = this.parentNode.children.splice(this.index, 1)
     this.parentNode.reArrangement()
@@ -49,7 +75,7 @@ export default class VNode {
       target.insert(vnode, index)
     })
   }
-  remove() {
+  remove () {
     console.log('remove')
     this.parentNode.children.splice(this.index, 1).forEach((i) => {
       i.removed = true
@@ -57,7 +83,7 @@ export default class VNode {
     })
     this.reArrangement(this.parentNode)
   }
-  reArrangement() {
+  reArrangement () {
     if (this.children) {
       this.children.forEach((item, index) => {
         const oldPosition = item.position
@@ -70,11 +96,11 @@ export default class VNode {
       })
     }
   }
-  appendChild(...vnodes) {
+  appendChild (...vnodes) {
     vnodes && this.children.push(...vnodes)
     this.reArrangement()
   }
-  get isEmpty() {
+  get isEmpty () {
     if (this.children && this.children.length) {
       return vnode.children.every((item) => this.isEmpty(item))
     } else {
@@ -87,7 +113,7 @@ export default class VNode {
       }
     }
   }
-  get length() {
+  get length () {
     console.log('length')
     if (this.type === 'atom') {
       return -1
@@ -95,7 +121,10 @@ export default class VNode {
       return this.children.filter((ele) => ele.type !== 'placeholder').length
     }
   }
-  render() {
+  get isEditable () {
+    return this.editable !== 'off'
+  }
+  render () {
     const dom = document.createElement(this.tagName)
     this.ele = dom
     dom.vnode = this
