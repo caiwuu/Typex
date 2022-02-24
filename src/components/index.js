@@ -1,4 +1,5 @@
 export { Paragraph } from './paragraph'
-export { Static } from './static'
+export { Diseditable } from './disEditable'
+export { Editable } from './editable'
 export { Block } from './block'
 export { Content } from './content'

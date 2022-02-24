@@ -1,5 +1,5 @@
 import { createElement as h, render, Component } from '../../core/model'
-import { Block, Paragraph, Content } from '../../components'
+import { Block, Paragraph, Content, Diseditable, Editable } from '../../components'
 // 工具栏
 class ToolBar extends Component {
   render(h) {
@@ -51,11 +51,8 @@ class Wrappe extends Component {
 // 编辑区
 class Body extends Component {
   render(h) {
-    console.log(h(Content, ['111']))
-    return h('div', { style: 'padding:16px;min-height: 200px;' }, [
-      h(Block),
-      h(Paragraph, h(Content, [h('span', { style: 'color:red' }, '1111'), '2222'])),
-    ])
+    console.log(h(Editable, '2222'))
+    return h('div', { style: 'padding:16px;min-height: 200px;' }, [h(Block), h(Paragraph, h(Diseditable, [h('span', { style: 'color:red' }, '1111'), h(Editable, '2222')]))])
   }
   componentDidMount() {
     console.log(this)
