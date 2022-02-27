@@ -2,7 +2,7 @@ import { createElement as h, render, Component } from '../../core'
 import { Block, Paragraph, Diseditable, Editable } from '../../components'
 // 工具栏
 class ToolBar extends Component {
-  render (h) {
+  render(h) {
     const { tools } = this.props
     return h(
       'div',
@@ -20,12 +20,13 @@ class ToolBarItem extends Component {
     super(props)
     this.state = { value: false }
   }
-  render (h) {
+  render(h) {
     return h(
       'span',
       {
-        style: `color: rgb(153, 153, 153);font-size: 12px;padding: 4px 13px;background: #e1e2e3;display: inline-block;border-radius: 4px;margin-right:10px;cursor: pointer;user-select: none;box-shadow: 1px 2px 3px #b7bbbd;font-weight:${this.state.value ? 'bold' : ''
-          }`,
+        style: `color: rgb(153, 153, 153);font-size: 12px;padding: 4px 13px;background: #e1e2e3;display: inline-block;border-radius: 4px;margin-right:10px;cursor: pointer;user-select: none;box-shadow: 1px 2px 3px #b7bbbd;font-weight:${
+          this.state.value ? 'bold' : ''
+        }`,
         onClick: this.click,
       },
       this.props.label
@@ -40,26 +41,22 @@ class ToolBarItem extends Component {
 }
 // UI外框
 class Wrappe extends Component {
-  render (h) {
+  render(h) {
     return h('div', { style: 'border:solid 1px #eee;' }, [h(this.props.ToolBar), h(this.props.Body)])
   }
-  componentDidMount () {
+  componentDidMount() {
     console.log(this)
   }
 }
 // 编辑区
 class Body extends Component {
-  render (h) {
-    console.log(h(Editable, '2222'))
+  render(h) {
     return h(
       'div',
-      h('div', { style: 'padding:16px;min-height: 200px;' }, [
-        h(Block),
-        h(Paragraph, h(Diseditable, [h('span', { style: 'color:red' }, '1111'), h(Editable, '2222')])),
-      ])
+      h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content' }, [h(Block), h(Paragraph, h(Diseditable, [h('span', { style: 'color:red' }, '1111'), h(Editable, '2222')]))])
     )
   }
-  componentDidMount () {
+  componentDidMount() {
     console.log(this)
   }
 }
@@ -68,7 +65,7 @@ export default class UI {
   constructor(editor) {
     this.editor = editor
   }
-  render () {
+  render() {
     this.body = h(Body)
     this.toolBar = h(ToolBar, {
       tools: [...this.editor.tools],

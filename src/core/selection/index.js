@@ -1,9 +1,11 @@
 import { nativeSelection } from '../native'
+import styleStr from './style'
 import Range from './range'
 export default class Selection {
   ranges = [] // 选区列表
   constructor(editor) {
     this.editor = editor
+    this._initStyle()
   }
   get rangeCount() {
     return this.ranges.length
@@ -28,6 +30,11 @@ export default class Selection {
     })
     return points
   }
+  _initStyle() {
+    const style = document.createElement('style')
+    style.innerHTML = styleStr
+    document.head.appendChild(style)
+  }
   _resetRanges() {
     this.clearRanges()
     const count = nativeSelection.rangeCount
@@ -42,7 +49,6 @@ export default class Selection {
     }
   }
   pushRange(nativeRange) {
-    console.log(nativeRange)
     const { focusNode, focusOffset } = nativeSelection
     const cloneRange = new Range(nativeRange, this.editor)
     if (cloneRange.collapsed) {
@@ -52,7 +58,6 @@ export default class Selection {
     } else {
       cloneRange._d = 1
     }
-    console.log(cloneRange)
     this.ranges.push(cloneRange)
   }
   // 注意chrome不支持多选区,需要在此之前调用 removeAllRanges

@@ -153,6 +153,9 @@ export default class VNode {
     this.listeners.forEach((value, key) => {
       dom.addEventListener(key, value)
     })
+    Object.keys(this.attrs).forEach((key) => {
+      dom.setAttribute(key, this.attrs[key])
+    })
     return dom
   }
 }
