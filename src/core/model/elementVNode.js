@@ -14,7 +14,6 @@ export default class elementVNode extends VNode {
     this.tagName = tagName
     // set style
     const style = attrs.style || ''
-    const styles = new Map()
     if (typeof style === 'string') {
       style
         .split(';')
@@ -23,15 +22,14 @@ export default class elementVNode extends VNode {
           if (!v[0] || !v[1]) {
             return
           }
-          styles.set(v[0].trim(), v[1].trim())
+          this.styles.set(v[0].trim(), v[1].trim())
         })
     } else if (typeof style === 'object') {
       Object.keys(style).forEach((key) => {
-        styles.set(key, style[key])
+        this.styles.set(key, style[key])
       })
     }
     Reflect.deleteProperty(attrs, 'style')
-    this.styles = styles
 
     // set classes
     const className = (attrs.class || '').trim()
@@ -39,7 +37,6 @@ export default class elementVNode extends VNode {
     Reflect.deleteProperty(attrs, 'class')
 
     // set listeners
-    this.listeners = new Map()
     Object.keys(attrs).forEach((key) => {
       if (/^on[A-Z]/.test(key)) {
         this.listeners.set(key.replace(/^on/, '').toLowerCase(), attrs[key])
@@ -49,7 +46,7 @@ export default class elementVNode extends VNode {
     })
     children && children.flat().length && this.appendChild(...children.flat())
   }
-  splitNode (index) {
+  splitNode(index) {
     if (index === 0) {
       return index
     }

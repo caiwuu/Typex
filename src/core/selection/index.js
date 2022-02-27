@@ -5,10 +5,10 @@ export default class Selection {
   constructor(editor) {
     this.editor = editor
   }
-  get rangeCount () {
+  get rangeCount() {
     return this.ranges.length
   }
-  get rangePoints () {
+  get rangePoints() {
     const points = []
     this.ranges.forEach((range) => {
       points.push(
@@ -28,7 +28,7 @@ export default class Selection {
     })
     return points
   }
-  _resetRanges () {
+  _resetRanges() {
     this.clearRanges()
     const count = nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
@@ -36,13 +36,13 @@ export default class Selection {
       this.pushRange(nativeRange)
     }
   }
-  clearRanges () {
+  clearRanges() {
     while (this.ranges.length) {
       this.ranges.pop().caret.remove()
     }
   }
-  pushRange (nativeRange) {
-    console.log(nativeRange);
+  pushRange(nativeRange) {
+    console.log(nativeRange)
     const { focusNode, focusOffset } = nativeSelection
     const cloneRange = new Range(nativeRange, this.editor)
     if (cloneRange.collapsed) {
@@ -52,19 +52,19 @@ export default class Selection {
     } else {
       cloneRange._d = 1
     }
-    console.log(cloneRange);
+    console.log(cloneRange)
     this.ranges.push(cloneRange)
   }
   // 注意chrome不支持多选区,需要在此之前调用 removeAllRanges
-  addRange (nativeRange) {
+  addRange(nativeRange) {
     nativeSelection.addRange(nativeRange)
     this.pushRange(nativeRange)
   }
-  collapse (parentNode, offset) {
+  collapse(parentNode, offset) {
     nativeSelection.collapse(parentNode, offset)
     this._resetRanges()
   }
-  _resetRanges () {
+  _resetRanges() {
     this.clearRanges()
     const count = nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
@@ -72,15 +72,15 @@ export default class Selection {
       this.pushRange(nativeRange)
     }
   }
-  getRangeAt (index = 0) {
+  getRangeAt(index = 0) {
     return this.ranges[index]
   }
-  removeAllRanges () {
+  removeAllRanges() {
     nativeSelection.removeAllRanges()
     this.clearRanges()
   }
   // 多选区支持
-  _extendRanges () {
+  _extendRanges() {
     const count = nativeSelection.rangeCount
     if (count > 0) {
       const nativeRange = nativeSelection.getRangeAt(count - 1)
@@ -95,13 +95,13 @@ export default class Selection {
       this.pushRange(nativeRange)
     }
   }
-  createNativeRange ({ startVNode, startOffset, endVNode, endOffset }) {
+  createNativeRange({ startVNode, startOffset, endVNode, endOffset }) {
     const range = document.createRange()
     range.setStart(startVNode.ele, startOffset)
     range.setEnd(endVNode.ele, endOffset)
     return range
   }
-  updateRanges (multiple) {
+  updateRanges(multiple) {
     // 选区的创建结果需要在宏任务中获取.
     setTimeout(() => {
       if (multiple) {
@@ -109,16 +109,15 @@ export default class Selection {
       } else {
         this._resetRanges()
       }
-      console.log(this.ranges);
       this.ranges.forEach((range) => range.updateCaret())
       this.drawRangeBg()
     })
   }
-  _isCoverd (rectA, rectB) {
+  _isCoverd(rectA, rectB) {
     return rectA.y < rectB.y ? rectA.y + rectA.ch >= rectB.y + rectB.ch : rectB.y + rectB.ch >= rectA.y + rectA.ch
   }
   // 高性能去重;
-  distinct () {
+  distinct() {
     let tempObj = {}
     let len = this.ranges.length
     for (let index = 0; index < len; index++) {
@@ -146,8 +145,9 @@ export default class Selection {
     }
     tempObj = null
   }
-  drawRangeBg () {
+  drawRangeBg() {
     const currRange = this.ranges[0]
+    if (!currRange) return
     nativeSelection.removeAllRanges()
     nativeSelection.addRange(this.createNativeRange(currRange))
   }
