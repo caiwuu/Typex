@@ -15,18 +15,18 @@ export default class Range {
     this.editor = editor
     this.caret = new Caret(this)
   }
-  get collapsed() {
+  get collapsed () {
     return this.endVNode === this.startVNode && this.endOffset === this.startOffset
   }
-  setEnd(endVNode, endOffset) {
+  setEnd (endVNode, endOffset) {
     this.endVNode = endVNode
     this.endOffset = endOffset
   }
-  setStart(startVNode, startOffset) {
+  setStart (startVNode, startOffset) {
     this.startVNode = startVNode
     this.startOffset = startOffset
   }
-  collapse(toStart) {
+  collapse (toStart) {
     if (toStart) {
       this.endVNode = this.startVNode
       this.endOffset = this.startOffset
@@ -35,10 +35,10 @@ export default class Range {
       this.startVNode = this.endVNode
     }
   }
-  updateCaret(drawCaret = true) {
+  updateCaret (drawCaret = true) {
     this.caret.update(this, drawCaret)
   }
-  remove() {
+  remove () {
     const index = this.vm.selection.ranges.findIndex((i) => i === this)
     this.caret.remove()
     this.vm.selection.ranges.splice(index, 1)

@@ -1,4 +1,4 @@
-import Measure from '../measure'
+import Measure from './measure'
 const setStyle = (dom, style) => {
   for (const key in style) {
     dom.style[key] = style[key]
@@ -15,14 +15,14 @@ export default class Caret {
     this.dom.classList.add('custom-caret')
     this.setStyle(this.dom)
   }
-  setStyle(style = {}) {
+  setStyle (style = {}) {
     const mergeStyle = Object.assign({}, defaultStyle, style)
     setStyle(this.dom, mergeStyle)
   }
-  remove() {
+  remove () {
     this.dom.remove()
   }
-  getRect(range) {
+  getRect (range) {
     let container, offset
     switch (range._d) {
       case 0:
@@ -37,10 +37,10 @@ export default class Caret {
     }
     return this.measure.measure(container, offset)
   }
-  update(range, drawCaret = true) {
+  update (range, drawCaret = true) {
     this.rect = this.getRect(range)
     if (!drawCaret) return
-    range.editor.ui.body.appendChild(this.dom)
+    range.editor.ui.body.ele.appendChild(this.dom)
     let container = range.startVNode.ele
     if (!container) return
     if (!(container instanceof Element)) {
