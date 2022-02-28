@@ -15,8 +15,8 @@ export const multiplication = (str, times) => {
   })
 }
 export const isEmptyNode = (vnode) => {
-  if (vnode.childrens && vnode.childrens.length) {
-    return vnode.childrens.every((item) => isEmptyNode(item))
+  if (vnode.children && vnode.children.length) {
+    return vnode.children.every((item) => isEmptyNode(item))
   } else {
     // TODO  暂时无placeholder类型
     if (vnode.type === 'placeholder') {
@@ -31,15 +31,16 @@ export const isEmptyNode = (vnode) => {
   }
 }
 export const getLayer = (vnode, ceil) => {
-  if (vnode.parent === ceil) {
+  if (vnode.parentNode === ceil) {
     return vnode
   } else if (vnode.type === 'block') {
     return vnode
   } else {
-    return getLayer(vnode.parent)
+    return getLayer(vnode.parentNode)
   }
 }
 export const isEmptyBlock = (vnode) => {
+  console.log(vnode)
   // debugger
   const block = getLayer(vnode)
   return isEmptyNode(block)

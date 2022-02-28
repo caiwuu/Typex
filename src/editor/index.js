@@ -1,4 +1,4 @@
-import { EventProxy, Selection } from '../core'
+import { EventProxy, Selection, registerActions } from '../core'
 import emit from 'mitt'
 import UI from './ui'
 export default class Editor {
@@ -8,21 +8,25 @@ export default class Editor {
     this.emitter = emit()
     this.selection = new Selection(this)
   }
-  mount (id) {
+  mount(id) {
     this.host = id
     this.ui.render()
     new EventProxy(this)
+    registerActions(this)
   }
-  setTools (tools) {
+  setTools(tools) {
     this.tools = [...tools]
   }
-  execComand (command) {
+  execComand(command) {
     console.log(command)
   }
-  on (eventName, fn) {
+  on(eventName, fn) {
     this.emitter.on(eventName, fn)
   }
-  focus () {
+  emit(eventName, ...args) {
+    this.emitter.emit(eventName, args)
+  }
+  focus() {
     this.emitter.emit('focus')
   }
 }

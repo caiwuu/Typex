@@ -53,7 +53,10 @@ class Body extends Component {
   render(h) {
     return h(
       'div',
-      h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content' }, [h(Block), h(Paragraph, h(Diseditable, [h('span', { style: 'color:red' }, '1111'), h(Editable, '2222')]))])
+      h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content' }, [
+        h(Block),
+        h(Paragraph, h(Diseditable, [h('span', { style: 'color:red' }, '不可编辑'), h(Editable, '可编辑文字')])),
+      ])
     )
   }
   componentDidMount() {
