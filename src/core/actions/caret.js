@@ -1,116 +1,138 @@
+/**
+ * 光标算法
+ */
 import emojiRegexCreater from 'emoji-regex'
+import { nativeSelection } from '../native'
 import { isEmptyBlock } from '../share/utils'
-function left(shiftKey) {
-  let container, offset
-  if (shiftKey) {
-    switch (this._d) {
-      case 1:
-      case 0:
-        container = this.startVNode
-        offset = this.startOffset
-        this._d = 1
-        break
-      case 2:
-        container = this.endVNode
-        offset = this.endOffset
-        break
+const caretActions = {
+  left(shiftKey) {
+    let container, offset
+    if (shiftKey) {
+      switch (this._d) {
+        case 1:
+        case 0:
+          container = this.startVNode
+          offset = this.startOffset
+          this._d = 1
+          break
+        case 2:
+          container = this.endVNode
+          offset = this.endOffset
+          break
+      }
+    } else {
+      container = this.startVNode
+      offset = this.startOffset
     }
-  } else {
-    container = this.startVNode
-    offset = this.startOffset
-  }
-  const { node, pos, flag } = getPrevPoint(container, offset)
-  if (flag === 404) return flag
-  if (shiftKey) {
-    switch (this._d) {
-      case 0:
-      case 1:
-        this.setStart(node, pos)
-        this._d = 1
-        break
-      case 2:
-        this.setEnd(node, pos)
-        break
+    const { node, pos, flag } = getPrev(container, offset)
+    if (flag === 404) return flag
+    if (shiftKey) {
+      switch (this._d) {
+        case 0:
+        case 1:
+          this.setStart(node, pos)
+          this._d = 1
+          break
+        case 2:
+          this.setEnd(node, pos)
+          break
+      }
+    } else {
+      this.setStart(node, pos)
+      this.collapse(true)
+      this._d = 0
     }
-  } else {
-    this.setStart(node, pos)
-    this.collapse(true)
-    this._d = 0
-  }
-  // 穿越空块
-  if (isEmptyBlock(container) && flag !== 2) {
-    return left.call(this, shiftKey)
-  }
-  if (flag === 1) {
-    return left.call(this, shiftKey)
-  }
-  return flag
-}
-function right(shiftKey) {
-  let container, offset
-  if (shiftKey) {
-    switch (this._d) {
-      case 2:
-      case 0:
-        container = this.endVNode
-        offset = this.endOffset
-        this._d = 2
-        break
-      case 1:
-        container = this.startVNode
-        offset = this.startOffset
-        break
+    // 穿越空块
+    if (isEmptyBlock(container) && flag !== 2) {
+      return caretActions.left.call(this, shiftKey)
     }
-  } else {
-    container = this.endVNode
-    offset = this.endOffset
-  }
-  const { node, pos, flag } = getNextPoint(container, offset)
-  if (flag === 404) return flag
-  if (shiftKey) {
-    switch (this._d) {
-      case 0:
-      case 2:
-        this.setEnd(node, pos)
-        this._d = 2
-        break
-      case 1:
-        this.setStart(node, pos)
-        break
+    if (flag === 1) {
+      return caretActions.left.call(this, shiftKey)
     }
-  } else {
-    this.setEnd(node, pos)
-    this.collapse(false)
-    this._d = 0
-  }
-  if (isEmptyBlock(container) && flag !== 2) {
-    return this.right(shiftKey)
-  }
-  if (flag === 1) {
-    return right.call(this, shiftKey)
-  }
-  return flag
+    return flag
+  },
+  right(shiftKey) {
+    let container, offset
+    if (shiftKey) {
+      switch (this._d) {
+        case 2:
+        case 0:
+          container = this.endVNode
+          offset = this.endOffset
+          this._d = 2
+          break
+        case 1:
+          container = this.startVNode
+          offset = this.startOffset
+          break
+      }
+    } else {
+      container = this.endVNode
+      offset = this.endOffset
+    }
+    const { node, pos, flag } = getNext(container, offset)
+    if (flag === 404) return flag
+    if (shiftKey) {
+      switch (this._d) {
+        case 0:
+        case 2:
+          this.setEnd(node, pos)
+          this._d = 2
+          break
+        case 1:
+          this.setStart(node, pos)
+          break
+      }
+    } else {
+      this.setEnd(node, pos)
+      this.collapse(false)
+      this._d = 0
+    }
+    if (isEmptyBlock(container) && flag !== 2) {
+      return caretActions.right.call(this, shiftKey)
+    }
+    if (flag === 1) {
+      return caretActions.right.call(this, shiftKey)
+    }
+    return flag
+  },
+  up(shiftKey) {
+    // 记录初时x坐标
+    const initialRect = { ...this.caret.rect },
+      prevRect = { ...this.caret.rect }
+    loop.call(this, 'left', initialRect, prevRect, false, shiftKey)
+    this.updateCaret(true)
+  },
+  down(shiftKey) {
+    const initialRect = { ...this.caret.rect },
+      prevRect = { ...this.caret.rect }
+    loop.call(this, 'right', initialRect, prevRect, false, shiftKey)
+    this.updateCaret(true)
+  },
 }
-
-function up(shiftKey) {
-  // 记录初时x坐标
-  const initialRect = { ...this.caret.rect },
-    prevRect = { ...this.caret.rect }
-  loop.call(this, 'left', initialRect, prevRect, false, shiftKey)
-  this.updateCaret(true)
+function getPrev(container, offset, f = 0) {
+  const { node, pos, flag } = getPrevPoint(container, offset, f)
+  if (node && !node.isEditable) {
+    const res = getPrev(node, 0, flag)
+    if (res.flag === 1) res.flag = -1
+    return res
+  }
+  return { node, pos, flag }
 }
-function down(shiftKey) {
-  const initialRect = { ...this.caret.rect },
-    prevRect = { ...this.caret.rect }
-  loop.call(this, 'right', initialRect, prevRect, false, shiftKey)
-  this.updateCaret(true)
+function getNext(container, offset, f = 0) {
+  const { node, pos, flag } = getNextPoint(container, offset, f)
+  if (node && !node.isEditable) {
+    const res = getNext(node, node.length, flag)
+    if (res.flag === 1) res.flag = -1
+    return res
+  }
+  return { node, pos, flag }
 }
-
 function getNextPoint(vnode, pos, flag = 0) {
   if (vnode.isRoot && pos === vnode.length) return { node: null, pos: null, flag: 404 }
   const len = vnode.type === 'text' ? vnode.length : vnode.children.length
   if (pos + 1 > len) {
-    flag = vnode.type === 'block' ? 2 : 1
+    flag = flag === 2 ? 2 : vnode.type === 'block' ? 2 : 1
     return getNextPoint(vnode.parentNode, vnode.index + 1, flag)
   } else if (pos + 1 === len) {
     return flag > 0 ? getHead(vnode, pos, flag) : { node: vnode, pos: pos + 1, flag }
@@ -162,7 +184,7 @@ function getPrevPoint(vnode, pos, flag = 0) {
     if (vnode.isRoot) {
       return { node: null, pos: null, flag: 404 }
     } else {
-      flag = vnode.type === 'block' ? 2 : 1
+      flag = flag === 2 ? 2 : vnode.type === 'block' ? 2 : 1
       return getPrevPoint(vnode.parentNode, vnode.index, flag)
     }
   } else if (pos - 1 === 0) {
@@ -202,7 +224,7 @@ function loop(direct, initialRect, prevRect, lineChanged = false, shiftKey) {
   if (this.collapsed) {
     this._d = 0
   }
-  const flag = direct === 'left' ? left.call(this, shiftKey) : right.call(this, shiftKey)
+  const flag = direct === 'left' ? caretActions.left.call(this, shiftKey) : caretActions.right.call(this, shiftKey)
   if (!lineChanged) {
     if (flag === 404) return
     this.updateCaret(false)
@@ -214,7 +236,7 @@ function loop(direct, initialRect, prevRect, lineChanged = false, shiftKey) {
       currDistance = Math.abs(currRect.x - initialRect.x),
       sameLine = isSameLine(initialRect, prevRect, currRect, flag, this.editor)
     if (!(currDistance <= preDistance && sameLine)) {
-      direct === 'left' ? right.call(this, shiftKey) : left.call(this, shiftKey)
+      direct === 'left' ? caretActions.right.call(this, shiftKey) : caretActions.left.call(this, shiftKey)
       this.updateCaret(false)
       return
     }
@@ -244,4 +266,38 @@ function isSameLine(initialRect, prevRect, currRect, flag, editor) {
   }
   return sameLine
 }
-export default { left, right, up, down }
+
+export default function caretMove(args) {
+  const [direction, drawCaret, shiftKey] = args
+  // 支持多光标但是目前还不支持多选区；这里禁止多光标拖蓝
+  if (shiftKey && this.selection.ranges.length > 1) {
+    return
+  }
+  const nativeRange = nativeSelection.rangeCount > 0 ? nativeSelection.getRangeAt(0) : null
+  this.selection.ranges.forEach((range) => {
+    // 没按shift 并且 存在选区,取消选区，左右不移动光标，上下可移动光标
+    if (!shiftKey && !range.collapsed) {
+      const collapseToStart = direction === 'left'
+      nativeRange && nativeRange.collapse(collapseToStart)
+      range.collapse(collapseToStart)
+      range._d = 0
+      range.updateCaret()
+      if (direction === 'up' || direction === 'down') {
+        caretActions[direction].call(range, shiftKey)
+        drawCaret && range.updateCaret()
+      }
+    } else {
+      if (range.collapsed) {
+        range._d = 0
+      }
+      caretActions[direction].call(range, shiftKey)
+      drawCaret && range.updateCaret()
+    }
+  })
+  this.selection.distinct()
+  this.focus()
+  // 按住shit时同步到真实原生range绘制拖蓝
+  if (shiftKey) {
+    this.selection.drawRangeBg()
+  }
+}

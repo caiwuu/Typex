@@ -44,24 +44,32 @@ class Wrappe extends Component {
   render(h) {
     return h('div', { style: 'border:solid 1px #eee;' }, [h(this.props.ToolBar), h(this.props.Body)])
   }
-  componentDidMount() {
-    console.log(this)
-  }
+  // componentDidMount() {
+  //   console.log(this)
+  // }
 }
 // 编辑区
 class Body extends Component {
   render(h) {
     return h(
       'div',
-      h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content' }, [
+      h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content', isRoot: true }, [
         h(Block),
-        h(Paragraph, h(Diseditable, [h('span', { style: 'color:red' }, '不可编辑'), h(Editable, '可编辑文字')])),
+        h(
+          Paragraph,
+          h(Diseditable, [
+            h(Editable, '可编辑文字😂'),
+            h('span', { style: 'color:red' }, '不可编辑'),
+            h(Editable, '可编辑文字😂'),
+            h(Editable, '可编辑文字😂'),
+          ])
+        ),
       ])
     )
   }
-  componentDidMount() {
-    console.log(this)
-  }
+  // componentDidMount() {
+  //   console.log(this)
+  // }
 }
 
 export default class UI {

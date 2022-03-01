@@ -1,4 +1,5 @@
 import { setStyle, multiplication } from '../share/utils'
+import input from './input'
 export default class KeyboardProxy {
   input = null
   constructor(editor) {
@@ -54,51 +55,53 @@ export default class KeyboardProxy {
     }
     setStyle(this.iframe, style)
     this.input.focus()
-    console.log(33)
   }
   destroy() {
-    this.input.removeEventListener('compositionstart', this._handleEvent.bind(this))
-    this.input.removeEventListener('compositionend', this._handleEvent.bind(this))
-    this.input.removeEventListener('input', this._handleEvent.bind(this))
+    this.input.removeEventListener('compositionstart', this._inputEvent.bind(this))
+    this.input.removeEventListener('compositionend', this._inputEvent.bind(this))
+    this.input.removeEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.removeEventListener('keydown', this._handGolobalKeydown.bind(this))
   }
   _initEvent() {
-    this.input.addEventListener('compositionstart', this._handleEvent.bind(this))
-    this.input.addEventListener('compositionend', this._handleEvent.bind(this))
-    this.input.addEventListener('input', this._handleEvent.bind(this))
+    this.input.addEventListener('compositionstart', this._inputEvent.bind(this))
+    this.input.addEventListener('compositionend', this._inputEvent.bind(this))
+    this.input.addEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
   }
-  _handleEvent(event) {
-    this.editor.selection.input(event)
+  _inputEvent(event) {
+    this.editor.selection.ranges.forEach((range) => {
+      input.call(range, event)
+    })
+    this.editor.selection.ranges.forEach((range) => {
+      range.updateCaret()
+    })
+    this.editor.selection.distinct()
+    this.editor.focus()
   }
   _handGolobalKeydown(event) {
     const key = event.key
     switch (key) {
       case 'ArrowRight':
         this.editor.emit('caretMove', 'right', true, event.shiftKey)
-        // this.editor.selection.move('right', true, event.shiftKey)
         break
       case 'ArrowLeft':
         this.editor.emit('caretMove', 'left', true, event.shiftKey)
-        // this.editor.selection.move('left', true, event.shiftKey)
         break
       case 'ArrowUp':
         event.preventDefault()
         this.editor.emit('caretMove', 'up', false, event.shiftKey)
-        // this.editor.selection.move('up', false, event.shiftKey)
         break
       case 'ArrowDown':
         event.preventDefault()
         this.editor.emit('caretMove', 'down', false, event.shiftKey)
-        // this.editor.selection.move('down', false, event.shiftKey)
         break
       case 'Backspace':
         event.preventDefault()
-        this.editor.selection.del()
+        // this.editor.selection.del()
         break
       case 'Enter':
         event.preventDefault()
-        this.editor.selection.enter()
+      // this.editor.selection.enter()
     }
   }
 }

@@ -45,3 +45,20 @@ export const isEmptyBlock = (vnode) => {
   const block = getLayer(vnode)
   return isEmptyNode(block)
 }
+
+export const recoverRangePoint = (points) => {
+  points.forEach((point) => {
+    if (point.flag === 'end') {
+      point.range.setEnd(point.container, point.offset)
+    } else {
+      point.range.setStart(point.container, point.offset)
+    }
+  })
+}
+// 多次函数执行器
+export const times = (n, fn, context = undefined, ...args) => {
+  let i = 0
+  while (i++ < n) {
+    fn.call(context, ...args)
+  }
+}

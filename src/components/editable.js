@@ -4,15 +4,15 @@ export class Editable extends Component {
   render(h) {
     const { children } = this.props
     children.forEach((vn) => {
-      this.staticTravel(vn)
+      this.travel(vn)
     })
     return h(children)
   }
-  staticTravel(vnode) {
+  travel(vnode) {
     if (vnode.editable !== 'off') {
       vnode.editable = 'on'
       if (vnode.children) {
-        vnode.children.forEach((vn) => this.staticTravel(vn))
+        vnode.children.forEach((vn) => this.travel(vn))
       }
     }
   }

@@ -36,7 +36,7 @@ export default class VNode {
       case 'text':
         return 'text'
       case 'br':
-        return 'softBreak'
+        return 'br'
       case 'img':
         return 'img'
       default:
@@ -137,6 +137,10 @@ export default class VNode {
         dom.src = this.attrs.src ?? ''
         Reflect.deleteProperty(this.attrs, 'src')
         break
+    }
+    if (this.attrs.isRoot) {
+      this.isRoot = this.attrs.isRoot
+      Reflect.deleteProperty(this.attrs, 'isRoot')
     }
     if (!this.isEditable) {
       this.styles.set('user-select', 'none')
