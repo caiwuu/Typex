@@ -40,8 +40,6 @@ export const getLayer = (vnode, ceil) => {
   }
 }
 export const isEmptyBlock = (vnode) => {
-  console.log(vnode)
-  // debugger
   const block = getLayer(vnode)
   return isEmptyNode(block)
 }

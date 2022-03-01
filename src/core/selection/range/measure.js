@@ -10,8 +10,7 @@ export default class Measure {
       return Measure.instance
     }
   }
-  measure(container, offset) {
-    console.log(container, offset)
+  measure (container, offset) {
     // splitText(0)会使原dom销毁造成startContainer向上逃逸， nodeName = '#text'
     let temp
     if (container.nodeName === '#text') {
@@ -33,7 +32,7 @@ export default class Measure {
     }
     return this._getRect(container, offset, temp)
   }
-  _getRect(container, offset, temp) {
+  _getRect (container, offset, temp) {
     let con = container
     if (!(container instanceof Element)) {
       con = container.parentNode
