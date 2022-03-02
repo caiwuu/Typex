@@ -1,5 +1,6 @@
 import { times } from '../share/utils'
-export default function input(event) {
+import del from './del'
+export default function input (event) {
   if (!this.collapsed) {
     // this.del()
     console.warn('TODO DEL')
@@ -18,7 +19,7 @@ export default function input(event) {
       this.inputState.value = inputData
     }
     console.warn('TODO 实现del')
-    // times(prevInputValue.length, this.del, this, true)
+    times(prevInputValue.length, del, this, true)
     this.editor.emit('insert', { node: this.endVNode, pos: this.endOffset, R: this }, inputData)
   } else if (event.type === 'compositionstart') {
     console.log('开始聚合输入:', event.data)

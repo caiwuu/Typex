@@ -5,4 +5,4 @@ editor.setTools([
   { label: '倾斜(I)', command: 'italic' },
 ])
 editor.mount('editor-root')
-console.log(editor);
+window.editor = editor

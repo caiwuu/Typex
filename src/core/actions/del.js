@@ -1,9 +1,19 @@
 import { getCommonAncestorNode, deleteNode, getLayer, recoverRangePoint, isEmptyBlock, comparePosition } from '../share/utils'
 import { getPrev, getNext } from './caret'
 import { createElement } from '../model'
-export default function del(args) {
+import { nativeSelection } from '../native'
+// TODO 24 109 125
+function transToNode (args) {
+  args.forEach((ele) => {
+    if (typeof ele.node === 'string') {
+      ele.node = getNode(this.ui.vnode, ele.node)
+    }
+  })
+  return args
+}
+export default function del (args) {
   const [from, to] = transToNode.call(this, args)
-  const prev = getPrevPoint(from.node, from.pos)
+  const prev = getPrev(from.node, from.pos)
   if (typeof to === 'number') {
     // 行内操作
     if (prev.flag <= 0) {
@@ -19,7 +29,7 @@ export default function del(args) {
     if (from.node === to.node) {
       innerDel.call(this, from, from.pos - to.pos, { node: from.node, pos: to.pos })
     } else {
-      const commonAncestorContainer = getCommonAncestorNode(this.ui.editableArea.vnode, from, to)
+      const commonAncestorContainer = getCommonAncestorNode(from.node, to.node)
       console.log(commonAncestorContainer)
       rangeDel.call(this, commonAncestorContainer, to, from, prev)
     }
@@ -29,14 +39,14 @@ export default function del(args) {
  * 单点删除
  */
 // 节点内删除
-function innerDel(from, to, prev) {
+function innerDel (from, to, prev) {
   // 重新计算受影响的range端点
   // 先移动range在执行删除
   const points = this.selection
-    .getRangePoints()
-    .filter((point) => point.container === from.node.ele && point.offset >= from.pos)
+    .rangePoints
+    .filter((point) => point.container === from.node && point.offset >= from.pos)
     .map((point) => ({
-      container: point.offset === from.pos ? prev.node.ele : point.container,
+      container: point.offset === from.pos ? prev.node : point.container,
       offset: point.offset === from.pos ? prev.pos : prev.flag === -2 ? point.offset - to - 1 : point.offset - to,
       range: point.range,
       flag: point.flag,
@@ -47,45 +57,43 @@ function innerDel(from, to, prev) {
   isEmpty && del.call(this, [prev, 1])
   // 添加br防止行塌陷
   if (isEmptyBlock(from.node)) {
-    const brContainer = from.node.type === 'text' ? from.node.parent : from.node
-    console.log(brContainer.childrens)
-    console.log(brContainer.childrens.some((vnode) => vnode.belong('placeholder')))
+    const brContainer = from.node.type === 'text' ? from.node.parentNode : from.node
     const brPos = from.node.type === 'text' ? from.node.index + 1 : from.pos
-    if (!brContainer.childrens.some((vnode) => vnode.belong('placeholder'))) {
+    if (!brContainer.children.some((vnode) => vnode.type === 'placeholder')) {
       console.log('添加br')
-      const br = createVnode({ type: 'br', kind: 'placeholder' })
+      const br = createElement('br', { type: 'placeholder' })
       brContainer.insert(br, brPos)
     }
   }
 }
-function clearBlock(block) {
-  block.childrens.slice(0).forEach((node) => {
+function clearBlock (block) {
+  block.children.slice(0).forEach((node) => {
     node.remove()
   })
 }
 // 跨节点
-function crossNodeDel(from, to, prev) {
+function crossNodeDel (from, to, prev) {
   // 首行删除
   // 404 没有找到前位点
   if (prev.flag === 404) {
     console.log('404')
     const block = getLayer(from.node)
-    let points = this.selection.getRangePoints().filter((point) => point.container === from.node.ele)
+    let points = this.selection.rangePoints.filter((point) => point.container === from.node)
     // 段落为空则初始化段落
     if (block.isEmpty) {
       clearBlock(block)
-      const br = createVnode({ type: 'br', kind: 'placeholder' })
+      const br = createElement('br', { type: 'placeholder' })
       block.insert(br, 1)
       points = points.map((point) => ({
-        container: block.ele,
+        container: block,
         offset: 0,
         range: point.range,
         flag: point.flag,
       }))
     } else if (from.node.isEmpty) {
-      const next = getNextPoint(from.node, from.pos)
+      const next = getNext(from.node, from.pos)
       points = points.map((point) => ({
-        container: next.node.ele,
+        container: next.node,
         offset: 0,
         range: point.range,
         flag: point.flag,
@@ -100,11 +108,11 @@ function crossNodeDel(from, to, prev) {
   const prevIsEmpty = isEmptyBlock(prev.node)
   console.log(prevIsEmpty)
   const points = this.selection
-    .getRangePoints()
-    .filter((point) => point.container === from.node.ele && point.offset === from.pos)
+    .rangePoints
+    .filter((point) => point.container === from.node && point.offset === from.pos)
     .map((point) => {
       return {
-        container: prevIsEmpty ? point.container : prev.node.ele,
+        container: prevIsEmpty ? point.container : prev.node,
         offset: prevIsEmpty ? point.offset : prev.pos,
         range: point.range,
         flag: point.flag,
@@ -130,19 +138,19 @@ function crossNodeDel(from, to, prev) {
     // 合并块
     console.log('合并块', to)
     const fromBlock = getLayer(from.node)
-    fromBlock.childrens.slice(0).forEach((node, index) => {
+    fromBlock.children.slice(0).forEach((node, index) => {
       node.moveTo(toBlock, prev.pos + index)
     })
     fromBlock.remove()
   }
-  this.selection.nativeSelection.removeAllRanges()
+  nativeSelection.removeAllRanges()
 }
 
-function compareStart(vnode, startPos, endPos, samebranch = false) {
+function compareStart (vnode, startPos, endPos, samebranch = false) {
   const compareRes = comparePosition(vnode.position, startPos)
   if (compareRes === 0 && vnode.position !== startPos) {
-    for (let index = vnode.childrens.length - 1; index >= 0; index--) {
-      const element = vnode.childrens[index]
+    for (let index = vnode.children.length - 1; index >= 0; index--) {
+      const element = vnode.children[index]
       compareStart(element, startPos, endPos, true)
     }
   } else if (compareRes == -1) {
@@ -153,11 +161,11 @@ function compareStart(vnode, startPos, endPos, samebranch = false) {
     }
   }
 }
-function compareEnd(vnode, endPos) {
+function compareEnd (vnode, endPos) {
   const compareRes = comparePosition(vnode.position, endPos)
   if (compareRes === 0 && vnode.position !== endPos) {
-    for (let index = vnode.childrens.length - 1; index >= 0; index--) {
-      const element = vnode.childrens[index]
+    for (let index = vnode.children.length - 1; index >= 0; index--) {
+      const element = vnode.children[index]
       compareEnd(element, endPos)
     }
   } else if (compareRes == 1) {
@@ -165,18 +173,18 @@ function compareEnd(vnode, endPos) {
   }
 }
 // 选区删除，删除两个节点之间的节点
-export function rangeDel(commonAncestorContainer, to, from) {
+export function rangeDel (commonAncestorContainer, to, from) {
   const startPos = to.node.position
   const endPos = from.node.position
   // 先删除开始到结束之间的节点
-  for (let index = commonAncestorContainer.childrens.length - 1; index >= 0; index--) {
-    const element = commonAncestorContainer.childrens[index]
+  for (let index = commonAncestorContainer.children.length - 1; index >= 0; index--) {
+    const element = commonAncestorContainer.children[index]
     compareStart(element, startPos, endPos)
   }
   // 再删除开始节点和结束节点选中的内容
   let curr = { node: from.node, pos: from.pos }
   while (curr.node !== to.node || curr.pos !== to.pos) {
-    const prev = getPrevPoint(curr.node, curr.pos)
+    const prev = getPrev(curr.node, curr.pos)
     del.call(this, [curr, 1])
     curr = prev
   }
