@@ -82,12 +82,10 @@ export default class UI {
       tools: [...this.editor.tools],
       onCommand: (command) => this.editor.execComand(command),
     })
-    render(
-      h(Wrappe, {
-        ToolBar: this.toolBar,
-        Body: this.body,
-      }),
-      document.getElementById(this.editor.host)
-    )
+    this.vnode = h(Wrappe, {
+      ToolBar: this.toolBar,
+      Body: this.body,
+    })
+    render(this.vnode, document.getElementById(this.editor.host))
   }
 }

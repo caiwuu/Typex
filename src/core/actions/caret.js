@@ -5,7 +5,7 @@ import emojiRegexCreater from 'emoji-regex'
 import { nativeSelection } from '../native'
 import { isEmptyBlock } from '../share/utils'
 const caretActions = {
-  left (shiftKey) {
+  left(shiftKey) {
     let container, offset
     if (shiftKey) {
       switch (this._d) {
@@ -51,7 +51,7 @@ const caretActions = {
     }
     return flag
   },
-  right (shiftKey) {
+  right(shiftKey) {
     let container, offset
     if (shiftKey) {
       switch (this._d) {
@@ -96,21 +96,21 @@ const caretActions = {
     }
     return flag
   },
-  up (shiftKey) {
+  up(shiftKey) {
     // 记录初时x坐标
     const initialRect = { ...this.caret.rect },
       prevRect = { ...this.caret.rect }
     loop.call(this, 'left', initialRect, prevRect, false, shiftKey)
     this.updateCaret(true)
   },
-  down (shiftKey) {
+  down(shiftKey) {
     const initialRect = { ...this.caret.rect },
       prevRect = { ...this.caret.rect }
     loop.call(this, 'right', initialRect, prevRect, false, shiftKey)
     this.updateCaret(true)
   },
 }
-function getPrev (container, offset, f = 0) {
+export function getPrev(container, offset, f = 0) {
   const { node, pos, flag } = getPrevPoint(container, offset, f)
   if (node && !node.isEditable) {
     const res = getPrev(node, 0, flag)
@@ -119,7 +119,7 @@ function getPrev (container, offset, f = 0) {
   }
   return { node, pos, flag }
 }
-function getNext (container, offset, f = 0) {
+export function getNext(container, offset, f = 0) {
   const { node, pos, flag } = getNextPoint(container, offset, f)
   if (node && !node.isEditable) {
     const res = getNext(node, node.length, flag)
@@ -128,7 +128,7 @@ function getNext (container, offset, f = 0) {
   }
   return { node, pos, flag }
 }
-function getNextPoint (vnode, pos, flag = 0) {
+function getNextPoint(vnode, pos, flag = 0) {
   if (vnode.isRoot && pos === vnode.length) return { node: null, pos: null, flag: 404 }
   const len = vnode.type === 'text' ? vnode.length : vnode.children.length
   if (pos + 1 > len) {
@@ -140,7 +140,7 @@ function getNextPoint (vnode, pos, flag = 0) {
     return getHead(vnode, flag > 0 ? pos : pos + 1, flag)
   }
 }
-function getHead (vnode, pos, flag) {
+function getHead(vnode, pos, flag) {
   if (vnode.type === 'text') {
     const emojiRegex = emojiRegexCreater()
     for (const match of vnode.context.matchAll(emojiRegex)) {
@@ -178,7 +178,7 @@ function getHead (vnode, pos, flag) {
  * -2 emoji 两个字符
  * @returns
  */
-function getPrevPoint (vnode, pos, flag = 0) {
+function getPrevPoint(vnode, pos, flag = 0) {
   // debugger
   if (pos - 1 < 0) {
     if (vnode.isRoot) {
@@ -194,7 +194,7 @@ function getPrevPoint (vnode, pos, flag = 0) {
   }
 }
 // R位点
-function getTail (vnode, pos, flag) {
+function getTail(vnode, pos, flag) {
   if (vnode.type === 'text') {
     const emojiRegex = emojiRegexCreater()
     for (const match of vnode.context.matchAll(emojiRegex)) {
@@ -219,7 +219,7 @@ function getTail (vnode, pos, flag) {
     return { node: vnode, pos: pos, flag }
   }
 }
-function loop (direct, initialRect, prevRect, lineChanged = false, shiftKey) {
+function loop(direct, initialRect, prevRect, lineChanged = false, shiftKey) {
   if (this.collapsed) {
     this._d = 0
   }
@@ -248,7 +248,7 @@ function loop (direct, initialRect, prevRect, lineChanged = false, shiftKey) {
   return loop.call(this, direct, initialRect, currRect, lineChanged, shiftKey)
 }
 
-function isSameLine (initialRect, prevRect, currRect, flag, editor) {
+function isSameLine(initialRect, prevRect, currRect, flag, editor) {
   // 标识光标是否在同一行移动
   let sameLine = true
   // 判断自动折行 非vnode层面的换行 这里存在判断失误的概率 但是绝大部分情况都能判断
@@ -266,7 +266,7 @@ function isSameLine (initialRect, prevRect, currRect, flag, editor) {
   return sameLine
 }
 
-export default function caretMove (args) {
+export default function caretMove(args) {
   const [direction, drawCaret, shiftKey] = args
   // 支持多光标但是目前还不支持多选区；这里禁止多光标拖蓝
   if (shiftKey && this.selection.ranges.length > 1) {

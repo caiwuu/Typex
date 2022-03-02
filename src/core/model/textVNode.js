@@ -38,11 +38,9 @@ export default class textVNode extends VNode {
     return this._context
   }
   get length() {
-    console.log('length')
     return this.context.length
   }
   get isEmpty() {
-    console.log('isEmpty')
     return this.length === 0
   }
   render() {
