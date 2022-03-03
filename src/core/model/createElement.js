@@ -2,7 +2,7 @@ import elementVNode from './elementVNode'
 import textVNode from './textVNode'
 import VNode from './vnode'
 import { type, typeValidate } from '../share/utils'
-export default function createElement(tagName, attrs = {}, children = []) {
+export default function createElement (tagName, attrs = {}, children = []) {
   if (tagName instanceof VNode) return tagName
   if (type(tagName) === 'array') return tagName.map((ele) => createElement(ele, attrs))
   if (type(attrs) !== 'object' || attrs instanceof VNode) {

@@ -2,9 +2,7 @@ import { times } from '../share/utils'
 import del from './del'
 export default function input (event) {
   if (!this.collapsed) {
-    // this.del()
-    console.warn('TODO DEL')
-    return
+    del.call(this)
   }
   if (event.type === 'input') {
     let prevInputValue,
@@ -18,7 +16,6 @@ export default function input (event) {
       prevInputValue = this.inputState.value
       this.inputState.value = inputData
     }
-    console.warn('TODO 实现del')
     times(prevInputValue.length, del, this, true)
     this.editor.emit('insert', { node: this.endVNode, pos: this.endOffset, R: this }, inputData)
   } else if (event.type === 'compositionstart') {

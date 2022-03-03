@@ -1,4 +1,11 @@
 export default `
+      .icon {
+        width: 1.4em;
+        height: 1.4em;
+        vertical-align: -0.15em;
+        fill: currentColor;
+        overflow: hidden;
+      }
       #editor-content:focus,
       .custom-input:focus {
         outline: none;

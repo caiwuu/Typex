@@ -3,6 +3,7 @@ const insKey = Symbol('key')
 export default class VNode {
   static [insKey] = 1000
   key = 0
+  ns = ""
   _type = null
   attrs = {}
   position = '0'
@@ -22,7 +23,7 @@ export default class VNode {
     VNode[insKey]++
     this.path = [this]
   }
-  get type() {
+  get type () {
     if (this._type) return this._type
     switch (this.tagName) {
       case 'div':
@@ -51,7 +52,7 @@ export default class VNode {
         return 'inline'
     }
   }
-  insert(vnode, index) {
+  insert (vnode, index) {
     console.log('insert')
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
@@ -67,16 +68,16 @@ export default class VNode {
     this.children.splice(index, 0, vnode)
     this.reArrangement()
   }
-  repalce() {
+  repalce () {
     console.log('replace')
   }
-  delete(index, count) {
+  delete (index, count) {
     console.log('delete')
     const start = index - count <= 0 ? 0 : index - count
     this.children.splice(start, index - start).forEach((vnode) => vnode.ele.remove())
     this.reArrangement()
   }
-  moveTo(target, index) {
+  moveTo (target, index) {
     console.log('moveTo')
     const removeNodes = this.parentNode.children.splice(this.index, 1)
     this.parentNode.reArrangement()
@@ -84,7 +85,7 @@ export default class VNode {
       target.insert(vnode, index)
     })
   }
-  remove() {
+  remove () {
     console.log('remove')
     this.parentNode.children.splice(this.index, 1).forEach((i) => {
       i.removed = true
@@ -92,7 +93,7 @@ export default class VNode {
     })
     this.parentNode.reArrangement()
   }
-  reArrangement() {
+  reArrangement () {
     if (this.children) {
       this.children.forEach((item, index) => {
         const oldPosition = item.position
@@ -105,25 +106,25 @@ export default class VNode {
       })
     }
   }
-  appendChild(...vnodes) {
+  appendChild (...vnodes) {
     vnodes && this.children.push(...vnodes)
     this.reArrangement()
   }
-  get isEmpty() {
+  get isEmpty () {
     return isEmptyNode(this)
   }
-  get length() {
+  get length () {
     if (this.type === 'atom') {
       return -1
     } else {
       return this.children.filter((ele) => ele.type !== 'placeholder').length
     }
   }
-  get isEditable() {
+  get isEditable () {
     return this.editable !== 'off'
   }
-  render() {
-    const dom = document.createElement(this.tagName)
+  render () {
+    const dom = this.ns ? document.createElementNS(this.ns, this.tagName) : document.createElement(this.tagName)
     this.ele = dom
     dom.vnode = this
     switch (this.tagName) {
@@ -159,8 +160,9 @@ export default class VNode {
     this.listeners.forEach((value, key) => {
       dom.addEventListener(key, value)
     })
-    Object.keys(this.attrs).forEach((key) => {
-      dom.setAttribute(key, this.attrs[key])
+    Object.keys(this.attrs).forEach((k) => {
+      this.ns ? dom.setAttributeNS("http://www.w3.org/1999/xlink", k, this.attrs[k])
+        : dom.setAttribute(k, this.attrs[k])
     })
     return dom
   }
