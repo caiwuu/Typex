@@ -1,15 +1,6 @@
 import VNode from './vnode'
-import { type, typeValidate } from '../share/utils'
 export default class elementVNode extends VNode {
   constructor(tagName, attrs = {}, children = []) {
-    if (tagName._isVnode) return tagName
-    if (type(attrs) !== 'object') {
-      children = [attrs]
-      attrs = {}
-    } else {
-      children = [children]
-    }
-    typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
     super()
     this.tagName = tagName
     // set style
