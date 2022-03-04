@@ -21,6 +21,8 @@ export const isEmptyNode = (vnode) => {
     // TODO  暂时无placeholder类型
     if (vnode.type === 'placeholder') {
       return true
+    } else if (vnode.editable === 'off') {
+      return true
     } else if (vnode.type === 'text') {
       return vnode.context === ''
     } else if (['img', 'br'].includes(vnode.type)) {

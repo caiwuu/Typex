@@ -2,10 +2,9 @@ import VNode from './vnode'
 export default class elementVNode extends VNode {
   constructor(tagName, attrs = {}, children = []) {
     super()
+    this.ns = attrs.ns || ''
+    Reflect.deleteProperty(attrs, 'ns')
     this.tagName = tagName
-    if (['svg', 'use'].includes(tagName)) {
-      this.ns = "http://www.w3.org/2000/svg"
-    }
     // set style
     const style = attrs.style || ''
     if (typeof style === 'string') {
@@ -40,7 +39,7 @@ export default class elementVNode extends VNode {
     })
     children && children.flat().length && this.appendChild(...children.flat())
   }
-  splitNode (index) {
+  splitNode(index) {
     if (index === 0) {
       return index
     }
