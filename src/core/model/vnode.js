@@ -1,10 +1,11 @@
 import { isEmptyNode } from '../share/utils'
 const insKey = Symbol('key')
+const typeKey = Symbol('type')
 export default class VNode {
-  static [insKey] = 1000
+  static [insKey] = 0;
+  [typeKey] = null
   key = 0
   ns = ''
-  _type = null
   attrs = {}
   position = '0'
   path = []
@@ -24,7 +25,7 @@ export default class VNode {
     this.path = [this]
   }
   get type() {
-    if (this._type) return this._type
+    if (this[typeKey]) return this[typeKey]
     switch (this.tagName) {
       case 'div':
       case 'p':
@@ -128,7 +129,7 @@ export default class VNode {
       Reflect.deleteProperty(this.attrs, 'isRoot')
     }
     if (this.attrs.type) {
-      this._type = this.attrs.type
+      this[typeKey] = this.attrs.type
       Reflect.deleteProperty(this.attrs, 'type')
     }
     if (!this.isEditable) {
