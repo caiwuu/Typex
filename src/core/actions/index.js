@@ -1,8 +1,8 @@
 import caretMove from './caret'
 import insert from './insert'
-import del from './del'
+import del from './delete.js'
 
-export default function registerActions (editor) {
+export default function registerActions(editor) {
   // 光标移动
   editor.on('caretMove', caretMove.bind(editor))
   // 内容插入

@@ -1,6 +1,6 @@
 import { times } from '../share/utils'
 import del from './del'
-export default function input (event) {
+export default function input(event) {
   if (!this.collapsed) {
     del.call(this)
   }
@@ -19,10 +19,10 @@ export default function input (event) {
     times(prevInputValue.length, del, this, true)
     this.editor.emit('insert', { node: this.endVNode, pos: this.endOffset, R: this }, inputData)
   } else if (event.type === 'compositionstart') {
-    console.log('开始聚合输入:', event.data)
+    // console.log('开始聚合输入:', event.data)
     this.inputState.isComposing = true
   } else if (event.type === 'compositionend') {
-    console.log('结束聚合输入:', event.data)
+    // console.log('结束聚合输入:', event.data)
     // TODO 接收聚合输入
     this.inputState.isComposing = false
     event.target.value = ''

@@ -1,4 +1,26 @@
 import Caret from './caret'
+import { getNextPoint } from '../../actions/caret'
+function formatPoint(nativeRange) {
+  const nr = {
+    endVNode: nativeRange.endContainer.vnode,
+    startVNode: nativeRange.startContainer.vnode,
+    endOffset: nativeRange.endOffset,
+    startOffset: nativeRange.startOffset,
+  }
+  if (!nr.endVNode.isEditable) {
+    const { node, pos, flag } = getNextPoint(nativeRange.endContainer.vnode, nativeRange.endOffset)
+    if (flag === 404) return
+    nr.endVNode = node
+    nr.endOffset = pos
+  }
+  if (!nr.startVNode.isEditable) {
+    const { node, pos, flag } = getNextPoint(nativeRange.startContainer.vnode, nativeRange.startOffset)
+    if (flag === 404) return
+    nr.startVNode = node
+    nr.startOffset = pos
+  }
+  return nr
+}
 export default class Range {
   inputState = {
     // 输入框状态
@@ -7,10 +29,11 @@ export default class Range {
   }
   _d = 0
   constructor(nativeRange, editor) {
-    this.endVNode = nativeRange.endContainer.vnode
-    this.startVNode = nativeRange.startContainer.vnode
-    this.endOffset = nativeRange.endOffset
-    this.startOffset = nativeRange.startOffset
+    const { startVNode, endVNode, startOffset, endOffset } = formatPoint(nativeRange)
+    this.endVNode = endVNode
+    this.startVNode = startVNode
+    this.endOffset = endOffset
+    this.startOffset = startOffset
     this.editor = editor
     this.caret = new Caret(this)
   }

@@ -10,7 +10,7 @@ export default class Measure {
       return Measure.instance
     }
   }
-  measure (container, offset) {
+  measure(container, offset) {
     // splitText(0)会使原dom销毁造成startContainer向上逃逸， nodeName = '#text'
     let temp
     if (container.nodeName === '#text') {
@@ -22,7 +22,6 @@ export default class Measure {
       }
     } else {
       if (container.childNodes[offset - 1] && container.childNodes[offset - 1].nodeName === 'BR') {
-        // container.parentNode.insertBefore(this.dom, container)
         container.insertBefore(this.dom, container.childNodes[offset - 1])
       } else if (container.childNodes[offset]) {
         container.insertBefore(this.dom, container.childNodes[offset])
@@ -32,7 +31,7 @@ export default class Measure {
     }
     return this._getRect(container, offset, temp)
   }
-  _getRect (container, offset, temp) {
+  _getRect(container, offset, temp) {
     let con = container
     if (!(container instanceof Element)) {
       con = container.parentNode

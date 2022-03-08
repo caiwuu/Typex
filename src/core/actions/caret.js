@@ -128,7 +128,7 @@ export function getNext(container, offset, f = 0) {
   }
   return { node, pos, flag }
 }
-function getNextPoint(vnode, pos, flag = 0) {
+export function getNextPoint(vnode, pos, flag = 0) {
   if (vnode.isRoot && pos === vnode.length) return { node: null, pos: null, flag: 404 }
   const len = vnode.type === 'text' ? vnode.length : vnode.children.length
   if (pos + 1 > len) {
@@ -178,7 +178,7 @@ function getHead(vnode, pos, flag) {
  * -2 emoji 两个字符
  * @returns
  */
-function getPrevPoint(vnode, pos, flag = 0) {
+export function getPrevPoint(vnode, pos, flag = 0) {
   // debugger
   if (pos - 1 < 0) {
     if (vnode.isRoot) {

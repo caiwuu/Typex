@@ -133,7 +133,7 @@ export default class VNode {
       Reflect.deleteProperty(this.attrs, 'type')
     }
     if (!this.isEditable) {
-      this.styles.set('user-select', 'none')
+      dom.classList.add('editor-disabled')
     }
     // set style
     this.styles.forEach((value, key) => {

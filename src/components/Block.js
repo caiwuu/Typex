@@ -1,4 +1,4 @@
-import { Component, createRef } from '../core/model/index'
+import { Component } from '../core'
 
 export class Block extends Component {
   render(h) {

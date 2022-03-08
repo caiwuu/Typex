@@ -17,11 +17,9 @@ export default function del(args) {
   if (typeof to === 'number') {
     // 行内操作
     if (prev.flag <= 0) {
-      console.log('节点内删除')
       innerDel.call(this, from, to, prev)
       // 需要跨标签操作
     } else {
-      console.log('跨节点删除')
       crossNodeDel.call(this, from, to, prev)
     }
   } else {
@@ -30,7 +28,6 @@ export default function del(args) {
       innerDel.call(this, from, from.pos - to.pos, { node: from.node, pos: to.pos })
     } else {
       const commonAncestorContainer = getCommonAncestorNode(from.node, to.node)
-      console.log(commonAncestorContainer)
       rangeDel.call(this, commonAncestorContainer, to, from, prev)
     }
   }
@@ -59,10 +56,7 @@ function innerDel(from, to, prev) {
     const brContainer = from.node.type === 'text' ? from.node.parentNode : from.node
     const brPos = from.node.type === 'text' ? from.node.index + 1 : from.pos
     if (!brContainer.children.some((vnode) => vnode.type === 'placeholder')) {
-      console.log('添加br')
       const br = createElement('br', { type: 'placeholder' })
-      //   br.render()
-      //   console.log(br)
       brContainer.insert(br, brPos)
     }
   }
@@ -107,7 +101,6 @@ function crossNodeDel(from, to, prev) {
   // 重新计算受影响的range端点
   // 先移动range在执行删除
   const prevIsEmpty = isEmptyBlock(prev.node)
-  console.log(prevIsEmpty)
   const points = this.selection.rangePoints
     .filter((point) => point.container === from.node && point.offset === from.pos)
     .map((point) => {
@@ -122,7 +115,6 @@ function crossNodeDel(from, to, prev) {
   // 跨节点自动执行一步删除
   const toBlock = getLayer(prev.node)
   if (prev.flag === 1) {
-    console.log('自动执行一步删除')
     const from = {
       node: prev.node,
       pos: prev.pos,
@@ -136,7 +128,6 @@ function crossNodeDel(from, to, prev) {
     deleteNode(from.node)
   } else {
     // 合并块
-    console.log('合并块', to)
     const fromBlock = getLayer(from.node)
     fromBlock.children.slice(0).forEach((node, index) => {
       node.moveTo(toBlock, prev.pos + index)
@@ -184,7 +175,6 @@ export function rangeDel(commonAncestorContainer, to, from) {
   // 再删除开始节点和结束节点选中的内容
   let curr = { node: from.node, pos: from.pos }
   while (curr.node !== to.node || curr.pos !== to.pos) {
-    console.log(curr, to)
     const prev = getPrev(curr.node, curr.pos)
     del.call(this, [curr, 1])
     curr = prev
