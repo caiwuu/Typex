@@ -6,13 +6,13 @@ export default function input(event) {
   }
   if (event.type === 'input') {
     let prevInputValue,
-      inputData = event.data === ' ' ? '\u00A0' : event.data + '' || ''
+      inputData = event.data === ' ' ? '\u00A0' : event.data || ''
     // 键盘字符输入
     if (!this.inputState.isComposing && event.data) {
-      console.log('键盘输入：', event.data)
+      console.log('键盘输入：', inputData)
       prevInputValue = this.inputState.value
     } else {
-      console.log('聚合输入:', event.data)
+      console.log('聚合输入:', inputData)
       prevInputValue = this.inputState.value
       this.inputState.value = inputData
     }
