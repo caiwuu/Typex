@@ -67,6 +67,12 @@ class Body extends Component {
       'div',
       h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content', isRoot: true }, [
         h(Block),
+        h(Paragraph, [
+          '普通文本',
+          h('span', { style: 'color:red' }, [h('strong', '加粗文本'), '普通文本', h('em', '斜体文本')]),
+          '普通文本',
+        ]),
+        // 第一种写法
         h(
           Paragraph,
           h(Diseditable, [
@@ -76,6 +82,8 @@ class Body extends Component {
             h(Editable, '可编辑文字😂'),
           ])
         ),
+        // 第二种写法
+        h(Paragraph, ['可编辑文字😂', h(Diseditable, h('span', { style: 'color:red' }, '不可编辑')), '可编辑文字😂', '可编辑文字😂']),
       ])
     )
   }

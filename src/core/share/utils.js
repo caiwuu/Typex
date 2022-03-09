@@ -65,10 +65,11 @@ export const times = (n, fn, context = undefined, ...args) => {
 /**
  * 获取最近的共同父级节点
  */
-export const getCommonAncestorNode = (from, to) => {
-  for (let index = 0; index < to.path.length; index++) {
-    if (to.path[index] !== from.path[index]) {
-      return to.path[index - 1]
+export const getCommonAncestorNode = (startVNode, endVNode) => {
+  if (startVNode === endVNode) return startVNode
+  for (let index = 0; index < endVNode.path.length; index++) {
+    if (endVNode.path[index] !== startVNode.path[index]) {
+      return endVNode.path[index - 1]
     }
   }
 }

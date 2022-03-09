@@ -1,16 +1,17 @@
 import { Component, createRef } from '../core/model/index'
 
 export class Content extends Component {
-  constructor(props) {
-    super(props)
-    this.comIns = createRef()
-    this.domIns = createRef()
-  }
   render(h) {
-    console.log(this.props.children)
-    return h(this.props.children)
+    const { children } = this.props
+    children.forEach((vn) => {
+      this.travel(vn)
+    })
+    return h(children)
   }
-  componentDidMount() {
-    console.log(this)
+  travel(vnode) {
+    vnode.isContent = true
+    if (vnode.children) {
+      vnode.children.forEach((vn) => this.travel(vn))
+    }
   }
 }

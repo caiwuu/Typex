@@ -1,6 +1,7 @@
 import { EventProxy, Selection, registerActions } from '../core'
 import emit from 'mitt'
 import UI from './ui'
+import { getCommonAncestorNode } from '../core/share/utils'
 export default class Editor {
   tools = []
   constructor() {
@@ -19,6 +20,7 @@ export default class Editor {
   }
   execComand(command) {
     console.log(command)
+    textParse(this.selection.getRangeAt(0))
   }
   on(eventName, fn) {
     this.emitter.on(eventName, fn)
@@ -28,5 +30,33 @@ export default class Editor {
   }
   focus() {
     this.emitter.emit('focus')
+  }
+}
+
+function textParse(range) {
+  console.log(range)
+  const commonAncestorNode = getCommonAncestorNode(range.startVNode, range.endVNode)
+  const p = parse(commonAncestorNode)
+  console.log(p)
+}
+function parse(vnode, inherit = {}) {
+  const marker = mark(vnode, inherit)
+  if (vnode.children.length) {
+    return vnode.children.map((i) => parse(i, marker)).flat()
+  } else {
+    return { content: vnode, mark: marker }
+  }
+}
+
+function mark(vnode, inherit = {}) {
+  if (vnode.tagName === 'text') return inherit
+  return {
+    B: vnode.tagName === 'strong' || inherit.B || null,
+    I: vnode.tagName === 'em' || inherit.I || null,
+    U: vnode.tagName === 'u' || inherit.U || null,
+    D: vnode.tagName === 'del' || inherit.D || null,
+    C: vnode.styles.get('color') || inherit.C || null,
+    BG: vnode.styles.get('background') || inherit.BG || null,
+    FZ: vnode.styles.get('font-size') || vnode.styles.get('fontSize') || inherit.FZ || null,
   }
 }
