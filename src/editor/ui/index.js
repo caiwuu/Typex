@@ -67,11 +67,7 @@ class Body extends Component {
       'div',
       h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content', isRoot: true }, [
         h(Block),
-        h(Paragraph, [
-          '普通文本',
-          h('span', { style: 'color:red' }, [h('strong', '加粗文本'), '普通文本', h('em', '斜体文本')]),
-          '普通文本',
-        ]),
+        h(Paragraph, ['普通文本1', '普通文本2', h('span', {}, [h('strong', h('em', '加粗斜体文本')), '普通文本3']), '普通文本4']),
         // 第一种写法
         h(
           Paragraph,
