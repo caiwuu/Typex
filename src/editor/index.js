@@ -9,31 +9,31 @@ export default class Editor {
     this.emitter = emit()
     this.selection = new Selection(this)
   }
-  mount(id) {
+  mount (id) {
     this.host = id
     this.ui.render()
     new EventProxy(this)
     registerActions(this)
   }
-  setTools(tools) {
+  setTools (tools) {
     this.tools = [...tools]
   }
-  execComand(command) {
+  execComand (command) {
     console.log(command)
     textParse(this.selection.getRangeAt(0))
   }
-  on(eventName, fn) {
+  on (eventName, fn) {
     this.emitter.on(eventName, fn)
   }
-  emit(eventName, ...args) {
+  emit (eventName, ...args) {
     this.emitter.emit(eventName, args)
   }
-  focus() {
+  focus () {
     this.emitter.emit('focus')
   }
 }
-
-function textParse(range) {
+// mark 测试demo 可行性验证
+function textParse (range) {
   // if (range.collapsed) {
   //   range.startVNode.splitNode(range.startOffset)
   // } else if (range.startVNode.type === 'text') {
@@ -47,12 +47,13 @@ function textParse(range) {
   if (sbn === ebn) {
     parentNode = sbn
     const marks = parse(parentNode)
-    const group = { marks, keys: ['B', 'I', 'U', 'D', 'FC', 'BG', 'FZ'], tags: null }
-    gen(group)
+    const group = { marks, keys: ['B', 'I', 'U', 'D', '$FC', '$BG', '$FZ'], tags: null }
+    const res = gen(group)
+    console.log('rebuild', res);
   }
   // const commonAncestorNode = getCommonAncestorNode(range.startVNode, range.endVNode)
 }
-function parse(vnode, inherit = {}, idx = 0) {
+function parse (vnode, inherit = {}, idx = 0) {
   const marker = idx === 0 ? {} : mark(vnode, inherit)
   idx++
   if (vnode.children.length) {
@@ -61,20 +62,25 @@ function parse(vnode, inherit = {}, idx = 0) {
     return { content: vnode, mark: marker }
   }
 }
-
-function mark(vnode, inherit = {}) {
+/**
+ * dom -> 特征提取 -> mark-> group -> 归并 -> gen vnode -> diff->update dom
+ * @param {*} vnode 
+ * @param {*} inherit 
+ * @returns 
+ */
+function mark (vnode, inherit = {}) {
   if (!vnode.children.length) return inherit
   return {
     B: vnode.tagName === 'strong' || inherit.B,
     I: vnode.tagName === 'em' || inherit.I,
     U: vnode.tagName === 'u' || inherit.U,
     D: vnode.tagName === 'del' || inherit.D,
-    FC: vnode.styles.get('color') || inherit.FC,
-    BG: vnode.styles.get('background') || inherit.BG,
-    FZ: vnode.styles.get('font-size') || vnode.styles.get('fontSize') || inherit.FZ,
+    $FC: vnode.styles.get('color') || inherit.$FC,
+    $BG: vnode.styles.get('background') || inherit.$BG,
+    $FZ: vnode.styles.get('font-size') || vnode.styles.get('fontSize') || inherit.$FZ,
   }
 }
-function divide(group, index = 0, res = []) {
+function divide (group, index = 0, res = []) {
   let counter = {}
   const g = { marks: [], tags: [], keys: [] }
   let prev = null
@@ -116,14 +122,61 @@ function divide(group, index = 0, res = []) {
     return res
   }
 }
-
-function gen(group) {
+const toVnodeOpsMap = {
+  B: () => ({ tag: 'strong', attrs: {}, children: [] }),
+  I: () => ({ tag: 'em', attrs: {}, children: [] }),
+  U: () => ({ tag: 'u', attrs: {}, children: [] }),
+  D: () => ({ tag: 'del', attrs: {}, children: [] }),
+  $FC: (value) => ({ style: `color:${value};` }),
+  $BG: (value) => ({ style: `background:${value};` }),
+  $FZ: (value) => ({ style: `font-size:${value};` }),
+}
+function gen (group) {
   const res = divide(group, 0)
-  console.log(res)
-  const obj = res.map((ele) => {
+  console.log("标记阶段", res);
+  const obj = res.map((ele, index) => {
     if (!ele.tags.length) {
       return { tag: 'text', attrs: {}, children: ele.marks.map((ele) => ele.content.context).join('') }
+    } else {
+      let result = null
+      ele.tags.reduce((obj, curr) => {
+        if (!obj) {
+          if (curr.startsWith("$")) {
+            result = {
+              tag: 'span',
+              attrs: toVnodeOpsMap[curr](ele.marks[0].mark[curr]),
+              children: []
+            }
+          } else {
+            result = toVnodeOpsMap[curr]()
+          }
+          return result
+        } else {
+          if (curr.startsWith("$")) {
+            const attr = toVnodeOpsMap[curr](ele.marks[0].mark[curr])
+            if (!obj.attrs.style) {
+              obj.attrs.style = attr.style
+            } else {
+              obj.attrs.style += attr.style
+            }
+            return obj
+          } else {
+            const child = toVnodeOpsMap[curr]()
+            obj.children.push(child)
+            return child
+          }
+        }
+
+      }, result)
+      if (ele.marks.length) {
+        let lastChild = result
+        while (lastChild.children.length) {
+          lastChild = lastChild.children[0]
+        }
+        lastChild.children = gen(ele)
+      }
+      return result
     }
   })
-  console.log(obj)
+  return obj
 }
