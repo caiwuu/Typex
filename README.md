@@ -1,4 +1,4 @@
-## 重构中
+## 重构中1
 操作：dom--vnode--vm(content)
 
 加粗strong  倾斜em  下划线u  删除线del  null
