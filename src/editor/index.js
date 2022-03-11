@@ -9,38 +9,42 @@ export default class Editor {
     this.emitter = emit()
     this.selection = new Selection(this)
   }
-  mount (id) {
+  mount(id) {
     this.host = id
     this.ui.render()
     new EventProxy(this)
     registerActions(this)
   }
-  setTools (tools) {
+  setTools(tools) {
     this.tools = [...tools]
   }
-  execComand (command) {
+  execComand(command) {
     console.log(command)
     textParse(this.selection.getRangeAt(0))
   }
-  on (eventName, fn) {
+  on(eventName, fn) {
     this.emitter.on(eventName, fn)
   }
-  emit (eventName, ...args) {
+  emit(eventName, ...args) {
     this.emitter.emit(eventName, args)
   }
-  focus () {
+  focus() {
     this.emitter.emit('focus')
   }
 }
 // mark 测试demo 可行性验证
-function textParse (range) {
-  // if (range.collapsed) {
-  //   range.startVNode.splitNode(range.startOffset)
-  // } else if (range.startVNode.type === 'text') {
-  //   range.startVNode.splitNode(range.startOffset)
-  // } else if (range.endVNode.type === 'text') {
-  //   range.endVNode.splitNode(range.endOffset)
-  // }
+function textParse(range) {
+  if (range.collapsed) {
+    range.startVNode.splitNode(range.startOffset)
+  } else {
+    if (range.startVNode.type === 'text') {
+      range.startVNode.splitNode(range.startOffset)
+    }
+    if (range.endVNode.type === 'text') {
+      range.endVNode.splitNode(range.endOffset)
+    }
+  }
+
   let parentNode = null
   const sbn = getLayer(range.startVNode)
   const ebn = getLayer(range.endVNode)
@@ -48,12 +52,13 @@ function textParse (range) {
     parentNode = sbn
     const marks = parse(parentNode)
     const group = { marks, keys: ['B', 'I', 'U', 'D', '$FC', '$BG', '$FZ'], tags: null }
+    console.log(marks)
     const res = gen(group)
-    console.log('rebuild', res);
+    console.log('rebuild', res)
   }
   // const commonAncestorNode = getCommonAncestorNode(range.startVNode, range.endVNode)
 }
-function parse (vnode, inherit = {}, idx = 0) {
+function parse(vnode, inherit = {}, idx = 0) {
   const marker = idx === 0 ? {} : mark(vnode, inherit)
   idx++
   if (vnode.children.length) {
@@ -64,11 +69,11 @@ function parse (vnode, inherit = {}, idx = 0) {
 }
 /**
  * dom -> 特征提取 -> mark-> group -> 归并 -> gen vnode -> diff->update dom
- * @param {*} vnode 
- * @param {*} inherit 
- * @returns 
+ * @param {*} vnode
+ * @param {*} inherit
+ * @returns
  */
-function mark (vnode, inherit = {}) {
+function mark(vnode, inherit = {}) {
   if (!vnode.children.length) return inherit
   return {
     B: vnode.tagName === 'strong' || inherit.B,
@@ -80,7 +85,7 @@ function mark (vnode, inherit = {}) {
     $FZ: vnode.styles.get('font-size') || vnode.styles.get('fontSize') || inherit.$FZ,
   }
 }
-function divide (group, index = 0, res = []) {
+function divide(group, index = 0, res = []) {
   let counter = {}
   const g = { marks: [], tags: [], keys: [] }
   let prev = null
@@ -131,28 +136,28 @@ const toVnodeOpsMap = {
   $BG: (value) => ({ style: `background:${value};` }),
   $FZ: (value) => ({ style: `font-size:${value};` }),
 }
-function gen (group) {
+function gen(group) {
   const res = divide(group, 0)
-  console.log("标记阶段", res);
-  const obj = res.map((ele, index) => {
+  console.log('标记阶段', res)
+  const obj = res.map((ele) => {
     if (!ele.tags.length) {
       return { tag: 'text', attrs: {}, children: ele.marks.map((ele) => ele.content.context).join('') }
     } else {
       let result = null
       ele.tags.reduce((obj, curr) => {
         if (!obj) {
-          if (curr.startsWith("$")) {
+          if (curr.startsWith('$')) {
             result = {
               tag: 'span',
               attrs: toVnodeOpsMap[curr](ele.marks[0].mark[curr]),
-              children: []
+              children: [],
             }
           } else {
             result = toVnodeOpsMap[curr]()
           }
           return result
         } else {
-          if (curr.startsWith("$")) {
+          if (curr.startsWith('$')) {
             const attr = toVnodeOpsMap[curr](ele.marks[0].mark[curr])
             if (!obj.attrs.style) {
               obj.attrs.style = attr.style
@@ -166,7 +171,6 @@ function gen (group) {
             return child
           }
         }
-
       }, result)
       if (ele.marks.length) {
         let lastChild = result

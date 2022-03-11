@@ -71,7 +71,7 @@ export default `
       #editor-content ::selection {
         background: rgb(186, 210, 250);
       }
-      #editor-content .editor-disabled:hover{
+      #editor-content .editor-disabled{
         user-select:none
       }
     `
