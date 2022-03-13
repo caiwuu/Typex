@@ -79,6 +79,7 @@ class Body extends Component {
         ),
         // 第二种写法
         h(Paragraph, ['可编辑文字😂', h(Diseditable, h('span', { style: 'color:red' }, '不可编辑')), '可编辑文字😂', '可编辑文字😂']),
+        h(Paragraph, [h('span', { style: 'color:red' }, '不可编辑')]),
       ])
     )
   }

@@ -24,7 +24,7 @@ export default class VNode {
     VNode[insKey]++
     this.path = [this]
   }
-  get type() {
+  get type () {
     if (this[typeKey]) return this[typeKey]
     switch (this.tagName) {
       case 'div':
@@ -53,7 +53,16 @@ export default class VNode {
         return 'inline'
     }
   }
-  insert(vnode, index) {
+  getContentMark (inherit = {}, idx = 0) {
+    const marker = idx === 0 ? {} : mark(this, inherit)
+    idx++
+    if (this.children.length) {
+      return this.children.map((i) => i.getContentMark(marker, idx)).flat()
+    } else {
+      return { content: this, mark: marker }
+    }
+  }
+  insert (vnode, index) {
     !vnode.ele && vnode.render()
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
@@ -68,16 +77,16 @@ export default class VNode {
     this.children.splice(index, 0, vnode)
     this.reArrangement()
   }
-  repalce() {
+  repalce () {
     console.log('replace')
   }
-  delete(index, count) {
+  delete (index, count) {
     console.log('delete')
     const start = index - count <= 0 ? 0 : index - count
     this.children.splice(start, index - start).forEach((vnode) => vnode.ele.remove())
     this.reArrangement()
   }
-  moveTo(target, index) {
+  moveTo (target, index) {
     console.log('moveTo')
     const removeNodes = this.parentNode.children.splice(this.index, 1)
     this.parentNode.reArrangement()
@@ -85,7 +94,7 @@ export default class VNode {
       target.insert(vnode, index)
     })
   }
-  remove() {
+  remove () {
     console.log('remove')
     this.parentNode.children.splice(this.index, 1).forEach((i) => {
       i.removed = true
@@ -93,7 +102,7 @@ export default class VNode {
     })
     this.parentNode.reArrangement()
   }
-  reArrangement() {
+  reArrangement () {
     if (this.children) {
       this.children.forEach((item, index) => {
         const oldPosition = item.position
@@ -107,20 +116,20 @@ export default class VNode {
       })
     }
   }
-  appendChild(...vnodes) {
+  appendChild (...vnodes) {
     vnodes && this.children.push(...vnodes)
     this.reArrangement()
   }
-  get isEmpty() {
+  get isEmpty () {
     return isEmptyNode(this)
   }
-  get length() {
+  get length () {
     return this.children.filter((ele) => ele.type !== 'placeholder').length
   }
-  get isEditable() {
+  get isEditable () {
     return this.editable !== 'off'
   }
-  render() {
+  render () {
     const dom = this.ns ? document.createElementNS(this.ns, this.tagName) : document.createElement(this.tagName)
     this.ele = dom
     dom.vnode = this
@@ -152,5 +161,17 @@ export default class VNode {
       Reflect.deleteProperty(this.attrs, k)
     })
     return dom
+  }
+}
+function mark (vnode, inherit = {}) {
+  if (!vnode.children.length) return inherit
+  return {
+    B: vnode.tagName === 'strong' || inherit.B,
+    I: vnode.tagName === 'em' || inherit.I,
+    U: vnode.tagName === 'u' || inherit.U,
+    D: vnode.tagName === 'del' || inherit.D,
+    $FC: vnode.styles.get('color') || inherit.$FC,
+    $BG: vnode.styles.get('background') || inherit.$BG,
+    $FZ: vnode.styles.get('font-size') || vnode.styles.get('fontSize') || inherit.$FZ,
   }
 }

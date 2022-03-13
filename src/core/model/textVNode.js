@@ -6,17 +6,16 @@ export default class textVNode extends VNode {
     super()
     this._context = context
   }
-  delete(offset, count) {
+  delete (offset, count) {
     const start = offset - count <= 0 ? 0 : offset - count
     const context = this.context.slice(0, start) + this.context.slice(offset)
     this.context = context
   }
-  setContext(context) {
+  setContext (context) {
     this.context = context
     this.ele.data = target.context
   }
-  splitNode(index) {
-    console.log('splitNode')
+  splitNode (index) {
     if (index === 0) {
       return index
     }
@@ -28,23 +27,23 @@ export default class textVNode extends VNode {
     // this.setContext(context)
     this.context = context
     const splited = new textVNode(splitedText)
-    this.parentNode.insert(splited, index)
+    this.parentNode.insert(splited, this.index + 1)
     return splited
   }
-  set context(value) {
+  set context (value) {
     this._context = value
     this.ele.data = value
   }
-  get context() {
+  get context () {
     return this._context
   }
-  get length() {
+  get length () {
     return this.context.length
   }
-  get isEmpty() {
+  get isEmpty () {
     return this.length === 0
   }
-  render() {
+  render () {
     const dom = document.createTextNode(this.context)
     this.ele = dom
     dom.vnode = this
