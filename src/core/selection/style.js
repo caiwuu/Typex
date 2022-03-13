@@ -1,10 +1,17 @@
 export default `
+      html,body{
+        overflow:hidden;
+        overflow-y:auto;
+      }
       .icon {
-        width: 1.4em;
-        height: 1.4em;
+        width: 1.2em;
+        height: 1.2em;
         vertical-align: -0.15em;
         fill: currentColor;
         overflow: hidden;
+      }
+      #editor-content{
+        word-break: break-all;
       }
       #editor-content:focus,
       .custom-input:focus {
