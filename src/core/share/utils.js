@@ -1,20 +1,14 @@
-export const type = (target) => Object.prototype.toString.call(target).slice(8, -1).toLowerCase()
-export const typeValidate = (target, requiredTypes, message) => {
-  const targetTypes = type(requiredTypes) === 'string' ? requiredTypes.split(',') : requiredTypes
-  const targetType = type(target)
-  if (!targetTypes.includes(targetType)) throw TypeError(message)
-}
-export const setStyle = (dom, style) => {
+export function setStyle(dom, style) {
   for (const key in style) {
     dom.style[key] = style[key]
   }
 }
-export const multiplication = (str, times) => {
+export function multiplication(str, times) {
   return str.replace(/(\d*).*/, function ($0, $1) {
     return $1 * times
   })
 }
-export const isEmptyNode = (vnode) => {
+export function isEmptyNode(vnode) {
   if (vnode.children && vnode.children.length) {
     return vnode.children.every((item) => isEmptyNode(item))
   } else {
@@ -31,7 +25,7 @@ export const isEmptyNode = (vnode) => {
     }
   }
 }
-export const getLayer = (vnode, ceil) => {
+export function getLayer(vnode, ceil) {
   if (vnode.parentNode === ceil) {
     return vnode
   } else if (vnode.type === 'block') {
@@ -40,12 +34,12 @@ export const getLayer = (vnode, ceil) => {
     return getLayer(vnode.parentNode)
   }
 }
-export const isEmptyBlock = (vnode) => {
+export function isEmptyBlock(vnode) {
   const block = getLayer(vnode)
   return isEmptyNode(block)
 }
 
-export const recoverRangePoint = (points) => {
+export function recoverRangePoint(points) {
   points.forEach((point) => {
     if (point.flag === 'end') {
       point.range.setEnd(point.container, point.offset)
@@ -55,7 +49,7 @@ export const recoverRangePoint = (points) => {
   })
 }
 // 多次函数执行器
-export const times = (n, fn, context = undefined, ...args) => {
+export function times(n, fn, context = undefined, ...args) {
   let i = 0
   while (i++ < n) {
     fn.call(context, ...args)
@@ -64,7 +58,7 @@ export const times = (n, fn, context = undefined, ...args) => {
 /**
  * 获取最近的共同父级节点
  */
-export const getCommonAncestorNode = (startVNode, endVNode) => {
+export function getCommonAncestorNode(startVNode, endVNode) {
   if (startVNode === endVNode) return startVNode
   for (let index = 0; index < endVNode.path.length; index++) {
     if (endVNode.path[index] !== startVNode.path[index]) {
@@ -73,7 +67,7 @@ export const getCommonAncestorNode = (startVNode, endVNode) => {
   }
 }
 // 通过position获取vnode
-export const getNode = (baseNode, position) => {
+export function getNode(baseNode, position) {
   const recursionTree = {
     childrens: [baseNode],
   }
@@ -82,7 +76,7 @@ export const getNode = (baseNode, position) => {
   }, recursionTree)
 }
 // 空节点递归删除 最多删除到块级
-export const deleteNode = (vnode) => {
+export function deleteNode(vnode) {
   const parent = vnode.parentNode || vnode
   // 如果父级只有一个子集，则递归删除父级
   if (isEmptyNode(parent)) {
@@ -98,7 +92,7 @@ export const deleteNode = (vnode) => {
 }
 // position位置比较 l < r 表示 r节点在 l 之后
 // l>r -1,r=l 0,l<r 1
-export const comparePosition = (l, r) => {
+export function comparePosition(l, r) {
   const arrL = l.split('-'),
     arrR = r.split('-'),
     minLen = Math.min(arrL.length, arrR.length)
@@ -112,4 +106,53 @@ export const comparePosition = (l, r) => {
     }
   }
   return flag
+}
+
+export function isUndef(v) {
+  return v === undefined || v === null
+}
+
+export function isDef(v) {
+  return v !== undefined && v !== null
+}
+/**
+ * Check if value is primitive.
+ */
+export function isPrimitive(value) {
+  return typeof value === 'string' || typeof value === 'number' || typeof value === 'symbol' || typeof value === 'boolean'
+}
+
+/**
+ * Quick object check - this is primarily used to tell
+ * Objects from primitive values when we know the value
+ * is a JSON-compliant type.
+ */
+export function isObject(obj) {
+  return obj !== null && typeof obj === 'object'
+}
+
+/**
+ * Get the raw type string of a value, e.g., [object Object].
+ */
+const _toString = Object.prototype.toString
+
+export function toRawType(value) {
+  return _toString.call(value).slice(8, -1).toLowerCase()
+}
+
+export function typeValidate(target, requiredTypes, message) {
+  const targetTypes = toRawType(requiredTypes) === 'string' ? requiredTypes.split(',') : requiredTypes
+  const targetType = toRawType(target)
+  if (!targetTypes.includes(targetType)) throw TypeError(message)
+}
+/**
+ * Strict object type check. Only returns true
+ * for plain JavaScript objects.
+ */
+export function isPlainObject(obj) {
+  return _toString.call(obj) === '[object Object]'
+}
+
+export function isRegExp(v) {
+  return _toString.call(v) === '[object RegExp]'
 }

@@ -11,10 +11,12 @@ import { createElement } from '../model'
 // }
 const handleInsert = {
   betweenTextAndEle: (from, inputData, newRangePos) => {
-    newRangePos.targetVnode.context = newRangePos.targetVnode.context + inputData
+    // newRangePos.targetVnode.context = newRangePos.targetVnode.context + inputData
+    newRangePos.targetVnode.setContext(newRangePos.targetVnode.context + inputData)
   },
   betweenEleAndText: (from, inputData, newRangePos) => {
-    newRangePos.targetVnode.context = inputData + newRangePos.targetVnode.context
+    // newRangePos.targetVnode.context = inputData + newRangePos.targetVnode.context
+    newRangePos.targetVnode.setContext(inputData + newRangePos.targetVnode.context)
   },
   betweenEleAndEle: (from, inputData, newRangePos) => {
     from.node.insert(newRangePos.targetVnode, from.pos)
@@ -22,7 +24,8 @@ const handleInsert = {
   betweenTextAndText: (from, inputData, newRangePos) => {
     let orgText = from.node.context
     orgText = orgText.slice(0, from.pos) + inputData + orgText.slice(from.pos)
-    from.node.context = orgText
+    // from.node.context = orgText
+    from.node.setContext(orgText)
   },
 }
 const handleRangePosition = {
