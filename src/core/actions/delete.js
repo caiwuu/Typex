@@ -53,6 +53,7 @@ function innerDel(from, to, prev) {
   isEmpty && del.call(this, [prev, 1])
   // 添加br防止行塌陷
   if (isEmptyBlock(from.node)) {
+    console.log(345)
     const brContainer = from.node.type === 'text' ? from.node.parentNode : from.node
     const brPos = from.node.type === 'text' ? from.node.index + 1 : from.pos
     if (!brContainer.children.some((vnode) => vnode.type === 'placeholder')) {

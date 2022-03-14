@@ -18,14 +18,13 @@ export const isEmptyNode = (vnode) => {
   if (vnode.children && vnode.children.length) {
     return vnode.children.every((item) => isEmptyNode(item))
   } else {
-    // TODO  暂时无placeholder类型
     if (vnode.type === 'placeholder') {
       return true
     } else if (vnode.editable === 'off') {
-      return true
+      return !vnode.length
     } else if (vnode.type === 'text') {
       return vnode.context === ''
-    } else if (['img', 'br'].includes(vnode.type)) {
+    } else if (vnode.type === 'atomic') {
       return false
     } else {
       return true

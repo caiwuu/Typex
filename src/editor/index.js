@@ -50,7 +50,7 @@ function textParse(range) {
   if (sbn === ebn) {
     parentNode = sbn
     transfer(parentNode)
-      .flat((args) => {
+      .toMarks((args) => {
         console.log(args)
         // return args
       })

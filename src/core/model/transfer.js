@@ -3,7 +3,7 @@ export default function (args, state = 0) {
   return {
     args,
     state,
-    flat(fn) {
+    toMarks(fn) {
       this.args = getContentMark(this.args)
       if (typeof fn === 'function') {
         this.args = fn(this.args) || this.args

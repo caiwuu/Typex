@@ -1,9 +1,3 @@
-## 重构中1
-操作：dom--vnode--vm(content)
+## 重构中
+![image-20220314111021472](https://gitee.com/caiwu123/pic/raw/master/image-20220314111021472.png)
 
-加粗strong  倾斜em  下划线u  删除线del  null
-颜色style-color 背景颜色stype-bg 字体大小style-fz 
-
-首行缩进(B-style) 对齐方式(B-style)
-
-const obj = [...map.entries()].reduce((obj, [key, value]) => (obj[key] = value, obj), {})
