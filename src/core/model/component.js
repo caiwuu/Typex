@@ -19,7 +19,7 @@ export default class Component {
     throw Error('props is readonly')
   }
   get dom() {
-    return this.vnode.ele
+    return this.vnode.elm
   }
   set dom(k) {
     throw Error('dom is readonly')

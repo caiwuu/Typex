@@ -15,33 +15,33 @@ export default class Caret {
     this.dom.classList.add('custom-caret')
     this.setStyle(this.dom)
   }
-  setStyle (style = {}) {
+  setStyle(style = {}) {
     const mergeStyle = Object.assign({}, defaultStyle, style)
     setStyle(this.dom, mergeStyle)
   }
-  remove () {
+  remove() {
     this.dom.remove()
   }
-  getRect (range) {
+  getRect(range) {
     let container, offset
     switch (range._d) {
       case 0:
       case 1:
-        container = range.startVNode.ele
+        container = range.startVNode.elm
         offset = range.startOffset
         break
       case 2:
-        container = range.endVNode.ele
+        container = range.endVNode.elm
         offset = range.endOffset
         break
     }
     return this.measure.measure(container, offset)
   }
-  update (range, drawCaret = true) {
+  update(range, drawCaret = true) {
     this.rect = this.getRect(range)
     if (!drawCaret) return
-    range.editor.ui.body.ele.appendChild(this.dom)
-    let container = range.startVNode.ele
+    range.editor.ui.body.elm.appendChild(this.dom)
+    let container = range.startVNode.elm
     if (!container) return
     if (!(container instanceof Element)) {
       container = container.parentNode

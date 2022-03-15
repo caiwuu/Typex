@@ -1,4 +1,8 @@
 import { isEmptyNode } from '../share/utils'
+import { stylesModule } from './modules/styles'
+import { attributesModule } from './modules/attributes'
+import { listenersModule } from './modules/listeners'
+import { classesModule } from './modules/classes'
 const insKey = Symbol('key')
 const typeKey = Symbol('type')
 export default class VNode {
@@ -12,7 +16,7 @@ export default class VNode {
   index = 0
   parentNode = null
   _isVnode = true
-  ele = null
+  elm = null
   isRoot = true
   tagName = null
   children = []
@@ -53,16 +57,16 @@ export default class VNode {
     }
   }
   insert(vnode, index) {
-    !vnode.ele && vnode.render()
+    !vnode.elm && vnode.render()
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
       if (index === 0) {
-        this.ele.insertBefore(vnode.ele, this.ele.childNodes[0])
+        this.elm.insertBefore(vnode.elm, this.elm.childNodes[0])
       } else {
-        this.ele.insertBefore(vnode.ele, this.ele.childNodes[index - 1].nextSibling)
+        this.elm.insertBefore(vnode.elm, this.elm.childNodes[index - 1].nextSibling)
       }
     } else {
-      this.ele.appendChild(vnode.ele)
+      this.elm.appendChild(vnode.elm)
     }
     this.children.splice(index, 0, vnode)
     this.reArrangement()
@@ -73,7 +77,7 @@ export default class VNode {
   delete(index, count) {
     console.log('delete')
     const start = index - count <= 0 ? 0 : index - count
-    this.children.splice(start, index - start).forEach((vnode) => vnode.ele.remove())
+    this.children.splice(start, index - start).forEach((vnode) => vnode.elm.remove())
     this.reArrangement()
   }
   moveTo(target, index) {
@@ -88,7 +92,7 @@ export default class VNode {
     console.log('remove')
     this.parentNode.children.splice(this.index, 1).forEach((i) => {
       i.removed = true
-      i.ele.remove()
+      i.elm.remove()
     })
     this.parentNode.reArrangement()
   }
@@ -121,7 +125,7 @@ export default class VNode {
   }
   render() {
     const dom = this.ns ? document.createElementNS(this.ns, this.tagName) : document.createElement(this.tagName)
-    this.ele = dom
+    this.elm = dom
     dom.vnode = this
     if (this.attrs.isRoot) {
       this.isRoot = this.attrs.isRoot
@@ -134,22 +138,10 @@ export default class VNode {
     if (!this.isEditable) {
       dom.classList.add('editor-disabled')
     }
-    // set style
-    this.styles.forEach((value, key) => {
-      dom.style[key] = value
-    })
-    // set class
-    this.classes.forEach((className) => {
-      dom.classList.add(className)
-    })
-    // set listeners
-    this.listeners.forEach((value, key) => {
-      dom.addEventListener(key, value)
-    })
-    Object.keys(this.attrs).forEach((k) => {
-      this.ns ? dom.setAttributeNS('http://www.w3.org/1999/xlink', k, this.attrs[k]) : dom.setAttribute(k, this.attrs[k])
-      Reflect.deleteProperty(this.attrs, k)
-    })
+    stylesModule.create(this)
+    classesModule.create(this)
+    listenersModule.create(this)
+    attributesModule.create(this)
     return dom
   }
 }

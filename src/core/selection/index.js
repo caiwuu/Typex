@@ -53,7 +53,7 @@ export default class Selection {
     const cloneRange = new Range(nativeRange, this.editor)
     if (cloneRange.collapsed) {
       cloneRange._d = 0
-    } else if (focusNode === cloneRange.endVNode.ele && focusOffset === cloneRange.endOffset) {
+    } else if (focusNode === cloneRange.endVNode.elm && focusOffset === cloneRange.endOffset) {
       cloneRange._d = 2
     } else {
       cloneRange._d = 1
@@ -91,7 +91,7 @@ export default class Selection {
       const nativeRange = nativeSelection.getRangeAt(count - 1)
       let flag = false
       this.ranges.forEach((i) => {
-        if (i.endVNode.ele === nativeRange.endContainer && i.startOffset === nativeRange.startOffset) {
+        if (i.endVNode.elm === nativeRange.endContainer && i.startOffset === nativeRange.startOffset) {
           flag = true
           i.remove()
         }
@@ -102,8 +102,8 @@ export default class Selection {
   }
   createNativeRange({ startVNode, startOffset, endVNode, endOffset }) {
     const range = document.createRange()
-    range.setStart(startVNode.ele, startOffset)
-    range.setEnd(endVNode.ele, endOffset)
+    range.setStart(startVNode.elm, startOffset)
+    range.setEnd(endVNode.elm, endOffset)
     return range
   }
   updateRanges(multiple) {

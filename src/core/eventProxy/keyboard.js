@@ -12,7 +12,7 @@ export default class KeyboardProxy {
   _initIframe() {
     this.iframe = document.createElement('iframe')
     this.iframe.classList.add('custom-input-iframe')
-    this.editor.ui.body.ele.appendChild(this.iframe)
+    this.editor.ui.body.elm.appendChild(this.iframe)
     const iframedocument = this.iframe.contentDocument
     const style = iframedocument.createElement('style')
     style.innerHTML = `
@@ -43,7 +43,7 @@ export default class KeyboardProxy {
   focus() {
     const range = this.editor.selection.getRangeAt(0)
     if (!range) return
-    let container = range.startVNode.ele
+    let container = range.startVNode.elm
     if (!(container instanceof Element)) {
       container = container.parentNode
     }

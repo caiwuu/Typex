@@ -13,7 +13,7 @@ export default class textVNode extends VNode {
   }
   setContext(context) {
     this._context = context
-    this.ele.data = context
+    this.elm.data = context
   }
   splitNode(index) {
     if (index === 0) {
@@ -43,7 +43,7 @@ export default class textVNode extends VNode {
   }
   render() {
     const dom = document.createTextNode(this.context)
-    this.ele = dom
+    this.elm = dom
     dom.vnode = this
     return dom
   }

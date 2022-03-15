@@ -253,7 +253,7 @@ function isSameLine(initialRect, prevRect, currRect, flag, editor) {
   let sameLine = true
   // 判断自动折行 非vnode层面的换行 这里存在判断失误的概率 但是绝大部分情况都能判断
   // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
-  if (Math.abs(currRect.x - prevRect.x) > editor.ui.body.ele.offsetWidth - 2 * currRect.h) {
+  if (Math.abs(currRect.x - prevRect.x) > editor.ui.body.elm.offsetWidth - 2 * currRect.h) {
     sameLine = false
   }
   if (flag === 2) {
