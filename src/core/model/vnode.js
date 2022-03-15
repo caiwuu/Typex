@@ -4,10 +4,9 @@ import { attributesModule } from './modules/attributes'
 import { listenersModule } from './modules/listeners'
 import { classesModule } from './modules/classes'
 const insKey = Symbol('key')
-const typeKey = Symbol('type')
 export default class VNode {
-  static [insKey] = 0;
-  [typeKey] = null
+  static [insKey] = 0
+  _type = null
   key = 0
   ns = ''
   attrs = {}
@@ -29,7 +28,7 @@ export default class VNode {
     this.path = [this]
   }
   get type() {
-    if (this[typeKey]) return this[typeKey]
+    if (this._type) return this._type
     switch (this.tagName) {
       case 'div':
       case 'p':
@@ -127,17 +126,6 @@ export default class VNode {
     const dom = this.ns ? document.createElementNS(this.ns, this.tagName) : document.createElement(this.tagName)
     this.elm = dom
     dom.vnode = this
-    if (this.attrs.isRoot) {
-      this.isRoot = this.attrs.isRoot
-      Reflect.deleteProperty(this.attrs, 'isRoot')
-    }
-    if (this.attrs.type) {
-      this[typeKey] = this.attrs.type
-      Reflect.deleteProperty(this.attrs, 'type')
-    }
-    if (!this.isEditable) {
-      dom.classList.add('editor-disabled')
-    }
     stylesModule.create(this)
     classesModule.create(this)
     listenersModule.create(this)

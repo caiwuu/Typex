@@ -33,6 +33,10 @@ export default class elementVNode extends VNode {
     Object.keys(attrs).forEach((key) => {
       if (/^on[A-Z]/.test(key)) {
         this.listeners.set(key.replace(/^on/, '').toLowerCase(), attrs[key])
+      } else if (key === 'isRoot') {
+        this.isRoot = attrs.isRoot
+      } else if (key === 'type') {
+        this._type = attrs.type
       } else {
         this.attrs[key] = attrs[key]
       }

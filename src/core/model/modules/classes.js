@@ -19,6 +19,11 @@ function updateClasses(vnode, oldVnode) {
       elm.classList.remove(key)
     }
   })
+  if (!vnode.isEditable) {
+    elm.classList.add('editor-disabled')
+  } else {
+    elm.classList.remove('editor-disabled')
+  }
 }
 
 export const classesModule = {
