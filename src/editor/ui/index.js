@@ -4,7 +4,7 @@ import './iconfont'
 window.h = h
 // 工具栏
 class ToolBar extends Component {
-  render(h) {
+  render (h) {
     const { tools } = this.props
     return h(
       'div',
@@ -22,7 +22,7 @@ class ToolBarItem extends Component {
     super(props)
     this.state = { value: true }
   }
-  render(h) {
+  render (h) {
     return h(
       'span',
       {
@@ -41,7 +41,7 @@ class ToolBarItem extends Component {
 }
 // UI外框
 class Wrappe extends Component {
-  render(h) {
+  render (h) {
     return h('div', { style: 'border:solid 1px #eee;' }, [h(this.props.ToolBar), h(this.props.Body)])
   }
   // componentDidMount() {
@@ -50,7 +50,7 @@ class Wrappe extends Component {
 }
 // 编辑区
 class Body extends Component {
-  render(h) {
+  render (h) {
     return h(
       'div',
       h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content', isRoot: true }, [
@@ -73,7 +73,7 @@ export default class UI {
   constructor(editor) {
     this.editor = editor
   }
-  render() {
+  render () {
     this.body = h(Body)
     this.toolBar = h(ToolBar, {
       tools: [...this.editor.tools],

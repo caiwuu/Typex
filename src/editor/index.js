@@ -9,31 +9,32 @@ export default class Editor {
     this.emitter = emit()
     this.selection = new Selection(this)
   }
-  mount(id) {
+  mount (id) {
     this.host = id
     this.ui.render()
     new EventProxy(this)
     registerActions(this)
   }
-  setTools(tools) {
+  setTools (tools) {
     this.tools = [...tools]
   }
-  execComand(command) {
+  execComand (command) {
     console.log(command)
     textParse(this.selection.getRangeAt(0))
   }
-  on(eventName, fn) {
+  on (eventName, fn) {
     this.emitter.on(eventName, fn)
   }
-  emit(eventName, ...args) {
+  emit (eventName, ...args) {
     this.emitter.emit(eventName, args)
   }
-  focus() {
+  focus () {
     this.emitter.emit('focus')
   }
 }
 // mark 测试demo 可行性验证
-function textParse(range) {
+function textParse (range) {
+  if (!range) return
   if (range.collapsed) {
     range.startVNode.splitNode(range.startOffset)
   } else {

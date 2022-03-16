@@ -7,12 +7,12 @@ export const render = (vnode, root) => {
   })
 }
 export const update = (vm) => {
-  // const oldDom = vm.dom
-  // const newVnode = vm.render(createElement)
-  // const newDom = renderDom(newVnode, true)
-  // vm.vnode = newVnode
+  const oldVnode = vm.vnode
+  const newVnode = vm.render(createElement)
+  // const newDom = createElm(newVnode, true)
+  vm.vnode = newVnode
   // newVnode.vm = vm
   // newVnode.elm = newDom
   // oldDom.parentNode.replaceChild(newDom, oldDom)
-  patch(vm.render(createElement), vm.vnode)
+  patch(newVnode, oldVnode)
 }
