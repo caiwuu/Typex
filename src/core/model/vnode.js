@@ -70,8 +70,13 @@ export default class VNode {
     this.children.splice(index, 0, vnode)
     this.reArrangement()
   }
-  repalce() {
+  replace(vnode, onlyVnode = false) {
     console.log('replace')
+    !vnode.elm && vnode.render()
+    !onlyVnode && this.elm.parentNode.insertBefore(vnode.elm, this.elm)
+    !onlyVnode && this.elm.remove()
+    this.parentNode.children.splice(this.index, 1, vnode)
+    this.reArrangement()
   }
   delete(index, count) {
     console.log('delete')

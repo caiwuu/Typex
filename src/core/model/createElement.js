@@ -1,4 +1,5 @@
 import elementVNode from './elementVNode'
+import Component from './component'
 import textVNode from './textVNode'
 import VNode from './vnode'
 import { toRawType, typeValidate } from '../share/utils'
@@ -11,7 +12,7 @@ export default function createElement(tagName, attrs = {}, children = []) {
   } else {
     children = [children].flat()
   }
-  // typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
+  typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
   if (typeof tagName === 'function') {
     const mergedAttrs = {
       ...attrs,
