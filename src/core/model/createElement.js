@@ -1,5 +1,4 @@
 import elementVNode from './elementVNode'
-import Component from './component'
 import textVNode from './textVNode'
 import VNode from './vnode'
 import { toRawType, typeValidate } from '../share/utils'

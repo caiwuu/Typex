@@ -3,6 +3,7 @@ import { stylesModule } from './modules/styles'
 import { attributesModule } from './modules/attributes'
 import { listenersModule } from './modules/listeners'
 import { classesModule } from './modules/classes'
+import { createElm } from './patch'
 const insKey = Symbol('key')
 export default class VNode {
   static [insKey] = 0
@@ -56,7 +57,7 @@ export default class VNode {
     }
   }
   insert(vnode, index) {
-    !vnode.elm && vnode.render()
+    !vnode.elm && createElm(vnode)
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
       if (index === 0) {
@@ -72,11 +73,12 @@ export default class VNode {
   }
   replace(vnode, onlyVnode = false) {
     console.log('replace')
-    !vnode.elm && vnode.render()
+    !vnode.elm && createElm(vnode)
+    console.log([this.elm])
     !onlyVnode && this.elm.parentNode.insertBefore(vnode.elm, this.elm)
-    !onlyVnode && this.elm.remove()
+    // !onlyVnode && this.elm.remove()
     this.parentNode.children.splice(this.index, 1, vnode)
-    this.reArrangement()
+    this.parentNode.reArrangement()
   }
   delete(index, count) {
     console.log('delete')

@@ -27,7 +27,7 @@ function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
-      parentElm.insertBefore(ch.render(), before)
+      parentElm.insertBefore(createElm(ch), before)
     }
   }
 }
@@ -109,11 +109,11 @@ function updateChildren(parentElm, newCh, oldCh) {
       idxInOld = oldKeyToIdx[newStartVnode.key]
       if (isUndef(idxInOld)) {
         // New element
-        parentElm.insertBefore(newStartVnode.render(), oldStartVnode.elm)
+        parentElm.insertBefore(createElm(newStartVnode), oldStartVnode.elm)
       } else {
         elmToMove = oldCh[idxInOld]
         if (elmToMove.tagName !== newStartVnode.tagName) {
-          parentElm.insertBefore(newStartVnode.render(), oldStartVnode.elm)
+          parentElm.insertBefore(createElm(newStartVnode), oldStartVnode.elm)
         } else {
           patchVnode(elmToMove, newStartVnode)
           oldCh[idxInOld] = undefined
@@ -142,7 +142,20 @@ function patchVnode(vnode, oldVnode) {
   update(vnode, oldVnode)
   if (oldCh !== ch) updateChildren(elm, ch, oldCh)
 }
-export default function patch(vnode, oldVnode) {
+export function createElm(vnode, isUpdate = false) {
+  const dom = vnode.render()
+  if (vnode.children) {
+    vnode.children.forEach((vn) => {
+      const child = createElm(vn, isUpdate)
+      dom.appendChild(child)
+      !isUpdate && vn.vm && vn.vm.componentDidMount && vn.vm.componentDidMount()
+    })
+  }
+
+  return dom
+}
+export function patch(vnode, oldVnode) {
+  // debugger
   if (sameVnode(oldVnode, vnode)) {
     patchVnode(oldVnode, vnode)
   } else {

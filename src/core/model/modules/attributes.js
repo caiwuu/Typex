@@ -13,7 +13,10 @@ function updateAttrs(vnode, oldVnode) {
   if (oldAttrs === attrs) return
   oldAttrs = oldAttrs || {}
   attrs = attrs || {}
-
+  // if (vnode.attrs.ref) {
+  //   vnode.attrs.ref.current = dom
+  //   delete vnode.attrs.ref
+  // }
   // update modified attributes, add new attributes
   for (key in attrs) {
     const cur = attrs[key]
@@ -23,6 +26,8 @@ function updateAttrs(vnode, oldVnode) {
         elm.setAttribute(key, '')
       } else if (cur === false) {
         elm.removeAttribute(key)
+      } else if (cur === 'ref') {
+        attrs.ref.current = elm
       } else {
         if (key.charCodeAt(0) !== xChar) {
           elm.setAttribute(key, cur)
