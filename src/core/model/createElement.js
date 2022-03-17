@@ -23,6 +23,7 @@ export default function createElement(tagName, attrs = {}, children = []) {
         }
       }),
     }
+    // 实例化 组件
     if (tagName.isConstructor) {
       const ref = mergedAttrs.ref
       ref && delete mergedAttrs.ref

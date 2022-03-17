@@ -14,5 +14,6 @@ export const update = (vm) => {
   // newVnode.vm = vm
   // newVnode.elm = newDom
   // oldDom.parentNode.replaceChild(newDom, oldDom)
+  console.log(newVnode, oldVnode)
   patch(newVnode, oldVnode)
 }

@@ -1,7 +1,7 @@
 import { Component } from '../core'
 
 export class Block extends Component {
-  render (h) {
+  render(h) {
     return h(
       'div',
       {
@@ -10,7 +10,7 @@ export class Block extends Component {
       this.props.children.length ? this.props.children : '一个块...'
     )
   }
-  componentDidMount () {
+  componentDidMount() {
     console.log(this)
   }
 }

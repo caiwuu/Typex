@@ -37,6 +37,8 @@ export default class elementVNode extends VNode {
         this.isRoot = attrs.isRoot
       } else if (key === 'type') {
         this._type = attrs.type
+      } else if (key === 'key') {
+        this.key = attrs.key
       } else {
         this.attrs[key] = attrs[key]
       }

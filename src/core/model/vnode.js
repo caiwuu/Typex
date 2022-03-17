@@ -4,9 +4,7 @@ import { attributesModule } from './modules/attributes'
 import { listenersModule } from './modules/listeners'
 import { classesModule } from './modules/classes'
 import { createElm } from './patch'
-const insKey = Symbol('key')
 export default class VNode {
-  static [insKey] = 0
   _type = null
   key = 0
   ns = ''
@@ -24,11 +22,9 @@ export default class VNode {
   classes = new Set()
   listeners = new Map()
   constructor() {
-    this.key = VNode[insKey]
-    VNode[insKey]++
     this.path = [this]
   }
-  get type () {
+  get type() {
     if (this._type) return this._type
     switch (this.tagName) {
       case 'div':
@@ -56,7 +52,7 @@ export default class VNode {
         return 'inline'
     }
   }
-  insert (vnode, index) {
+  insert(vnode, index) {
     !vnode.elm && createElm(vnode)
     index = index === undefined ? this.length : index
     if (this.children.length > index) {
@@ -71,19 +67,19 @@ export default class VNode {
     this.children.splice(index, 0, vnode)
     this.reArrangement()
   }
-  replace (vnode, onlyVnode = false) {
+  replace(vnode, onlyVnode = false) {
     !vnode.elm && createElm(vnode)
     !onlyVnode && this.elm.parentNode.replaceChild(vnode.elm, this.elm)
     this.parentNode.children.splice(this.index + 3, 1, vnode)
     this.parentNode.reArrangement()
   }
-  delete (index, count) {
+  delete(index, count) {
     console.log('delete')
     const start = index - count <= 0 ? 0 : index - count
     this.children.splice(start, index - start).forEach((vnode) => vnode.elm.remove())
     this.reArrangement()
   }
-  moveTo (target, index) {
+  moveTo(target, index) {
     console.log('moveTo')
     const removeNodes = this.parentNode.children.splice(this.index, 1)
     this.parentNode.reArrangement()
@@ -91,7 +87,7 @@ export default class VNode {
       target.insert(vnode, index)
     })
   }
-  remove () {
+  remove() {
     console.log('remove')
     this.parentNode.children.splice(this.index, 1).forEach((i) => {
       i.removed = true
@@ -99,7 +95,7 @@ export default class VNode {
     })
     this.parentNode.reArrangement()
   }
-  reArrangement () {
+  reArrangement() {
     if (this.children) {
       this.children.forEach((item, index) => {
         const oldPosition = item.position
@@ -113,20 +109,20 @@ export default class VNode {
       })
     }
   }
-  appendChild (...vnodes) {
+  appendChild(...vnodes) {
     vnodes && this.children.push(...vnodes)
     this.reArrangement()
   }
-  get isEmpty () {
+  get isEmpty() {
     return isEmptyNode(this)
   }
-  get length () {
+  get length() {
     return this.children.filter((ele) => ele.type !== 'placeholder').length
   }
-  get isEditable () {
+  get isEditable() {
     return this.editable !== 'off'
   }
-  render () {
+  render() {
     const dom = this.ns ? document.createElementNS(this.ns, this.tagName) : document.createElement(this.tagName)
     this.elm = dom
     dom.vnode = this

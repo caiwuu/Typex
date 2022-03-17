@@ -4,16 +4,16 @@ import { listenersModule } from './modules/listeners'
 import { classesModule } from './modules/classes'
 import { isUndef } from '../share/utils'
 
-function update (vnode, oldVnode) {
+function update(vnode, oldVnode) {
   stylesModule.update(vnode, oldVnode)
   attributesModule.update(vnode, oldVnode)
   listenersModule.update(vnode, oldVnode)
   classesModule.update(vnode, oldVnode)
 }
-function sameVnode (vnode, oldVnode) {
+function sameVnode(vnode, oldVnode) {
   return vnode?.key === oldVnode?.key && vnode?.tagName === oldVnode?.tagName
 }
-function createKeyToOldIdx (children, beginIdx, endIdx) {
+function createKeyToOldIdx(children, beginIdx, endIdx) {
   const map = {}
   for (let i = beginIdx; i <= endIdx; ++i) {
     const key = children[i]?.key
@@ -23,7 +23,7 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
   }
   return map
 }
-function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
+function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
@@ -31,7 +31,7 @@ function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
     }
   }
 }
-function invokeDestroyHook (vnode) {
+function invokeDestroyHook(vnode) {
   const vm = vnode.vm
   if (vm !== undefined) {
     vm?.destroy?.(vnode)
@@ -46,7 +46,7 @@ function invokeDestroyHook (vnode) {
     }
   }
 }
-function removeVnodes (parentElm, vnodes, startIdx, endIdx) {
+function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
@@ -55,7 +55,7 @@ function removeVnodes (parentElm, vnodes, startIdx, endIdx) {
     }
   }
 }
-function updateChildren (parentElm, newCh, oldCh) {
+function updateChildren(parentElm, newCh, oldCh) {
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1
@@ -132,7 +132,7 @@ function updateChildren (parentElm, newCh, oldCh) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
   }
 }
-function patchVnode (vnode, oldVnode) {
+function patchVnode(vnode, oldVnode) {
   if (oldVnode === vnode) return
   const elm = (vnode.elm = oldVnode.elm)
   elm.vnode = vnode
@@ -142,7 +142,7 @@ function patchVnode (vnode, oldVnode) {
   update(vnode, oldVnode)
   if (oldCh !== ch) updateChildren(elm, ch, oldCh)
 }
-export function createElm (vnode, isUpdate = false) {
+export function createElm(vnode, isUpdate = false) {
   const dom = vnode.render()
   if (vnode.children) {
     vnode.children.forEach((vn) => {
@@ -154,9 +154,9 @@ export function createElm (vnode, isUpdate = false) {
 
   return dom
 }
-export function patch (vnode, oldVnode) {
-  if (sameVnode(oldVnode, vnode)) {
-    patchVnode(oldVnode, vnode)
+export function patch(vnode, oldVnode) {
+  if (sameVnode(vnode, oldVnode)) {
+    patchVnode(vnode, oldVnode)
   } else {
     oldVnode.replace(vnode)
   }
