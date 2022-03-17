@@ -9,11 +9,6 @@ export const render = (vnode, root) => {
 export const update = (vm) => {
   const oldVnode = vm.vnode
   const newVnode = vm.render(createElement)
-  // const newDom = createElm(newVnode, true)
   vm.vnode = newVnode
-  // newVnode.vm = vm
-  // newVnode.elm = newDom
-  // oldDom.parentNode.replaceChild(newDom, oldDom)
-  console.log(newVnode, oldVnode)
   patch(newVnode, oldVnode)
 }

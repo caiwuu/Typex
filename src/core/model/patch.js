@@ -160,4 +160,5 @@ export function patch(vnode, oldVnode) {
   } else {
     oldVnode.replace(vnode)
   }
+  return vnode
 }

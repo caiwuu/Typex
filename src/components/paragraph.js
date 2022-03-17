@@ -1,7 +1,7 @@
-import { Component, createRef } from '../core/model/index'
+import { Component } from '../core/model/index'
 
 export class Paragraph extends Component {
-  render (h) {
+  render(h) {
     return h(
       'div',
       {

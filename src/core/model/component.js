@@ -24,9 +24,8 @@ export default class Component {
   set dom(k) {
     throw Error('dom is readonly')
   }
-  setState(state) {
-    this.state = Object.assign(this.state, state)
-    // 这里暂时同步更新，不做优化
+  setState(partialState) {
+    this.state = Object.assign(this.state, partialState)
     update(this)
   }
   render() {
