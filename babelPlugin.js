@@ -28,12 +28,47 @@ const t = require('@babel/types')
 // console.log(result.code)
 
 const code = `
-    var html = <div>
-        <h1>good good study, day day up</h1>
-    </div>
+export class Paragraph extends Component {
+  constructor() {
+    var h = this.q.$createElement
+  	var h=1
+    h=22
+    this.h=22
+  }
+  render(h) {
+    return h(<div style='color:#666;padding:6px 20px;'>{this.props.children.length ? this.props.children : 2}</div>)
+  }
+}
+function aa(){}
 `
-
-const visitor = {}
+const isRender = false
+const visitor = {
+  ClassMethod(path) {
+    if (path.node.key.name === 'render') {
+      path
+        .get('body')
+        .unshiftContainer(
+          'body',
+          t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier('h'),
+              isRender
+                ? t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
+                : t.memberExpression(t.thisExpression(), t.identifier('$createElement'))
+            ),
+          ])
+        )
+      path.get('body').pushContainer('body', t.expressionStatement(t.stringLiteral('after')))
+      path.traverse({
+        CallExpression(path) {
+          if (path.node.callee.name === 'h') {
+            path.node.callee.name = 'this.$createElement'
+          }
+        },
+      })
+    }
+  },
+}
 
 const result = babel.transform(code, {
   plugins: [
