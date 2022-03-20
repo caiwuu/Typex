@@ -224,11 +224,10 @@ function loop(direct, initialRect, prevRect, lineChanged = false, shiftKey) {
     this._d = 0
   }
   const flag = direct === 'left' ? caretActions.left.call(this, shiftKey) : caretActions.right.call(this, shiftKey)
+  if (flag === 404) return
   if (!lineChanged) {
-    if (flag === 404) return
     this.updateCaret(false)
   } else {
-    if (flag === 404) return
     this.updateCaret(false)
     const currRect = { ...this.caret.rect },
       preDistance = Math.abs(prevRect.x - initialRect.x),

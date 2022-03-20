@@ -28,18 +28,12 @@ const t = require('@babel/types')
 // console.log(result.code)
 
 const code = `
-export class Paragraph extends Component {
-  constructor() {
-    var h = this.q.$createElement
-  	var h=1
-    h=22
-    this.h=22
+  export class Paragraph extends Component {
+    render(h) {
+      return h(<div style='color:#666;;padding:6px 20px;'>{this.props.children.length ? this.props.children : '一个段落'}</div>)
+    }
   }
-  render(h) {
-    return h(<div style='color:#666;padding:6px 20px;'>{this.props.children.length ? this.props.children : 2}</div>)
-  }
-}
-function aa(){}
+  function aa(){}
 `
 const isRender = false
 const visitor = {
@@ -52,9 +46,7 @@ const visitor = {
           t.variableDeclaration('const', [
             t.variableDeclarator(
               t.identifier('h'),
-              isRender
-                ? t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
-                : t.memberExpression(t.thisExpression(), t.identifier('$createElement'))
+              isRender ? t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true) : t.memberExpression(t.thisExpression(), t.identifier('$createElement'))
             ),
           ])
         )
