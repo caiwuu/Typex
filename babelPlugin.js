@@ -30,7 +30,7 @@ const t = require('@babel/types')
 const code = `
   export class Paragraph extends Component {
     render(h) {
-      return h(<div style='color:#666;;padding:6px 20px;'>{this.props.children.length ? this.props.children : '一个段落'}</div>)
+      return h(<div  style='color:#666;;padding:6px 20px;' id='12'>{this.props.children.length ? this.props.children : '一个段落'}</div>)
     }
   }
   function aa(){}
@@ -46,18 +46,55 @@ const visitor = {
           t.variableDeclaration('const', [
             t.variableDeclarator(
               t.identifier('h'),
-              isRender ? t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true) : t.memberExpression(t.thisExpression(), t.identifier('$createElement'))
+              isRender
+                ? t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
+                : t.memberExpression(t.thisExpression(), t.identifier('$createElement'))
             ),
           ])
         )
-      path.get('body').pushContainer('body', t.expressionStatement(t.stringLiteral('after')))
-      path.traverse({
-        CallExpression(path) {
-          if (path.node.callee.name === 'h') {
-            path.node.callee.name = 'this.$createElement'
-          }
+      const ops = {}
+      path.traverse(
+        {
+          CallExpression(path) {
+            if (path.node.callee.name === 'h') {
+              path.node.callee = t.memberExpression(
+                t.memberExpression(t.thisExpression(), t.identifier('v')),
+                t.identifier('$createElement')
+              )
+            }
+            path.traverse(
+              {
+                JSXElement(path, state) {
+                  const tagName = path.node.openingElement.name.name
+                  const attrs = path.node.openingElement.attributes.reduce((r, i) => {
+                    r[i.name.name] = i.value.value
+                    return r
+                  }, {})
+                  this.ops.tagName = tagName
+                  this.ops.attrs = attrs
+                },
+              },
+              {
+                ops: this.ops,
+              }
+            )
+          },
         },
-      })
+        { ops }
+      )
+      console.log(ops)
+      path.get('body').pushContainer('body', t.expressionStatement(t.stringLiteral('after')))
+      path
+        .get('body')
+        .pushContainer(
+          'body',
+          t.callExpression(t.identifier('h'), [
+            t.stringLiteral(ops.tagName),
+            t.ObjectExpression([
+              t.ObjectProperty(t.stringLiteral('name'), t.stringLiteral('name')),
+            ]),
+          ])
+        )
     }
   },
 }
