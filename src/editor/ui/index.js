@@ -35,22 +35,6 @@ class ToolBarItem extends Component {
         </svg>
       </span>
     )
-    // return h(
-    //   'span',
-    //   {
-    //     style: `color: ${
-    //       this.state.value ? 'rgb(227 227 227)' : 'rgb(42 201 249)'
-    //     };padding: 4px 10px;display: inline-block;border-radius: 4px;cursor: pointer;user-select: none;`,
-    //     onClick: this.click,
-    //   },
-    //   [
-    //     h(
-    //       'svg',
-    //       { class: 'icon', 'aria-hidden': true, ns: 'http://www.w3.org/2000/svg' },
-    //       h('use', { 'xlink:href': this.props.icon })
-    //     ),
-    //   ]
-    // )
   }
   click = () => {
     this.props.onCommand(this.props.command)
@@ -61,48 +45,50 @@ class ToolBarItem extends Component {
 }
 // UI外框
 class Wrappe extends Component {
-  render(h) {
-    return h('div', { style: 'border:solid 1px #eee;' }, [
-      h(this.props.ToolBar),
-      h(this.props.Body),
-    ])
+  render(__editor__) {
+    return (
+      <div style='border:solid 1px #eee;'>
+        {this.props.ToolBar}
+        {this.props.Body}
+      </div>
+    )
   }
-  // componentDidMount() {
-  //   console.log(this)
-  // }
 }
 // 编辑区
 class Body extends Component {
-  render(h) {
-    return h(
-      'div',
-      h('div', { style: 'padding:16px;min-height: 200px;', id: 'editor-content', isRoot: true }, [
-        h(Block),
-        h(Paragraph, [
-          '普通文本1',
-          '普通文本2',
-          h('span', { style: 'color:red' }, [h('strong', '加粗文本'), h('em', '加粗斜体文本')]),
-          '普通文本4',
-        ]),
-        // 第一种写法
-        h(
-          Paragraph,
-          h(Diseditable, [
-            h(Editable, '可编辑文字😂'),
-            h('span', { style: 'color:red' }, '不可编辑'),
-            h(Editable, '可编辑文字😂'),
-            h(Editable, '可编辑文字😂'),
-          ])
-        ),
-        // 第二种写法
-        h(Paragraph, [
-          '可编辑文字😂',
-          h(Diseditable, h('span', { style: 'color:red' }, '不可编辑')),
-          '可编辑文字😂',
-          '可编辑文字😂',
-        ]),
-        h(Paragraph, [h('span', { style: 'color:red' }, '红色文字')]),
-      ])
+  render(__editor__) {
+    return (
+      <div>
+        <div style='padding:16px;min-height: 200px;' id='editor-content' isRoot={true}>
+          <Block></Block>
+          <Paragraph>
+            普通文本1普通文本2
+            <span style='color:red'>
+              <strong>加粗文本</strong>
+              <em>斜体文本</em>
+            </span>
+            普通文本4
+          </Paragraph>
+          <Paragraph>
+            <Diseditable>
+              <Editable>可编辑文字😂</Editable>
+              <span style='color:red'>不可编辑</span>
+              <Editable>可编辑文字😂</Editable>
+              <Editable>可编辑文字😂</Editable>
+            </Diseditable>
+          </Paragraph>
+          <Paragraph>
+            可编辑文字😂
+            <Diseditable>
+              <span style='color:red'>不可编辑</span>
+            </Diseditable>
+            可编辑文字😂 可编辑文字😂
+          </Paragraph>
+          <Paragraph>
+            <span style='color:red'>红色文字</span>
+          </Paragraph>
+        </div>
+      </div>
     )
   }
 }
