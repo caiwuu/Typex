@@ -1,13 +1,5 @@
 const babel = require('@babel/core')
 const t = require('@babel/types')
-
-// const code = `
-//     const a = 3 * 103.5 * 0.8;
-//     log(a);
-//     const b = a + 105 - 12;
-//     log(b);
-// `
-
 // const visitor = {
 //   CallExpression(path) {
 //     // 这里判断一下如果不是log的函数执行语句则不处理
@@ -49,51 +41,9 @@ const code = `
       )
     }
   }
-  
 `
-function convertAttrName(node) {
-  if (t.isJSXNamespacedName(node.name)) {
-    return t.identifier(node.name.namespace.name + ':' + node.name.name.name)
-  } else {
-    return t.identifier(node.name.name)
-  }
-}
-function convertAttrValue(node) {
-  return t.isJSXExpressionContainer(node.value)
-    ? node.value.expression
-    : t.stringLiteral(node.value.value)
-}
-function convertAttribute(attrs) {
-  return t.ObjectExpression(
-    attrs.map((i) => {
-      const name = convertAttrName(i)
-      const value = convertAttrValue(i)
-      return t.ObjectProperty(name, value)
-    })
-  )
-}
-// {tools.map((ele) => h(ToolBarItem, { onCommand: this.onCommand, ...ele }))}
 
-function converJSX(path) {
-  // console.log(path)
-  if (path.isJSXElement()) {
-    const tagName = path.node.openingElement.name.name
-    const attrs = path.node.openingElement.attributes.reduce((r, i) => {
-      r[i.name.name] = i.value
-      r.push(i)
-      return r
-    }, [])
-    return t.callExpression(t.identifier('h'), [
-      t.stringLiteral(tagName),
-      convertAttribute(path.node.openingElement.attributes),
-      t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
-    ])
-  } else if (path.isJSXText()) {
-    return t.stringLiteral(path.node.value)
-  } else if (path.isJSXExpressionContainer()) {
-    return path.node.expression
-  }
-}
+// {tools.map((ele) => h(ToolBarItem, { onCommand: this.onCommand, ...ele }))}
 const visitor = {
   'ClassMethod|FunctionDeclaration'(path) {
     const jsxChecker = {
@@ -101,7 +51,7 @@ const visitor = {
     }
     path.traverse(
       {
-        JSXElement() {
+        JSXElement(path) {
           this.hasJsx = true
           path.stop()
         },
@@ -116,7 +66,7 @@ const visitor = {
         .get('body')
         .unshiftContainer(
           'body',
-          t.variableDeclaration('const', [
+          t.variableDeclaration('var', [
             t.variableDeclarator(
               t.identifier('h'),
               t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
@@ -134,6 +84,42 @@ const visitor = {
       })
     }
   },
+}
+
+function convertAttrName(node) {
+  if (t.isJSXNamespacedName(node.name)) {
+    return t.stringLiteral(node.name.namespace.name + ':' + node.name.name.name)
+  } else {
+    return t.stringLiteral(node.name.name)
+  }
+}
+function convertAttrValue(node) {
+  return t.isJSXExpressionContainer(node.value)
+    ? node.value.expression
+    : t.stringLiteral(node.value.value)
+}
+function convertAttribute(attrs) {
+  return t.ObjectExpression(
+    attrs.map((i) => {
+      const name = convertAttrName(i)
+      const value = convertAttrValue(i)
+      return t.ObjectProperty(name, value)
+    })
+  )
+}
+function converJSX(path) {
+  if (path.isJSXElement()) {
+    const tagName = path.node.openingElement.name.name
+    return t.callExpression(t.identifier('h'), [
+      t.stringLiteral(tagName),
+      convertAttribute(path.node.openingElement.attributes),
+      t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
+    ])
+  } else if (path.isJSXText()) {
+    return t.stringLiteral(path.node.value)
+  } else if (path.isJSXExpressionContainer()) {
+    return path.node.expression
+  }
 }
 
 const result = babel.transform(code, {

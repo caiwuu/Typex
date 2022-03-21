@@ -22,7 +22,7 @@ class ToolBarItem extends Component {
     super(props)
     this.state = { value: true }
   }
-  render(h) {
+  render() {
     return (
       <span
         onClick={this.click}
