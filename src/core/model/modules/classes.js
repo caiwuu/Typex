@@ -22,6 +22,7 @@ function updateClasses(vnode, oldVnode) {
   if (!vnode.isEditable) {
     elm.classList.add('editor-disabled')
   } else {
+    console.log(elm)
     elm.classList.remove('editor-disabled')
   }
 }

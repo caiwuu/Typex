@@ -26,19 +26,92 @@ const t = require('@babel/types')
 // })
 
 // console.log(result.code)
+// path.get('body').pushContainer('body', t.expressionStatement(t.stringLiteral('after')))
+// path
+//   .get('body')
+//   .pushContainer(
+//     'body',
+//     t.callExpression(t.identifier('h'), [
+//       t.stringLiteral(ops.tagName),
+//       t.ObjectExpression([t.ObjectProperty(t.stringLiteral('name'), t.stringLiteral('name'))]),
+//     ])
+//   )
 
 const code = `
   export class Paragraph extends Component {
-    render(h) {
-      return h(<div  style='color:#666;;padding:6px 20px;' id='12'>{this.props.children.length ? this.props.children : '一个段落'}</div>)
+    render() {
+      return (
+        <div  style='color:#666;;padding:6px 20px;' id='12'>
+        <svg class='icon' aria-hidden={true} ns='http://www.w3.org/2000/svg'>
+          <use xlink:href={this.props.icon}></use>
+        </svg>
+        </div>
+      )
     }
   }
-  function aa(){}
+  
 `
-const isRender = false
+function convertAttrName(node) {
+  if (t.isJSXNamespacedName(node.name)) {
+    return t.identifier(node.name.namespace.name + ':' + node.name.name.name)
+  } else {
+    return t.identifier(node.name.name)
+  }
+}
+function convertAttrValue(node) {
+  return t.isJSXExpressionContainer(node.value)
+    ? node.value.expression
+    : t.stringLiteral(node.value.value)
+}
+function convertAttribute(attrs) {
+  return t.ObjectExpression(
+    attrs.map((i) => {
+      const name = convertAttrName(i)
+      const value = convertAttrValue(i)
+      return t.ObjectProperty(name, value)
+    })
+  )
+}
+// {tools.map((ele) => h(ToolBarItem, { onCommand: this.onCommand, ...ele }))}
+
+function converJSX(path) {
+  // console.log(path)
+  if (path.isJSXElement()) {
+    const tagName = path.node.openingElement.name.name
+    const attrs = path.node.openingElement.attributes.reduce((r, i) => {
+      r[i.name.name] = i.value
+      r.push(i)
+      return r
+    }, [])
+    return t.callExpression(t.identifier('h'), [
+      t.stringLiteral(tagName),
+      convertAttribute(path.node.openingElement.attributes),
+      t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
+    ])
+  } else if (path.isJSXText()) {
+    return t.stringLiteral(path.node.value)
+  } else if (path.isJSXExpressionContainer()) {
+    return path.node.expression
+  }
+}
 const visitor = {
-  ClassMethod(path) {
-    if (path.node.key.name === 'render') {
+  'ClassMethod|FunctionDeclaration'(path) {
+    const jsxChecker = {
+      hasJsx: false,
+    }
+    path.traverse(
+      {
+        JSXElement() {
+          this.hasJsx = true
+          path.stop()
+        },
+      },
+      jsxChecker
+    )
+    if (!jsxChecker.hasJsx) {
+      return
+    }
+    if (path.node.key?.name === 'render' || path.node.id?.name === 'render') {
       path
         .get('body')
         .unshiftContainer(
@@ -46,55 +119,19 @@ const visitor = {
           t.variableDeclaration('const', [
             t.variableDeclarator(
               t.identifier('h'),
-              isRender
-                ? t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
-                : t.memberExpression(t.thisExpression(), t.identifier('$createElement'))
+              t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
             ),
           ])
         )
-      const ops = {}
-      path.traverse(
-        {
-          CallExpression(path) {
-            if (path.node.callee.name === 'h') {
-              path.node.callee = t.memberExpression(
-                t.memberExpression(t.thisExpression(), t.identifier('v')),
-                t.identifier('$createElement')
-              )
-            }
-            path.traverse(
-              {
-                JSXElement(path, state) {
-                  const tagName = path.node.openingElement.name.name
-                  const attrs = path.node.openingElement.attributes.reduce((r, i) => {
-                    r[i.name.name] = i.value.value
-                    return r
-                  }, {})
-                  this.ops.tagName = tagName
-                  this.ops.attrs = attrs
-                },
-              },
-              {
-                ops: this.ops,
-              }
-            )
-          },
+      path.traverse({
+        ReturnStatement(path) {
+          path.traverse({
+            JSXElement(path, state) {
+              path.replaceWith(converJSX(path))
+            },
+          })
         },
-        { ops }
-      )
-      console.log(ops)
-      path.get('body').pushContainer('body', t.expressionStatement(t.stringLiteral('after')))
-      path
-        .get('body')
-        .pushContainer(
-          'body',
-          t.callExpression(t.identifier('h'), [
-            t.stringLiteral(ops.tagName),
-            t.ObjectExpression([
-              t.ObjectProperty(t.stringLiteral('name'), t.stringLiteral('name')),
-            ]),
-          ])
-        )
+      })
     }
   },
 }
