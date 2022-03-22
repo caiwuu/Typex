@@ -1,4 +1,4 @@
-const testPlugin = require('./jsxPlugin.js')
+const editorJsx = require('./babel-plugin-transform-editor-jsx.js')
 module.exports = {
   presets: [
     [
@@ -10,5 +10,5 @@ module.exports = {
       },
     ],
   ],
-  plugins: [testPlugin],
+  plugins: [editorJsx],
 }

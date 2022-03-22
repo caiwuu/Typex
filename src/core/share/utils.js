@@ -119,7 +119,12 @@ export function isDef(v) {
  * Check if value is primitive.
  */
 export function isPrimitive(value) {
-  return typeof value === 'string' || typeof value === 'number' || typeof value === 'symbol' || typeof value === 'boolean'
+  return (
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'symbol' ||
+    typeof value === 'boolean'
+  )
 }
 
 /**
@@ -141,7 +146,8 @@ export function toRawType(value) {
 }
 
 export function typeValidate(target, requiredTypes, message) {
-  const targetTypes = toRawType(requiredTypes) === 'string' ? requiredTypes.split(',') : requiredTypes
+  const targetTypes =
+    toRawType(requiredTypes) === 'string' ? requiredTypes.split(',') : requiredTypes
   const targetType = toRawType(target)
   if (!targetTypes.includes(targetType)) throw TypeError(message)
 }

@@ -10,10 +10,8 @@ function updateListeners(vnode, oldVnode) {
   listeners = listeners || emptyMap
 
   listeners.forEach((value, key) => {
-    const cur = value
-    const old = oldListeners.get(key)
-    if (old !== cur) {
-      elm.addEventListener(key, cur, false)
+    if (!oldListeners.has(key)) {
+      elm.addEventListener(key, value, false)
     }
   })
   oldListeners.forEach((value, key) => {

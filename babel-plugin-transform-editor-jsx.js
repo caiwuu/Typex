@@ -50,6 +50,7 @@ module.exports = function (babel) {
     if (state.opts.nameSpace) {
       return (
         path.node.params.length &&
+        // 在参数最后一个位置写上 __editor__ 来标记这个函数使用该plugin转换，主要为了避免和vue。react等的jsx插件冲突
         path.node.params[path.node.params.length - 1].name === '__editor__'
       )
     } else {
@@ -58,6 +59,7 @@ module.exports = function (babel) {
   }
   function convertAttrName(node) {
     if (t.isJSXNamespacedName(node.name)) {
+      // 带命名空间的属性 如 xlink:href 等等
       return t.stringLiteral(node.name.namespace.name + ':' + node.name.name.name)
     } else {
       return t.stringLiteral(node.name.name)
@@ -66,7 +68,9 @@ module.exports = function (babel) {
   function convertAttrValue(node) {
     return t.isJSXExpressionContainer(node.value)
       ? node.value.expression
-      : t.stringLiteral(node.value.value)
+      : node.value
+      ? t.stringLiteral(node.value.value)
+      : t.booleanLiteral(true)
   }
   function convertAttribute(attrs) {
     return t.ObjectExpression(
@@ -81,6 +85,7 @@ module.exports = function (babel) {
     if (path.isJSXElement()) {
       const tagName = path.node.openingElement.name.name
       return t.callExpression(t.identifier('h'), [
+        // 首字母大写的被视作组件处理
         tagName.charCodeAt(0) < 96 ? t.identifier(tagName) : t.stringLiteral(tagName),
         convertAttribute(path.node.openingElement.attributes),
         t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
@@ -88,7 +93,12 @@ module.exports = function (babel) {
     } else if (path.isJSXText()) {
       return t.stringLiteral(path.node.value.replace(/\n\s+/g, ''))
     } else if (path.isJSXExpressionContainer()) {
-      return path.node.expression
+      // 注释转化成空字符串节点，空串不会被渲染函数处理
+      if (path.get('expression').isJSXEmptyExpression()) {
+        return t.stringLiteral('')
+      } else {
+        return path.node.expression
+      }
     }
   }
 }

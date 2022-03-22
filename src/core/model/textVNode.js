@@ -47,4 +47,23 @@ export default class textVNode extends VNode {
     dom.vnode = this
     return dom
   }
+  toJson() {
+    const attrs = {}
+    if (this._type) attrs.type = this._type
+    if (this.key !== null) attrs.key = this.key
+    return {
+      tagName: this.tagName,
+      attrs,
+      children: this._context,
+    }
+  }
+  clone() {
+    const nVnode = new textVNode(this._context)
+    nVnode._type = this.type
+    nVnode.key = this.key
+    nVnode.position = this.position
+    nVnode.index = this.index
+    nVnode.parentNode = this.parentNode
+    return nVnode
+  }
 }

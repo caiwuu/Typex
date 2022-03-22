@@ -5,10 +5,14 @@ import { classesModule } from './modules/classes'
 import { isUndef } from '../share/utils'
 
 function update(vnode, oldVnode) {
-  stylesModule.update(vnode, oldVnode)
-  attributesModule.update(vnode, oldVnode)
-  listenersModule.update(vnode, oldVnode)
-  classesModule.update(vnode, oldVnode)
+  if (vnode.tagName === 'text') {
+    vnode.elm.data = vnode.context
+  } else {
+    stylesModule.update(vnode, oldVnode)
+    attributesModule.update(vnode, oldVnode)
+    listenersModule.update(vnode, oldVnode)
+    classesModule.update(vnode, oldVnode)
+  }
 }
 function sameVnode(vnode, oldVnode) {
   return vnode?.key === oldVnode?.key && vnode?.tagName === oldVnode?.tagName
@@ -35,7 +39,7 @@ function invokeDestroyHook(vnode) {
   const vm = vnode.vm
   if (vm !== undefined) {
     vm?.destroy?.(vnode)
-    for (let i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
+    // for (let i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode)
     if (vnode.children !== undefined) {
       for (let j = 0; j < vnode.children.length; ++j) {
         const child = vnode.children[j]
@@ -51,7 +55,7 @@ function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
       invokeDestroyHook(ch)
-      parentElm.removeChild(ch)
+      parentElm.removeChild(ch.elm)
     }
   }
 }

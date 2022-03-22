@@ -2,8 +2,6 @@ import VNode from './vnode'
 export default class elementVNode extends VNode {
   constructor(tagName, attrs = {}, children = []) {
     super()
-    this.ns = attrs.ns || ''
-    Reflect.deleteProperty(attrs, 'ns')
     this.tagName = tagName
     // set style
     const style = attrs.style || ''
@@ -39,6 +37,10 @@ export default class elementVNode extends VNode {
         this._type = attrs.type
       } else if (key === 'key') {
         this.key = attrs.key
+      } else if (key === 'ns') {
+        this.ns = attrs.ns
+      } else if (key === 'editable') {
+        this.editable = attrs.editable
       } else {
         this.attrs[key] = attrs[key]
       }
@@ -52,9 +54,31 @@ export default class elementVNode extends VNode {
     if (index === this.length + 1) {
       return index + 1
     }
-    const splited = elementVNode.createElement(this.tagName, { styles: this.styles, classes: this.classes, ...this.listeners })
+    const splited = elementVNode.createElement(this.tagName, {
+      styles: this.styles,
+      classes: this.classes,
+      ...this.listeners,
+    })
     this.children.slice(index).forEach((ele) => ele.moveTo(splited))
     this.parentNode.insert(splited, index + 1)
     return splited
+  }
+  clone() {
+    const nVnode = new elementVNode(this.tagName)
+    nVnode._type = this.type
+    nVnode.editable = this.editable
+    nVnode.key = this.key
+    nVnode.ns = this.ns
+    nVnode.attrs = { ...this.attrs }
+    nVnode.position = this.position
+    nVnode.index = this.index
+    nVnode.parentNode = this.parentNode
+    nVnode._isVnode = this._isVnode
+    nVnode.isRoot = this.isRoot
+    nVnode.children = []
+    nVnode.styles = new Map(this.styles)
+    nVnode.classes = new Set(this.classes)
+    nVnode.listeners = new Map(this.listeners)
+    return nVnode
   }
 }

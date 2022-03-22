@@ -11,7 +11,11 @@ export default function createElement(tagName, attrs = {}, children = []) {
   } else {
     children = [children].flat()
   }
-  typeValidate(tagName, ['string', 'function'], "argument 'tagName' expect 'string'|'function'|'vnode'")
+  typeValidate(
+    tagName,
+    ['string', 'function'],
+    "argument 'tagName' expect 'string'|'function'|'vnode'"
+  )
   if (typeof tagName === 'function') {
     const mergedAttrs = {
       ...attrs,

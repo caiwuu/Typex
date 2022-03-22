@@ -1,6 +1,7 @@
 import createElement from './createElement'
 export default function (args, state = 0) {
   return {
+    root: args,
     args,
     state,
     toMarks(fn) {
@@ -12,7 +13,11 @@ export default function (args, state = 0) {
       return this
     },
     toJson(fn) {
-      this.args = generate({ marks: this.args, keys: ['B', 'I', 'U', 'D', '$FC', '$BG', '$FZ'], tags: null })
+      this.args = generate({
+        marks: this.args,
+        keys: ['B', 'I', 'U', 'D', '$FC', '$BG', '$FZ'],
+        tags: null,
+      })
       if (typeof fn === 'function') {
         this.args = fn(this.args) || this.args
       }
@@ -20,6 +25,7 @@ export default function (args, state = 0) {
       return this
     },
     toVNode(fn) {
+      if (this.state === 0) throw Error('The target is already a VNode')
       if (this.state === 1) {
         this.toJson()
       }
@@ -35,7 +41,11 @@ export default function (args, state = 0) {
 
 function json2VNode(list) {
   return list.map((ele) => {
-    return createElement(ele.tag, ele.attrs, typeof ele.children === 'string' ? ele.children : json2VNode(ele.children))
+    return createElement(
+      ele.tagName,
+      ele.attrs,
+      typeof ele.children === 'string' ? ele.children : json2VNode(ele.children)
+    )
   })
 }
 function getContentMark(vnode, inherit = {}, idx = 0) {
@@ -48,7 +58,7 @@ function getContentMark(vnode, inherit = {}, idx = 0) {
   }
 }
 function mark(vnode, inherit = {}) {
-  if (!vnode.children.length) return inherit
+  if (!vnode.children.length) return { ...inherit }
   return {
     B: vnode.tagName === 'strong' || inherit.B,
     I: vnode.tagName === 'em' || inherit.I,
@@ -72,7 +82,10 @@ function divide(group, index = 0, res = []) {
         counter[key] = 0
         current.mark[key] && counter[key]++
       } else {
-        if ((current.mark[key] && current.mark[key] === prev.mark[key]) || (current.mark[key] && !prev.mark[key])) {
+        if (
+          (current.mark[key] && current.mark[key] === prev.mark[key]) ||
+          (current.mark[key] && !prev.mark[key])
+        ) {
           counter[key]++
         }
       }
@@ -102,10 +115,10 @@ function divide(group, index = 0, res = []) {
   }
 }
 const toVnodeOpsMap = {
-  B: () => ({ tag: 'strong', attrs: {}, children: [] }),
-  I: () => ({ tag: 'em', attrs: {}, children: [] }),
-  U: () => ({ tag: 'u', attrs: {}, children: [] }),
-  D: () => ({ tag: 'del', attrs: {}, children: [] }),
+  B: () => ({ tagName: 'strong', attrs: {}, children: [] }),
+  I: () => ({ tagName: 'em', attrs: {}, children: [] }),
+  U: () => ({ tagName: 'u', attrs: {}, children: [] }),
+  D: () => ({ tagName: 'del', attrs: {}, children: [] }),
   $FC: (value) => ({ style: `color:${value};` }),
   $BG: (value) => ({ style: `background:${value};` }),
   $FZ: (value) => ({ style: `font-size:${value};` }),
@@ -114,14 +127,18 @@ function generate(group) {
   const res = divide(group, 0)
   const obj = res.map((ele) => {
     if (!ele.tags.length) {
-      return { tag: 'text', attrs: {}, children: ele.marks.map((ele) => ele.content.context).join('') }
+      return {
+        tagName: 'text',
+        attrs: {},
+        children: ele.marks.map((ele) => ele.content.context).join(''),
+      }
     } else {
       let result = null
       ele.tags.reduce((obj, curr) => {
         if (!obj) {
           if (curr.startsWith('$')) {
             result = {
-              tag: 'span',
+              tagName: 'span',
               attrs: toVnodeOpsMap[curr](ele.marks[0].mark[curr]),
               children: [],
             }

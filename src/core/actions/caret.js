@@ -223,7 +223,10 @@ function loop(direct, initialRect, prevRect, lineChanged = false, shiftKey) {
   if (this.collapsed) {
     this._d = 0
   }
-  const flag = direct === 'left' ? caretActions.left.call(this, shiftKey) : caretActions.right.call(this, shiftKey)
+  const flag =
+    direct === 'left'
+      ? caretActions.left.call(this, shiftKey)
+      : caretActions.right.call(this, shiftKey)
   if (flag === 404) return
   if (!lineChanged) {
     this.updateCaret(false)
@@ -234,7 +237,9 @@ function loop(direct, initialRect, prevRect, lineChanged = false, shiftKey) {
       currDistance = Math.abs(currRect.x - initialRect.x),
       sameLine = isSameLine(initialRect, prevRect, currRect, flag, this.editor)
     if (!(currDistance <= preDistance && sameLine)) {
-      direct === 'left' ? caretActions.right.call(this, shiftKey) : caretActions.left.call(this, shiftKey)
+      direct === 'left'
+        ? caretActions.right.call(this, shiftKey)
+        : caretActions.left.call(this, shiftKey)
       this.updateCaret(false)
       return
     }

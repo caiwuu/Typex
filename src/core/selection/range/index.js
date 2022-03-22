@@ -14,7 +14,10 @@ function formatPoint(nativeRange) {
     nr.endOffset = pos
   }
   if (!nr.startVNode.isEditable) {
-    const { node, pos, flag } = getNextPoint(nativeRange.startContainer.vnode, nativeRange.startOffset)
+    const { node, pos, flag } = getNextPoint(
+      nativeRange.startContainer.vnode,
+      nativeRange.startOffset
+    )
     if (flag === 404) return
     nr.startVNode = node
     nr.startOffset = pos

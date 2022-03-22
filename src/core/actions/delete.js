@@ -1,4 +1,11 @@
-import { getCommonAncestorNode, deleteNode, getLayer, recoverRangePoint, isEmptyBlock, comparePosition } from '../share/utils'
+import {
+  getCommonAncestorNode,
+  deleteNode,
+  getLayer,
+  recoverRangePoint,
+  isEmptyBlock,
+  comparePosition,
+} from '../share/utils'
 import { getPrev, getNext } from './caret'
 import { createElement } from '../model'
 import { nativeSelection } from '../native'
@@ -43,7 +50,12 @@ function innerDel(from, to, prev) {
     .filter((point) => point.container === from.node && point.offset >= from.pos)
     .map((point) => ({
       container: point.offset === from.pos ? prev.node : point.container,
-      offset: point.offset === from.pos ? prev.pos : prev.flag === -2 ? point.offset - to - 1 : point.offset - to,
+      offset:
+        point.offset === from.pos
+          ? prev.pos
+          : prev.flag === -2
+          ? point.offset - to - 1
+          : point.offset - to,
       range: point.range,
       flag: point.flag,
     }))

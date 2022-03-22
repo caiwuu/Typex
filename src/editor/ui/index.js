@@ -1,19 +1,25 @@
-import { createElement as h, render, Component } from '../../core'
-import { Block, Paragraph, Diseditable, Editable } from '../../components'
+import { createElement as h, render, Component, createRef } from '../../core'
+import { Block, Paragraph, Diseditable, Editable, Dialog } from '../../components'
 import './iconfont'
 window.h = h
 // 工具栏
 class ToolBar extends Component {
+  constructor(props) {
+    super(props)
+    this.dialogRef = createRef()
+  }
   render() {
     const { tools } = this.props
     return (
       <div style='background:rgb(40 40 40);padding:6px'>
         {tools.map((ele) => h(ToolBarItem, { onCommand: this.onCommand, ...ele }))}
+        <Dialog ref={this.dialogRef}></Dialog>
       </div>
     )
   }
   onCommand = (command) => {
     this.props.onCommand(command)
+    this.dialogRef.current.toggle()
   }
 }
 // // 工具栏-元素
@@ -30,13 +36,14 @@ class ToolBarItem extends Component {
           this.state.value ? 'rgb(227 227 227)' : 'rgb(42 201 249)'
         };padding: 4px 10px;display: inline-block;border-radius: 4px;cursor: pointer;user-select: none;`}
       >
-        <svg class='icon' aria-hidden={true} ns='http://www.w3.org/2000/svg'>
+        <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
       </span>
     )
   }
   click = () => {
+    console.log('click')
     this.props.onCommand(this.props.command)
     this.setState({
       value: !this.state.value,
@@ -45,7 +52,7 @@ class ToolBarItem extends Component {
 }
 // UI外框
 class Wrappe extends Component {
-  render(__editor__) {
+  render() {
     return (
       <div style='border:solid 1px #eee;'>
         {this.props.ToolBar}
@@ -56,7 +63,7 @@ class Wrappe extends Component {
 }
 // 编辑区
 class Body extends Component {
-  render(__editor__) {
+  render() {
     return (
       <div>
         <div style='padding:16px;min-height: 200px;' id='editor-content' isRoot={true}>

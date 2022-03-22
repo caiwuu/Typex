@@ -2,7 +2,7 @@ const babel = require('@babel/core')
 const t = require('@babel/types')
 const code = `
   export class Paragraph extends Component {
-    render(EE) {
+    render(__editor__) {
       return (
          <span
         onClick={this.click}
@@ -83,7 +83,9 @@ function convertAttrName(node) {
 function convertAttrValue(node) {
   return t.isJSXExpressionContainer(node.value)
     ? node.value.expression
-    : t.stringLiteral(node.value.value)
+    : node.value
+    ? t.stringLiteral(node.value.value)
+    : t.booleanLiteral(true)
 }
 function convertAttribute(attrs) {
   return t.ObjectExpression(

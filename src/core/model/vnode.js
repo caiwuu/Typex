@@ -6,7 +6,8 @@ import { classesModule } from './modules/classes'
 import { createElm } from './patch'
 export default class VNode {
   _type = null
-  key = 0
+  editable = null
+  key = null
   ns = ''
   attrs = {}
   position = '0'
@@ -70,7 +71,7 @@ export default class VNode {
   replace(vnode, onlyVnode = false) {
     !vnode.elm && createElm(vnode)
     !onlyVnode && this.elm.parentNode.replaceChild(vnode.elm, this.elm)
-    this.parentNode.children.splice(this.index + 3, 1, vnode)
+    this.parentNode.children.splice(this.index, 1, vnode)
     this.parentNode.reArrangement()
   }
   delete(index, count) {
@@ -123,7 +124,9 @@ export default class VNode {
     return this.editable !== 'off'
   }
   render() {
-    const dom = this.ns ? document.createElementNS(this.ns, this.tagName) : document.createElement(this.tagName)
+    const dom = this.ns
+      ? document.createElementNS(this.ns, this.tagName)
+      : document.createElement(this.tagName)
     this.elm = dom
     dom.vnode = this
     stylesModule.create(this)
@@ -131,5 +134,27 @@ export default class VNode {
     listenersModule.create(this)
     attributesModule.create(this)
     return dom
+  }
+  toJson() {
+    const attrs = { ...this.attrs }
+    if (this.isRoot) attrs.isRoot = true
+    if (this._type) attrs.type = this._type
+    if (this.editable) attrs.editable = this.editable
+    if (this.key !== null) attrs.key = this.key
+    if (this.ns) attrs.ns = this.ns
+    if (this.classes.size) attrs.class = [...this.classes].join(' ')
+    if (this.styles.size) {
+      this.attrs.style = [...this.styles].reduce((pre, curr) => {
+        return `${pre}${curr[0]}:${curr[1]};`
+      }, '')
+    }
+    this.listeners.forEach((value, key) => {
+      attrs[key] = value
+    })
+    return {
+      tagNmae: this.tagName,
+      attrs,
+      children: [],
+    }
   }
 }
