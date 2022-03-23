@@ -34,12 +34,8 @@ module.exports = function (babel) {
               )
           }
           path.traverse({
-            ReturnStatement(path) {
-              path.traverse({
-                JSXElement(path, state) {
-                  path.replaceWith(converJSX(path))
-                },
-              })
+            JSXElement(path, state) {
+              path.replaceWith(converJSX(path))
             },
           })
         }
@@ -68,16 +64,23 @@ module.exports = function (babel) {
   function convertAttrValue(node) {
     return t.isJSXExpressionContainer(node.value)
       ? node.value.expression
-      : node.value
+      : // 直接写属性名 默认赋值为true
+      node.value
       ? t.stringLiteral(node.value.value)
       : t.booleanLiteral(true)
   }
   function convertAttribute(attrs) {
     return t.ObjectExpression(
       attrs.map((i) => {
-        const name = convertAttrName(i)
-        const value = convertAttrValue(i)
-        return t.ObjectProperty(name, value)
+        // 普通键值对传参
+        if (t.isJSXAttribute(i)) {
+          const name = convertAttrName(i)
+          const value = convertAttrValue(i)
+          return t.ObjectProperty(name, value)
+          // 处理解构传参
+        } else if (t.isJSXSpreadAttribute(i)) {
+          return t.spreadElement(i.argument)
+        }
       })
     )
   }

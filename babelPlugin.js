@@ -1,25 +1,29 @@
 const babel = require('@babel/core')
 const t = require('@babel/types')
 const code = `
-  export class Paragraph extends Component {
-    render(__editor__) {
-      return (
-         <span
-        onClick={this.click}
-      >
-        <svg class='icon' aria-hidden={true} ns='http://www.w3.org/2000/svg'>
-          <use xlink:href={this.props.icon}></use>
-        </svg>
-      </span>
-      )
-    }
+class ToolBar extends Component {
+  constructor(props) {
+    super(props)
+    this.dialogRef = createRef()
   }
-  function renderee(h,__editor__){
-    return <span>2323</span>
+  render() {
+    const { tools } = this.props
+    return (
+      <div style='background:rgb(40 40 40);padding:6px'>
+        {tools.map((ele) => (
+          <ToolBarItem onCommand={this.onCommand} {...ele}></ToolBarItem>
+        ))}
+        <Dialog ref={this.dialogRef}>
+          <span style='color:red'>dialog</span>
+        </Dialog>
+      </div>
+    )
   }
-  function rendere(h,__editor__){
-    return 23
+  onCommand = (command) => {
+    this.props.onCommand(command)
+    this.dialogRef.current.toggle()
   }
+}
 `
 const visitor = {
   'ClassMethod|FunctionDeclaration'(path, state) {
@@ -53,12 +57,8 @@ const visitor = {
           )
       }
       path.traverse({
-        ReturnStatement(path) {
-          path.traverse({
-            JSXElement(path, state) {
-              path.replaceWith(converJSX(path))
-            },
-          })
+        JSXElement(path, state) {
+          path.replaceWith(converJSX(path))
         },
       })
     }
@@ -90,9 +90,13 @@ function convertAttrValue(node) {
 function convertAttribute(attrs) {
   return t.ObjectExpression(
     attrs.map((i) => {
-      const name = convertAttrName(i)
-      const value = convertAttrValue(i)
-      return t.ObjectProperty(name, value)
+      if (t.isJSXAttribute(i)) {
+        const name = convertAttrName(i)
+        const value = convertAttrValue(i)
+        return t.ObjectProperty(name, value)
+      } else if (t.isJSXSpreadAttribute(i)) {
+        return t.spreadElement(i.argument)
+      }
     })
   )
 }
@@ -118,7 +122,7 @@ const result = babel.transform(code, {
       {
         visitor: visitor,
       },
-      { nameSpace: 'EE' },
+      { nameSpace: false },
     ],
   ],
 })

@@ -12,13 +12,17 @@ class ToolBar extends Component {
     const { tools } = this.props
     return (
       <div style='background:rgb(40 40 40);padding:6px'>
-        {tools.map((ele) => h(ToolBarItem, { onCommand: this.onCommand, ...ele }))}
-        <Dialog ref={this.dialogRef}></Dialog>
+        {tools.map((ele) => (
+          <ToolBarItem {...{ ...ele, onCommand: this.onCommand }}></ToolBarItem>
+        ))}
+        <Dialog ref={this.dialogRef}>
+          <span style='color:red'>dialog</span>
+        </Dialog>
       </div>
     )
   }
-  onCommand = (command) => {
-    this.props.onCommand(command)
+  onCommand = (command, ...args) => {
+    this.props.onCommand(command, ...args)
     this.dialogRef.current.toggle()
   }
 }
@@ -44,7 +48,7 @@ class ToolBarItem extends Component {
   }
   click = () => {
     console.log('click')
-    this.props.onCommand(this.props.command)
+    this.props.onCommand('fontStyle', this.props.command, true)
     this.setState({
       value: !this.state.value,
     })
@@ -105,15 +109,14 @@ export default class UI {
     this.editor = editor
   }
   render() {
-    this.body = h(Body)
-    this.toolBar = h(ToolBar, {
-      tools: [...this.editor.tools],
-      onCommand: (command) => this.editor.execComand(command),
-    })
-    this.vnode = h(Wrappe, {
-      ToolBar: this.toolBar,
-      Body: this.body,
-    })
+    this.body = <Body></Body>
+    this.toolBar = (
+      <ToolBar
+        tools={[...this.editor.tools]}
+        onCommand={(command, ...args) => this.editor.execComand(command, ...args)}
+      ></ToolBar>
+    )
+    this.vnode = <Wrappe ToolBar={this.toolBar} Body={this.body}></Wrappe>
     render(this.vnode, document.getElementById(this.editor.host))
   }
 }

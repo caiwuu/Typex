@@ -19,9 +19,9 @@ export default class Editor {
   setTools(tools) {
     this.tools = [...tools]
   }
-  execComand(command) {
-    console.log(command)
-    textParse(this.selection.getRangeAt(0))
+  execComand(command, ...args) {
+    this.emit(command, ...args)
+    // textParse(this.selection.getRangeAt(0))
   }
   on(eventName, fn) {
     this.emitter.on(eventName, fn)
