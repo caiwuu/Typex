@@ -1,4 +1,4 @@
-import { createElement as h, render, Component, createRef } from '../../core'
+import { createElement as h, mount, Component, createRef } from '../../core'
 import { Block, Paragraph, Diseditable, Editable, Dialog } from '../../components'
 import './iconfont'
 window.h = h
@@ -23,7 +23,7 @@ class ToolBar extends Component {
   }
   onCommand = (command, ...args) => {
     this.props.onCommand(command, ...args)
-    this.dialogRef.current.toggle()
+    // this.dialogRef.current.toggle()
   }
 }
 // // 工具栏-元素
@@ -117,6 +117,6 @@ export default class UI {
       ></ToolBar>
     )
     this.vnode = <Wrappe ToolBar={this.toolBar} Body={this.body}></Wrappe>
-    render(this.vnode, document.getElementById(this.editor.host))
+    mount(this.vnode, document.getElementById(this.editor.host))
   }
 }

@@ -70,12 +70,10 @@ export default class elementVNode extends VNode {
     nVnode.key = this.key
     nVnode.ns = this.ns
     nVnode.attrs = { ...this.attrs }
-    nVnode.position = this.position
     nVnode.index = this.index
     nVnode.parentNode = this.parentNode
     nVnode._isVnode = this._isVnode
     nVnode.isRoot = this.isRoot
-    nVnode.children = []
     nVnode.styles = new Map(this.styles)
     nVnode.classes = new Set(this.classes)
     nVnode.listeners = new Map(this.listeners)

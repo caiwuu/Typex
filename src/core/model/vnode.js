@@ -18,7 +18,7 @@ export default class VNode {
   elm = null
   isRoot = true
   tagName = null
-  children = []
+  _children = []
   styles = new Map()
   classes = new Set()
   listeners = new Map()
@@ -96,7 +96,7 @@ export default class VNode {
     })
     this.parentNode.reArrangement()
   }
-  reArrangement() {
+  reArrangement(deep = true) {
     if (this.children) {
       this.children.forEach((item, index) => {
         const oldPosition = item.position
@@ -106,7 +106,7 @@ export default class VNode {
         this.ns && (item.ns = this.ns)
         item.parentNode = this
         item.position = this.position + '-' + index
-        if (oldPosition !== item.position) item.reArrangement()
+        if (oldPosition !== item.position && deep) item.reArrangement(deep)
       })
     }
   }
@@ -122,6 +122,17 @@ export default class VNode {
   }
   get isEditable() {
     return this.editable !== 'off'
+  }
+  get children() {
+    return this._children
+  }
+  get nextSibling() {
+    return this.parentNode?.children[this.index + 1] || null
+  }
+  set children(chs) {
+    console.log('set children')
+    this._children = chs
+    this.reArrangement()
   }
   render() {
     const dom = this.ns

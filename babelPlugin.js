@@ -9,14 +9,9 @@ class ToolBar extends Component {
   render() {
     const { tools } = this.props
     return (
-      <div style='background:rgb(40 40 40);padding:6px'>
-        {tools.map((ele) => (
-          <ToolBarItem onCommand={this.onCommand} {...ele}></ToolBarItem>
-        ))}
-        <Dialog ref={this.dialogRef}>
-          <span style='color:red'>dialog</span>
-        </Dialog>
-      </div>
+      <Paragraph>
+        <span style='color:red'>123</span>
+      </Paragraph>
     )
   }
   onCommand = (command) => {

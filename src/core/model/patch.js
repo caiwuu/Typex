@@ -140,7 +140,6 @@ function patchVnode(vnode, oldVnode) {
   if (oldVnode === vnode) return
   const elm = (vnode.elm = oldVnode.elm)
   elm.vnode = vnode
-  oldVnode.replace(vnode, true)
   const oldCh = oldVnode.children
   const ch = vnode.children
   update(vnode, oldVnode)
@@ -161,6 +160,7 @@ export function createElm(vnode, isUpdate = false) {
 export function patch(vnode, oldVnode) {
   if (sameVnode(vnode, oldVnode)) {
     patchVnode(vnode, oldVnode)
+    oldVnode.replace(vnode, true)
   } else {
     oldVnode.replace(vnode)
   }

@@ -17,10 +17,10 @@ export default class textVNode extends VNode {
   }
   splitNode(index) {
     if (index === 0) {
-      return index
+      return this.index
     }
-    if (index === this.length + 1) {
-      return index + 1
+    if (index === this.length) {
+      return this.index + 1
     }
     const splitedText = this.context.slice(index)
     const context = this.context.slice(0, index)

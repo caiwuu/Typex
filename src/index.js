@@ -28,17 +28,17 @@ editor.setTools([
   },
   {
     label: '加粗(B)',
-    command: 'bold',
+    command: 'B',
     icon: '#icon-bold',
   },
   {
     label: '加粗(B)',
-    command: 'bold',
+    command: 'U',
     icon: '#icon-underline',
   },
   {
     label: '加粗(B)',
-    command: 'bold',
+    command: 'D',
     icon: '#icon-del',
   },
   {

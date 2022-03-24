@@ -19,13 +19,16 @@ export default function createElement(tagName, attrs = {}, children = []) {
   if (typeof tagName === 'function') {
     const mergedAttrs = {
       ...attrs,
-      children: children.flat().map((ele) => {
-        if (toRawType(ele) === 'string' || toRawType(ele) === 'number') {
-          return new textVNode(String(ele))
-        } else {
-          return ele
-        }
-      }),
+      children: children
+        .flat()
+        .filter((ele) => ele !== '')
+        .map((ele) => {
+          if (toRawType(ele) === 'string' || toRawType(ele) === 'number') {
+            return new textVNode(String(ele))
+          } else {
+            return ele
+          }
+        }),
     }
     // 实例化 组件
     if (tagName.isConstructor) {
@@ -42,8 +45,8 @@ export default function createElement(tagName, attrs = {}, children = []) {
       return tagName(createElement, mergedAttrs)
     }
   }
-  if (tagName === 'text') {
-    return new textVNode(String(children[0] ?? ''))
+  if (tagName === 'text' && !!String(children[0])) {
+    return new textVNode(String(children[0]))
   } else {
     const vnode = new elementVNode(tagName, attrs)
     children.flat().forEach((ch) => {

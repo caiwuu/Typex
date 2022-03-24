@@ -1,6 +1,7 @@
 import createElement from './createElement'
 export default function (args, state = 0) {
   return {
+    range: [],
     root: args,
     args,
     state,
@@ -29,9 +30,9 @@ export default function (args, state = 0) {
       if (this.state === 1) {
         this.toJson()
       }
-      this.args = json2VNode(this.args)
+      this.args = json2VNode(this.args, this.range)
       if (typeof fn === 'function') {
-        this.args = fn(this.args) || this.args
+        this.args = fn(this.args, this.range) || this.args
       }
       this.state = 0
       return this
@@ -39,13 +40,30 @@ export default function (args, state = 0) {
   }
 }
 
-function json2VNode(list) {
+function json2VNode(list, range) {
   return list.map((ele) => {
-    return createElement(
+    let flag = false
+    if (/_\$START\$_/.test(ele.children)) {
+      flag = 1
+      ele.children = ele.children.replace(/_\$START\$_/, '')
+    }
+    if (/_\$END\$_/.test(ele.children)) {
+      flag = 2
+      ele.children = ele.children.replace(/_\$END\$_/, '')
+    }
+
+    const res = createElement(
       ele.tagName,
       ele.attrs,
-      typeof ele.children === 'string' ? ele.children : json2VNode(ele.children)
+      typeof ele.children === 'string' ? ele.children : json2VNode(ele.children, range)
     )
+    if (flag === 1) {
+      range[0] = res
+    }
+    if (flag === 2) {
+      range[1] = res
+    }
+    return res
   })
 }
 function getContentMark(vnode, inherit = {}, idx = 0) {
