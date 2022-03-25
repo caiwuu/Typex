@@ -96,7 +96,7 @@ class Body extends Component {
             可编辑文字😂 可编辑文字😂
           </Paragraph>
           <Paragraph>
-            <span style='color:red'>红色文字</span>
+            <span style='color:red'>红色文字红色文字</span>
           </Paragraph>
         </div>
       </div>

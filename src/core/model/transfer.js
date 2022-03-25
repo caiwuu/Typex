@@ -1,12 +1,12 @@
 import createElement from './createElement'
-export default function (args, state = 0) {
+export default function (args, range, state = 0) {
   return {
-    range: [],
+    range,
     root: args,
     args,
     state,
     toMarks(fn) {
-      this.args = getContentMark(this.args)
+      this.args = getContentMark(this.args, this.range)
       if (typeof fn === 'function') {
         this.args = fn(this.args) || this.args
       }
@@ -32,7 +32,7 @@ export default function (args, state = 0) {
       }
       this.args = json2VNode(this.args, this.range)
       if (typeof fn === 'function') {
-        this.args = fn(this.args, this.range) || this.args
+        this.args = fn(this.args) || this.args
       }
       this.state = 0
       return this
@@ -42,37 +42,85 @@ export default function (args, state = 0) {
 
 function json2VNode(list, range) {
   return list.map((ele) => {
-    let flag = false
-    if (/_\$START\$_/.test(ele.children)) {
-      flag = 1
-      ele.children = ele.children.replace(/_\$START\$_/, '')
-    }
-    if (/_\$END\$_/.test(ele.children)) {
-      flag = 2
-      ele.children = ele.children.replace(/_\$END\$_/, '')
-    }
-
     const res = createElement(
       ele.tagName,
-      ele.attrs,
+      { ...ele.attrs },
       typeof ele.children === 'string' ? ele.children : json2VNode(ele.children, range)
     )
-    if (flag === 1) {
-      range[0] = res
-    }
-    if (flag === 2) {
-      range[1] = res
-    }
+    if (ele.startOffset !== undefined) range.setStart(res, ele.startOffset)
+    if (ele.endOffset !== undefined) range.setEnd(res, ele.endOffset)
     return res
   })
 }
-function getContentMark(vnode, inherit = {}, idx = 0) {
+function getContentMark(vnode, range, inherit = {}, idx = 0) {
   const marker = idx === 0 ? {} : mark(vnode, inherit)
   idx++
   if (vnode.children.length) {
-    return vnode.children.map((i) => getContentMark(i, marker, idx)).flat()
-  } else {
-    return { content: vnode, mark: marker }
+    return vnode.children.map((i) => getContentMark(i, range, marker, idx)).flat()
+  } else if (vnode.tagName === 'text') {
+    if (vnode === range.startVNode && range.startVNode === range.endVNode) {
+      const res = []
+      console.log(vnode.context.slice(0, range.startOffset))
+      vnode.context.slice(0, range.startOffset) &&
+        res.push({
+          content: vnode.context.slice(0, range.startOffset),
+          mark: { ...marker },
+          selected: false,
+        })
+      res.push({
+        content: vnode.context.slice(range.startOffset, range.endOffset),
+        mark: { ...marker },
+        selected: true,
+        start: true,
+        end: true,
+      })
+      vnode.context.slice(range.endOffset) &&
+        res.push({
+          content: vnode.context.slice(range.endOffset),
+          mark: { ...marker },
+          selected: false,
+        })
+      return res
+    }
+    if (vnode === range.startVNode && range.startOffset !== vnode.length) {
+      const res = []
+      vnode.context.slice(0, range.startOffset) &&
+        res.push({
+          content: vnode.context.slice(0, range.startOffset),
+          mark: { ...marker },
+          selected: false,
+        })
+      res.push({
+        content: vnode.context.slice(range.startOffset),
+        mark: { ...marker },
+        selected: true,
+        start: true,
+      })
+      return res
+    }
+    if (vnode === range.endVNode && range.endtOffset !== 0) {
+      const res = [
+        {
+          content: vnode.context.slice(0, range.endOffset),
+          mark: { ...marker },
+          selected: true,
+          end: true,
+        },
+      ]
+      vnode.context.slice(range.endOffset) &&
+        res.push({
+          content: vnode.context.slice(range.endOffset),
+          mark: { ...marker },
+          selected: false,
+        })
+      return res
+    }
+    return {
+      content: vnode.context,
+      mark: marker,
+      selected:
+        range.startVNode.position < vnode.position && vnode.position < range.endVNode.position,
+    }
   }
 }
 function mark(vnode, inherit = {}) {
@@ -145,11 +193,29 @@ function generate(group) {
   const res = divide(group, 0)
   const obj = res.map((ele) => {
     if (!ele.tags.length) {
-      return {
+      console.log(ele)
+      let n = 0
+      let startOffset
+      let endOffset
+      const res = {
         tagName: 'text',
         attrs: {},
-        children: ele.marks.map((ele) => ele.content.context).join(''),
+        children: ele.marks
+          .map((ele) => {
+            if (ele.start) {
+              startOffset = n
+            }
+            n += ele.content.length
+            if (ele.end) {
+              endOffset = n
+            }
+            return ele.content
+          })
+          .join(''),
       }
+      if (startOffset !== undefined) res.startOffset = startOffset
+      if (endOffset !== undefined) res.endOffset = endOffset
+      return res
     } else {
       let result = null
       ele.tags.reduce((obj, curr) => {
