@@ -155,7 +155,7 @@ export default class VNode {
     if (this.ns) attrs.ns = this.ns
     if (this.classes.size) attrs.class = [...this.classes].join(' ')
     if (this.styles.size) {
-      this.attrs.style = [...this.styles].reduce((pre, curr) => {
+      attrs.style = [...this.styles].reduce((pre, curr) => {
         return `${pre}${curr[0]}:${curr[1]};`
       }, '')
     }

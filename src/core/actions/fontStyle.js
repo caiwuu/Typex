@@ -32,7 +32,7 @@ function textParse(range, selection, type, value) {
       const pVnode = parentNode.clone()
       pVnode.children = chs
       console.log(parentNode)
-      // patch(pVnode, parentNode)
+      patch(pVnode, parentNode)
       selection.drawRangeBg()
     })
 }

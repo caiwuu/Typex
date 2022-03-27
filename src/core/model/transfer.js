@@ -2,8 +2,8 @@ import createElement from './createElement'
 export default function (args, range, state = 0) {
   return {
     range,
-    // root: { ...args },
-    args: args,
+    root: args,
+    args,
     state,
     toMarks(fn) {
       this.args = getContentMark(this.args, this.range)
@@ -208,13 +208,13 @@ function generate(group) {
   const res = divide(group, 0)
   const obj = res.map((ele) => {
     if (ele.static) {
-      // return {
-      //   tagName: ele.marks[0].content,
-      //   attrs: {},
-      //   children: [],
-      // }
-      console.log(ele.marks[0].content.toJson(true))
-      return ele.marks[0].content.toJson(true)
+      return {
+        tagName: ele.marks[0].content,
+        attrs: {},
+        children: [],
+      }
+      // console.log(ele.marks[0].content.toJson(true))
+      // return ele.marks[0].content.toJson(true)
     } else if (!ele.tags.length) {
       let n = 0
       let startOffset
