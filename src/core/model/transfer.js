@@ -2,8 +2,8 @@ import createElement from './createElement'
 export default function (args, range, state = 0) {
   return {
     range,
-    root: args,
-    args,
+    // root: { ...args },
+    args: args,
     state,
     toMarks(fn) {
       this.args = getContentMark(this.args, this.range)
@@ -55,12 +55,16 @@ function json2VNode(list, range) {
 function getContentMark(vnode, range, inherit = {}, idx = 0) {
   const marker = idx === 0 ? {} : mark(vnode, inherit)
   idx++
-  if (vnode.children.length) {
+  if (vnode.editable === 'off') {
+    return {
+      content: vnode,
+      static: true,
+    }
+  } else if (vnode.children.length) {
     return vnode.children.map((i) => getContentMark(i, range, marker, idx)).flat()
   } else if (vnode.tagName === 'text') {
     if (vnode === range.startVNode && range.startVNode === range.endVNode) {
       const res = []
-      console.log(vnode.context.slice(0, range.startOffset))
       vnode.context.slice(0, range.startOffset) &&
         res.push({
           content: vnode.context.slice(0, range.startOffset),
@@ -135,7 +139,9 @@ function mark(vnode, inherit = {}) {
     $FZ: vnode.styles.get('font-size') || vnode.styles.get('fontSize') || inherit.$FZ,
   }
 }
+// 分组
 function divide(group, index = 0, res = []) {
+  // debugger
   let counter = {}
   const g = { marks: [], tags: [], keys: [] }
   let prev = null
@@ -143,6 +149,14 @@ function divide(group, index = 0, res = []) {
   for (index; index < group.marks.length; index++) {
     let copyCounter = { ...counter }
     const current = group.marks[index]
+    if (current.static) {
+      if (!prev) {
+        g.marks.push(current)
+        g.static = true
+        index++
+      }
+      break
+    }
     group.keys.forEach((key) => {
       if (!prev) {
         counter[key] = 0
@@ -189,11 +203,19 @@ const toVnodeOpsMap = {
   $BG: (value) => ({ style: `background:${value};` }),
   $FZ: (value) => ({ style: `font-size:${value};` }),
 }
+// 标记重组归并算法
 function generate(group) {
   const res = divide(group, 0)
   const obj = res.map((ele) => {
-    if (!ele.tags.length) {
-      console.log(ele)
+    if (ele.static) {
+      // return {
+      //   tagName: ele.marks[0].content,
+      //   attrs: {},
+      //   children: [],
+      // }
+      console.log(ele.marks[0].content.toJson(true))
+      return ele.marks[0].content.toJson(true)
+    } else if (!ele.tags.length) {
       let n = 0
       let startOffset
       let endOffset

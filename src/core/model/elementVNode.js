@@ -63,7 +63,7 @@ export default class elementVNode extends VNode {
     this.parentNode.insert(splited, index + 1)
     return splited
   }
-  clone() {
+  clone(deep = false) {
     const nVnode = new elementVNode(this.tagName)
     nVnode._type = this.type
     nVnode.editable = this.editable
@@ -77,6 +77,7 @@ export default class elementVNode extends VNode {
     nVnode.styles = new Map(this.styles)
     nVnode.classes = new Set(this.classes)
     nVnode.listeners = new Map(this.listeners)
+    deep && (nVnode.children = this.children.map((ch) => ch.clone(deep)))
     return nVnode
   }
 }

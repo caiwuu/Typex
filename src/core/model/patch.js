@@ -74,6 +74,7 @@ function updateChildren(parentElm, newCh, oldCh) {
   let before
 
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
+    // debugger
     if (oldStartVnode == null) {
       oldStartVnode = oldCh[++oldStartIdx] // Vnode might have been moved left
     } else if (oldEndVnode == null) {

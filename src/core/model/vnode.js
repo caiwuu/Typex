@@ -146,7 +146,7 @@ export default class VNode {
     attributesModule.create(this)
     return dom
   }
-  toJson() {
+  toJson(deep = false) {
     const attrs = { ...this.attrs }
     if (this.isRoot) attrs.isRoot = true
     if (this._type) attrs.type = this._type
@@ -163,9 +163,9 @@ export default class VNode {
       attrs[key] = value
     })
     return {
-      tagNmae: this.tagName,
+      tagName: this.tagName,
       attrs,
-      children: [],
+      children: deep ? this.children.map((ch) => ch.toJson(deep)) : [],
     }
   }
 }

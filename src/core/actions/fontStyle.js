@@ -20,7 +20,7 @@ function textParse(range, selection, type, value) {
       console.log(args)
       args.forEach((ele, index) => {
         if (ele.selected) {
-          console.log(ele)
+          // console.log(ele)
           ele.mark[type] = !ele.mark[type]
         }
       })
@@ -31,7 +31,8 @@ function textParse(range, selection, type, value) {
     .toVNode((chs) => {
       const pVnode = parentNode.clone()
       pVnode.children = chs
-      patch(pVnode, parentNode)
+      console.log(parentNode)
+      // patch(pVnode, parentNode)
       selection.drawRangeBg()
     })
 }
