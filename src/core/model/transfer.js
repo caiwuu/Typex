@@ -1,5 +1,5 @@
 import createElement from './createElement'
-export default function (args, range, state = 0) {
+export default function transfer(args, range, state = 0) {
   return {
     range,
     root: args,
@@ -64,6 +64,7 @@ function getContentMark(vnode, range, inherit = {}, idx = 0) {
   } else if (vnode.children.length) {
     return vnode.children.map((i) => getContentMark(i, range, marker, ++idx)).flat()
   } else if (vnode.tagName === 'text') {
+    // 选区在同一容器
     if (vnode === range.startVNode && range.startVNode === range.endVNode) {
       const res = []
       vnode.context.slice(0, range.startOffset) &&
@@ -87,7 +88,7 @@ function getContentMark(vnode, range, inherit = {}, idx = 0) {
         })
       return res
     }
-    if (vnode === range.startVNode && range.starttOffset !== vnode.length) {
+    if (vnode === range.startVNode) {
       const res = []
       vnode.context.slice(0, range.startOffset) &&
         res.push({
@@ -98,17 +99,17 @@ function getContentMark(vnode, range, inherit = {}, idx = 0) {
       res.push({
         content: vnode.context.slice(range.startOffset),
         mark: { ...marker },
-        selected: true,
+        selected: range.startOffset !== vnode.length,
         start: true,
       })
       return res
     }
-    if (vnode === range.endVNode && range.endtOffset !== 0) {
+    if (vnode === range.endVNode) {
       const res = [
         {
           content: vnode.context.slice(0, range.endOffset),
           mark: { ...marker },
-          selected: true,
+          selected: range.endOffset !== 0,
           end: true,
         },
       ]
@@ -161,7 +162,6 @@ function divide(group, index = 0, res = []) {
       if (!prev) {
         counter[key] = 0
         current.mark[key] && current.content && counter[key]++
-        // console.log(current)
       } else {
         if (
           (current.mark[key] && current.mark[key] === prev.mark[key]) ||
