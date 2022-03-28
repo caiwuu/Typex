@@ -54,14 +54,15 @@ function json2VNode(list, range) {
 }
 function getContentMark(vnode, range, inherit = {}, idx = 0) {
   const marker = idx === 0 ? {} : mark(vnode, inherit)
-  idx++
-  if (vnode.editable === 'off') {
+  // 选区之外的节点和不可编辑的节点被标记为static，
+  // static节点不会有标记重组的过程，diff过程也大大节约性能
+  if (vnode.editable === 'off' || (vnode.type === 'block' && idx)) {
     return {
       content: vnode,
       static: true,
     }
   } else if (vnode.children.length) {
-    return vnode.children.map((i) => getContentMark(i, range, marker, idx)).flat()
+    return vnode.children.map((i) => getContentMark(i, range, marker, ++idx)).flat()
   } else if (vnode.tagName === 'text') {
     if (vnode === range.startVNode && range.startVNode === range.endVNode) {
       const res = []
@@ -86,7 +87,7 @@ function getContentMark(vnode, range, inherit = {}, idx = 0) {
         })
       return res
     }
-    if (vnode === range.startVNode && range.startOffset !== vnode.length) {
+    if (vnode === range.startVNode && range.starttOffset !== vnode.length) {
       const res = []
       vnode.context.slice(0, range.startOffset) &&
         res.push({
@@ -141,7 +142,6 @@ function mark(vnode, inherit = {}) {
 }
 // 分组
 function divide(group, index = 0, res = []) {
-  // debugger
   let counter = {}
   const g = { marks: [], tags: [], keys: [] }
   let prev = null
@@ -160,7 +160,8 @@ function divide(group, index = 0, res = []) {
     group.keys.forEach((key) => {
       if (!prev) {
         counter[key] = 0
-        current.mark[key] && counter[key]++
+        current.mark[key] && current.content && counter[key]++
+        // console.log(current)
       } else {
         if (
           (current.mark[key] && current.mark[key] === prev.mark[key]) ||
@@ -206,6 +207,7 @@ const toVnodeOpsMap = {
 // 标记重组归并算法
 function generate(group) {
   const res = divide(group, 0)
+  console.log(res)
   const obj = res.map((ele) => {
     if (ele.static) {
       return {
@@ -213,8 +215,6 @@ function generate(group) {
         attrs: {},
         children: [],
       }
-      // console.log(ele.marks[0].content.toJson(true))
-      // return ele.marks[0].content.toJson(true)
     } else if (!ele.tags.length) {
       let n = 0
       let startOffset

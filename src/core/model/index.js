@@ -1,6 +1,6 @@
 export { default as createElement } from './createElement'
 export { default as Component } from './component'
-export { patch, createElm } from './patch'
+export { patch, createElm, updateChildren } from './patch'
 export { mount } from './render'
 export { default as transfer } from './transfer'
 export const createRef = () => {

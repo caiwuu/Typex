@@ -1,5 +1,5 @@
 import Caret from './caret'
-import { getNextPoint } from '../../actions/caret'
+import { getNextPoint, getPrevPoint } from '../../actions/caret'
 function formatPoint(nativeRange) {
   const nr = {
     endVNode: nativeRange.endContainer.vnode,
@@ -8,7 +8,8 @@ function formatPoint(nativeRange) {
     startOffset: nativeRange.startOffset,
   }
   if (!nr.endVNode.isEditable) {
-    const { node, pos, flag } = getNextPoint(nativeRange.endContainer.vnode, nativeRange.endOffset)
+    debugger
+    const { node, pos, flag } = getPrevPoint(nativeRange.endContainer.vnode, nativeRange.endOffset)
     if (flag === 404) return
     nr.endVNode = node
     nr.endOffset = pos

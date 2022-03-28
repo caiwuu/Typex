@@ -2,7 +2,7 @@ import { stylesModule } from './modules/styles'
 import { attributesModule } from './modules/attributes'
 import { listenersModule } from './modules/listeners'
 import { classesModule } from './modules/classes'
-import { isUndef } from '../share/utils'
+import { isUndef, isDef } from '../share/utils'
 
 function update(vnode, oldVnode) {
   if (vnode.tagName === 'text') {
@@ -17,11 +17,17 @@ function update(vnode, oldVnode) {
 function sameVnode(vnode, oldVnode) {
   return vnode?.key === oldVnode?.key && vnode?.tagName === oldVnode?.tagName
 }
+function findIdxInOld(node, oldCh, start, end) {
+  for (let i = start; i < end; i++) {
+    const c = oldCh[i]
+    if (isDef(c) && sameVnode(node, c)) return i
+  }
+}
 function createKeyToOldIdx(children, beginIdx, endIdx) {
   const map = {}
   for (let i = beginIdx; i <= endIdx; ++i) {
     const key = children[i]?.key
-    if (key !== undefined) {
+    if (isDef(key)) {
       map[key] = i
     }
   }
@@ -59,7 +65,7 @@ function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
     }
   }
 }
-function updateChildren(parentElm, newCh, oldCh) {
+export function updateChildren(parentElm, newCh, oldCh) {
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1
@@ -74,7 +80,6 @@ function updateChildren(parentElm, newCh, oldCh) {
   let before
 
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-    // debugger
     if (oldStartVnode == null) {
       oldStartVnode = oldCh[++oldStartIdx] // Vnode might have been moved left
     } else if (oldEndVnode == null) {
@@ -111,7 +116,9 @@ function updateChildren(parentElm, newCh, oldCh) {
       if (oldKeyToIdx === undefined) {
         oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx)
       }
-      idxInOld = oldKeyToIdx[newStartVnode.key]
+      idxInOld = isDef(newStartVnode.key)
+        ? oldKeyToIdx[newStartVnode.key]
+        : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)
       if (isUndef(idxInOld)) {
         // New element
         parentElm.insertBefore(createElm(newStartVnode), oldStartVnode.elm)
@@ -120,7 +127,7 @@ function updateChildren(parentElm, newCh, oldCh) {
         if (elmToMove.tagName !== newStartVnode.tagName) {
           parentElm.insertBefore(createElm(newStartVnode), oldStartVnode.elm)
         } else {
-          patchVnode(elmToMove, newStartVnode)
+          patchVnode(newStartVnode, elmToMove)
           oldCh[idxInOld] = undefined
           parentElm.insertBefore(elmToMove.elm, oldStartVnode.elm)
         }
@@ -155,7 +162,6 @@ export function createElm(vnode, isUpdate = false) {
       !isUpdate && vn.vm && vn.vm.componentDidMount && vn.vm.componentDidMount()
     })
   }
-
   return dom
 }
 export function patch(vnode, oldVnode) {
