@@ -11,6 +11,14 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.styl(us)?$/,
+        use: ['style-loader', 'css-loader', 'stylus-loader'],
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
         test: /\.js$/,
         use: {
           loader: 'babel-loader',

@@ -1,0 +1,47 @@
+.editor-block
+    background #eee
+    padding 6px 20px
+    margin-bottom 10px
+    border-radius 5px
+.editor-paragraph
+    padding 6px 20px
+.editor-tooltip
+    position relative
+    display inline-block
+    border-bottom 1px dotted black
+.editor-tooltip .tooltiptext
+    opacity 0
+    width 60px
+    font-size 12px
+    background-color black
+    color #fff
+    text-align center
+    border-radius 6px
+    padding 5px 0
+    position absolute
+    z-index 1
+    top 140%
+    left 50%
+    margin-left -30px
+    transition opacity 600ms ease-out
+.editor-tooltip .tooltiptext::after
+    content ''
+    position absolute
+    left 50%
+    margin-left -5px
+    border-width 5px
+    border-style solid
+.editor-tooltip:hover .tooltiptext
+    opacity 1
+// bottom
+.editor-tooltip .tooltiptext.bottom
+    top 140%
+.editor-tooltip .tooltiptext.bottom::after
+    bottom 100%
+    border-color transparent transparent black transparent
+// top
+.editor-tooltip .tooltiptext.top
+    top -140%
+.editor-tooltip .tooltiptext.top::after
+    top 100%
+    border-color black transparent transparent transparent

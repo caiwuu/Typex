@@ -1,11 +1,9 @@
 import { nativeSelection } from '../native'
-import styleStr from './style'
 import Range from './range'
 export default class Selection {
   ranges = [] // 选区列表
   constructor(editor) {
     this.editor = editor
-    this._initStyle()
   }
   get rangeCount() {
     return this.ranges.length
@@ -29,11 +27,6 @@ export default class Selection {
       )
     })
     return points
-  }
-  _initStyle() {
-    const style = document.createElement('style')
-    style.innerHTML = styleStr
-    document.head.appendChild(style)
   }
   _resetRanges() {
     this.clearRanges()

@@ -1,5 +1,5 @@
 import { createElement as h, mount, Component, createRef } from '../../core'
-import { Block, Paragraph, Diseditable, Editable, Dialog } from '../../components'
+import { Block, Paragraph, Diseditable, Editable, Dialog, Tooltip } from '../../components'
 import './iconfont'
 window.h = h
 // 工具栏
@@ -11,9 +11,11 @@ class ToolBar extends Component {
   render() {
     const { tools } = this.props
     return (
-      <div style='background:rgb(40 40 40);padding:6px'>
+      <div class='tool-bar'>
         {tools.map((ele) => (
-          <ToolBarItem {...{ ...ele, onCommand: this.onCommand }}></ToolBarItem>
+          <Tooltip width='64' content={ele.tooltip}>
+            <ToolBarItem {...{ ...ele, onCommand: this.onCommand }}></ToolBarItem>
+          </Tooltip>
         ))}
         <Dialog ref={this.dialogRef}>
           <span style='color:red'>dialog</span>
@@ -36,9 +38,8 @@ class ToolBarItem extends Component {
     return (
       <span
         onClick={this.click}
-        style={`color: ${
-          this.state.value ? 'rgb(227 227 227)' : 'rgb(42 201 249)'
-        };padding: 4px 10px;display: inline-block;border-radius: 4px;cursor: pointer;user-select: none;`}
+        class='tool-bar-item'
+        style={`color: ${this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
@@ -58,7 +59,7 @@ class ToolBarItem extends Component {
 class Wrappe extends Component {
   render() {
     return (
-      <div style='border:solid 1px #eee;'>
+      <div class='editor-wrappe'>
         {this.props.ToolBar}
         {this.props.Body}
       </div>
@@ -70,7 +71,7 @@ class Body extends Component {
   render() {
     return (
       <div>
-        <div style='padding:16px;min-height: 200px;' id='editor-content' isRoot={true}>
+        <div id='editor-content' isRoot={true}>
           <Block></Block>
           <Paragraph>
             普通文本1普通文本2
