@@ -54,8 +54,6 @@ function json2VNode(list, range) {
 }
 function getContentMark(vnode, range, inherit = {}, idx = 0) {
   const marker = idx === 0 ? {} : mark(vnode, inherit)
-  // 选区之外的节点和不可编辑的节点被标记为static，
-  // static节点不会有标记重组的过程，diff过程也大大节约性能
   if (vnode.editable === 'off' || (vnode.type === 'block' && idx)) {
     return {
       content: vnode,

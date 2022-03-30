@@ -32,9 +32,9 @@ function transEveryBlock(blockVnode, range, selection, type) {
     return
   }
   transfer(blockVnode, range)
-    .toMarks((args) => {
-      // console.log(args)
-      args.forEach((ele) => {
+    .toMarks((mark) => {
+      console.log(mark)
+      mark.forEach((ele) => {
         if (ele.selected) {
           ele.mark[type] = !ele.mark[type]
         }
