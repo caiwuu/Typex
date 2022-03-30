@@ -1,6 +1,8 @@
 import Editor from './editor/index'
 const editor = new Editor()
 import './style/index.styl'
+import './componentTest'
+
 editor.setTools([
   {
     tooltip: '撤销',
