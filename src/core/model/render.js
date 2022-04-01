@@ -3,7 +3,7 @@ import { patch, createElm } from './patch'
 export const mount = (vnode, root) => {
   ;[vnode].flat().forEach((vn) => {
     root.appendChild(createElm(vn))
-    vn.vm && vn.vm.componentDidMount && vn.vm.componentDidMount()
+    vn.vm && vn.vm.onMounted && vn.vm.onMounted()
   })
 }
 export const update = (vm) => {

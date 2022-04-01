@@ -1,7 +1,7 @@
 import Editor from './editor/index'
 const editor = new Editor()
 import './style/index.styl'
-import './componentTest'
+import './componentsDomo/index'
 
 editor.setTools([
   {

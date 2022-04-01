@@ -7,7 +7,7 @@ export class Block extends Component {
       </div>
     )
   }
-  componentDidMount() {
+  onMounted() {
     console.log(this)
   }
 }

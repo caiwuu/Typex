@@ -159,17 +159,19 @@ export function createElm(vnode, isUpdate = false) {
     vnode.children.forEach((vn) => {
       const child = createElm(vn, isUpdate)
       dom.appendChild(child)
-      !isUpdate && vn.vm && vn.vm.componentDidMount && vn.vm.componentDidMount()
+      !isUpdate && vn.vm && vn.vm.onMounted && vn.vm.onMounted()
     })
   }
   return dom
 }
 export function patch(vnode, oldVnode) {
+  const insertedVnodeQueue = []
   if (sameVnode(vnode, oldVnode)) {
     patchVnode(vnode, oldVnode)
     oldVnode.replace(vnode, true)
   } else {
     oldVnode.replace(vnode)
+    insertedVnodeQueue.push(vnode)
   }
   return vnode
 }
