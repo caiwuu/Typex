@@ -3,7 +3,7 @@ import { throttle, HSLToRGB } from '../../core/share/utils'
 export default class Hue extends Component {
   constructor(props) {
     super(props)
-    this.state = { x: 0, x2: 0 }
+    this.state = { x: 200, x2: 200, R: 255, G: 0, B: 0, A: 1 }
     this.colorBlock = createRef()
   }
   render() {
@@ -28,24 +28,27 @@ export default class Hue extends Component {
           </div>
         </div>
         <div class='right'>
-          <div ref={this.colorBlock} class='color-block'></div>
+          <div class='color-block-bg'></div>
+          <div
+            style={`background:rgba(${this.state.R},${this.state.G},${this.state.B},${this.state.A})`}
+            ref={this.colorBlock}
+            class='color-block'
+          ></div>
         </div>
       </div>
     )
   }
   onMounted() {
-    // console.log(this.colorBlock)
-    // setTimeout(() => {
+    console.log('hue')
     console.log(getComputedStyle(this.colorBlock.current).backgroundColor)
-    // }, 1000)
   }
   // hue
   handleHueChange = throttle((e) => {
     const { offsetX: x } = e
     const hue = (x * 360) / 200
     const [R, G, B] = HSLToRGB(hue, 100, 50)
-    console.log(R, G, B)
-    this.setState({ x: x })
+    // console.log(R, G, B)
+    this.setState({ x: x, R, G, B })
     this.props.paletteRef.current.setHue(hue)
   }, 30)
 
@@ -58,7 +61,7 @@ export default class Hue extends Component {
   // Transparency
   handleTransparencyChange = throttle((e) => {
     const { offsetX: x2 } = e
-    this.setState({ x2: x2 })
+    this.setState({ x2: x2, A: x2 / 200 })
   }, 30)
 
   handleTransparencyMouseDown = (e) => {

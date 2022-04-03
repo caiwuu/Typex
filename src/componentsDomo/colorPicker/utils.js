@@ -1,5 +1,5 @@
 import { HSLToRGB, RGBToHSL, round } from '../../core/share/utils'
-export default function rgbToCoordinates(R, G, B) {
+export function rgbToCoordinates(R, G, B) {
   const rgbMap = { R, G, B }
   const [H, S, L] = RGBToHSL(R, G, B)
   const [PR, PG, PB] = HSLToRGB(H, 100, 50)
@@ -16,3 +16,4 @@ export default function rgbToCoordinates(R, G, B) {
   }
   console.log(round(x, 2), round(y, 2))
 }
+export const toRGBArray = (rgbStr) => rgbStr.match(/\d+/g).map(Number)

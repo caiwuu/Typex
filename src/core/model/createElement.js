@@ -36,7 +36,7 @@ export default function createElement(tagName, attrs = {}, children = []) {
       ref && delete mergedAttrs.ref
       const vm = new tagName(mergedAttrs)
       ref && (ref.current = vm)
-      const vn = vm.render(createElement)
+      const vn = vm._render_(createElement)
       vm.vnode = vn
       if (vn instanceof VNode) vn.vm = vm
       // beforeMounted

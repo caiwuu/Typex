@@ -28,6 +28,11 @@ export default class Component {
     this.state = Object.assign(this.state, partialState)
     update(this)
   }
+  _render_(h) {
+    const vnode = this.render(h)
+    if (vnode._isVnode) vnode.vm = this
+    return vnode
+  }
   render() {
     throw Error('Component does not implement a required interface "render"')
   }

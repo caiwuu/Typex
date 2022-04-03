@@ -72,14 +72,15 @@ html, body
     font-size 0
     height 10px
     width 200px
-    background linear-gradient(to left, red, #ff0, lime, cyan, blue, #f0f, red)
+    // background linear-gradient(to left, red, #ff0, lime, cyan, blue, #f0f, red)
+    background linear-gradient(to left, red, #f0f, blue, cyan, lime, #ff0, red)
     .hue-picker
       pointer-events none
       display inline-block
       position relative
-      width 12px
+      width 6px
       height 12px
-      border-radius 6px
+      // border-radius 6px
       transform translate(-6px, -1px)
       background-color rgb(248, 248, 248)
       box-shadow rgba(0, 0, 0, 0.37) 0px 1px 4px 0px
@@ -95,20 +96,27 @@ html, body
       pointer-events none
       display inline-block
       position relative
-      width 12px
+      width 6px
       height 12px
-      border-radius 6px
+      // border-radius 6px
       transform translate(-6px, -1px)
       background-color rgb(248, 248, 248)
       box-shadow rgba(0, 0, 0, 0.37) 0px 1px 4px 0px
 .right
+  position relative
   .color-block
     width 24px
     height 24px
-    background red
+    position absolute
+    top 0
+  .color-block-bg
+    width 24px
+    height 24px
+    background url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZGBgEGHAD97gk2YcNYBhmIQBgWSAP52AwoAQwJvQRg1gACckQoC2gQgAIF8IscwEtKYAAAAASUVORK5CYII=') left center
 .palette
   width 228px
   height 150px
+  overflow hidden
   .palette-picker
     display inline-block
     position relative

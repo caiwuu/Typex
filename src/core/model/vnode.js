@@ -71,8 +71,8 @@ export default class VNode {
   replace(vnode, onlyVnode = false) {
     !vnode.elm && createElm(vnode)
     !onlyVnode && this.elm.parentNode.replaceChild(vnode.elm, this.elm)
-    this.parentNode.children.splice(this.index, 1, vnode)
-    this.parentNode.reArrangement()
+    this.parentNode?.children.splice(this.index, 1, vnode)
+    this.parentNode?.reArrangement()
   }
   delete(index, count) {
     console.log('delete')

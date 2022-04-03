@@ -68,6 +68,7 @@ export default class elementVNode extends VNode {
     nVnode._type = this.type
     nVnode.editable = this.editable
     nVnode.key = this.key
+    nVnode.vm = this.vm
     nVnode.ns = this.ns
     nVnode.attrs = { ...this.attrs }
     nVnode.index = this.index

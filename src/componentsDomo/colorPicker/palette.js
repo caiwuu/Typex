@@ -1,9 +1,10 @@
-import { Component } from '../../core'
+import { Component, createRef } from '../../core'
 import { throttle } from '../../core/share/utils'
 export default class Palette extends Component {
   constructor(props) {
     super(props)
     this.state = { hue: 0, x: 228, y: 0 }
+    this.containerRef = createRef()
   }
   render() {
     return (
@@ -12,14 +13,21 @@ export default class Palette extends Component {
         onClick={this.handerClick}
         onMousedown={this.handleMouseDown}
         class='palette'
+        ref={this.containerRef}
       >
         <span style={`top:${this.state.y}px;left:${this.state.x}px;`} class='palette-picker'></span>
       </div>
     )
   }
   handleChange = throttle((e) => {
-    const { offsetX: x, offsetY: y } = e
-    this.setState({ x, y })
+    const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
+    const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
+    const left = x - (this.containerRef.current.getBoundingClientRect().left + window.pageXOffset)
+    const top = y - (this.containerRef.current.getBoundingClientRect().top + window.pageYOffset)
+    this.setState({
+      x: left >= 228 ? 228 : left <= 0 ? 0 : left,
+      y: top >= 150 ? 150 : top <= 0 ? 0 : top,
+    })
   }, 30)
 
   handleMouseDown = (e) => {
@@ -32,7 +40,7 @@ export default class Palette extends Component {
     this.unbindEventListeners()
   }
 
-  unbindEventListeners() {
+  unbindEventListeners = () => {
     window.removeEventListener('mousemove', this.handleChange)
     window.removeEventListener('mouseup', this.handleMouseUp)
   }
