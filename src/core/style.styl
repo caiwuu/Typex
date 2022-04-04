@@ -34,7 +34,7 @@ html, body
   pointer-events none
   border none
   caret-color transparent
-  /* display: none; */
+  position absolute
 .custom-caret
   top -100px
   left 0
@@ -75,7 +75,7 @@ html, body
     // background linear-gradient(to left, red, #ff0, lime, cyan, blue, #f0f, red)
     background linear-gradient(to left, red, #f0f, blue, cyan, lime, #ff0, red)
     .hue-picker
-      pointer-events none
+      // pointer-events none
       display inline-block
       position relative
       width 6px
@@ -93,7 +93,7 @@ html, body
     .transparency-picker-bg
       height 100%
     .transparency-picker
-      pointer-events none
+      // pointer-events none
       display inline-block
       position relative
       width 6px
@@ -104,6 +104,7 @@ html, body
       box-shadow rgba(0, 0, 0, 0.37) 0px 1px 4px 0px
 .right
   position relative
+  cursor pointer
   .color-block
     width 24px
     height 24px
@@ -117,12 +118,12 @@ html, body
   width 228px
   height 150px
   overflow hidden
+  border: #eeeeee solid 1px
   .palette-picker
     display inline-block
     position relative
     width 12px
     height 12px
     border-radius 50%
-    pointer-events none
     box-shadow rgb(255 255 255) 0px 0px 0px 1px inset
     transform translate(-6px, -6px)

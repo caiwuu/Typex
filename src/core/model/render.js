@@ -8,7 +8,7 @@ export const mount = (vnode, root) => {
   } else {
     patch(vnode, root)
   }
-  // 执行mounte钩子
+  // 执行mounted钩子
   for (let i = 0; i < insertedVnodeQueue.length; i++) {
     const vn = insertedVnodeQueue[i]
     vn?.vm?.onMounted?.()

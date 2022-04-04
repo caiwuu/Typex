@@ -1,5 +1,12 @@
 import { Component, createRef } from '../../core'
 import { throttle } from '../../core/share/utils'
+function pauseEvent(e) {
+  if (e.stopPropagation) e.stopPropagation()
+  if (e.preventDefault) e.preventDefault()
+  e.cancelBubble = true
+  e.returnValue = false
+  return false
+}
 export default class Palette extends Component {
   constructor(props) {
     super(props)
@@ -20,6 +27,7 @@ export default class Palette extends Component {
     )
   }
   handleChange = throttle((e) => {
+    pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
     const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
     const left = x - (this.containerRef.current.getBoundingClientRect().left + window.pageXOffset)
@@ -28,15 +36,17 @@ export default class Palette extends Component {
       x: left >= 228 ? 228 : left <= 0 ? 0 : left,
       y: top >= 150 ? 150 : top <= 0 ? 0 : top,
     })
-  }, 30)
+  }, 32)
 
   handleMouseDown = (e) => {
+    pauseEvent(e)
     this.handleChange(e)
     window.addEventListener('mousemove', this.handleChange)
     window.addEventListener('mouseup', this.handleMouseUp)
   }
 
-  handleMouseUp = () => {
+  handleMouseUp = (e) => {
+    pauseEvent(e)
     this.unbindEventListeners()
   }
 
@@ -44,7 +54,7 @@ export default class Palette extends Component {
     window.removeEventListener('mousemove', this.handleChange)
     window.removeEventListener('mouseup', this.handleMouseUp)
   }
-  setHue(hue) {
+  setPalette(hue) {
     this.setState({ hue: hue })
   }
   handerClick = (e) => {

@@ -67,7 +67,7 @@ function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
     }
   }
 }
-export function updateChildren(parentElm, newCh, oldCh, insertedVnodeQueue) {
+export function updateChildren(parentElm, newCh, oldCh) {
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1
@@ -92,25 +92,25 @@ export function updateChildren(parentElm, newCh, oldCh, insertedVnodeQueue) {
       newEndVnode = newCh[--newEndIdx]
       // 新头=旧头
     } else if (sameVnode(newStartVnode, oldStartVnode)) {
-      patchVnode(newStartVnode, oldStartVnode, insertedVnodeQueue)
+      patchVnode(newStartVnode, oldStartVnode)
       oldStartVnode = oldCh[++oldStartIdx]
       newStartVnode = newCh[++newStartIdx]
       // 新尾=旧尾
     } else if (sameVnode(newEndVnode, oldEndVnode)) {
-      patchVnode(newEndVnode, oldEndVnode, insertedVnodeQueue)
+      patchVnode(newEndVnode, oldEndVnode)
       oldEndVnode = oldCh[--oldEndIdx]
       newEndVnode = newCh[--newEndIdx]
       // 旧头=新尾
     } else if (sameVnode(newEndVnode, oldStartVnode)) {
       // Vnode moved right
-      patchVnode(newEndVnode, oldStartVnode, insertedVnodeQueue)
+      patchVnode(newEndVnode, oldStartVnode)
       parentElm.insertBefore(oldStartVnode.elm, oldEndVnode.elm.nextSibling)
       oldStartVnode = oldCh[++oldStartIdx]
       newEndVnode = newCh[--newEndIdx]
       // 新头=旧尾
     } else if (sameVnode(newStartVnode, oldEndVnode)) {
       // Vnode moved left
-      patchVnode(newStartVnode, oldEndVnode, insertedVnodeQueue)
+      patchVnode(newStartVnode, oldEndVnode)
       parentElm.insertBefore(oldEndVnode.elm, oldStartVnode.elm)
       oldEndVnode = oldCh[--oldEndIdx]
       newStartVnode = newCh[++newStartIdx]
@@ -131,7 +131,7 @@ export function updateChildren(parentElm, newCh, oldCh, insertedVnodeQueue) {
           parentElm.insertBefore(createElm(newStartVnode), oldStartVnode.elm)
           newStartVnode.vm && insertedVnodeQueue.push(newStartVnode)
         } else {
-          patchVnode(newStartVnode, elmToMove, insertedVnodeQueue)
+          patchVnode(newStartVnode, elmToMove)
           oldCh[idxInOld] = undefined
           parentElm.insertBefore(elmToMove.elm, oldStartVnode.elm)
         }
@@ -148,14 +148,14 @@ export function updateChildren(parentElm, newCh, oldCh, insertedVnodeQueue) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
   }
 }
-function patchVnode(vnode, oldVnode, insertedVnodeQueue) {
+function patchVnode(vnode, oldVnode) {
   if (oldVnode === vnode) return
   const elm = (vnode.elm = oldVnode.elm)
   elm.vnode = vnode
   const oldCh = oldVnode.children
   const ch = vnode.children
   update(vnode, oldVnode)
-  if (oldCh !== ch) updateChildren(elm, ch, oldCh, insertedVnodeQueue)
+  if (oldCh !== ch) updateChildren(elm, ch, oldCh)
 }
 export function createElm(vnode) {
   const dom = vnode.render()
@@ -182,7 +182,7 @@ export function patch(vnode, oldVnode) {
     oldVnode.elm = elm
   }
   if (sameVnode(vnode, oldVnode)) {
-    patchVnode(vnode, oldVnode, insertedVnodeQueue)
+    patchVnode(vnode, oldVnode)
     oldVnode.replace(vnode, true)
     isInit && isDef(vnode.vm) && insertedVnodeQueue.push(vnode)
     isInit = false

@@ -140,10 +140,6 @@ export default class VNode {
       : document.createElement(this.tagName)
     this.elm = dom
     dom.vnode = this
-    if (this.attrs.ref) {
-      this.attrs.ref.current = dom
-      delete this.attrs.ref
-    }
     stylesModule.create(this)
     classesModule.create(this)
     listenersModule.create(this)

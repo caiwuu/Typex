@@ -13,10 +13,10 @@ function updateAttrs(vnode, oldVnode) {
   if (oldAttrs === attrs) return
   oldAttrs = oldAttrs || {}
   attrs = attrs || {}
-  // if (vnode.attrs.ref) {
-  //   vnode.attrs.ref.current = dom
-  //   delete vnode.attrs.ref
-  // }
+  if (vnode.attrs.ref) {
+    vnode.attrs.ref.current = vnode.elm
+    delete vnode.attrs.ref
+  }
   // update modified attributes, add new attributes
   for (key in attrs) {
     const cur = attrs[key]

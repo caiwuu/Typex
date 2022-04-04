@@ -11,7 +11,7 @@ export default class ColorPicker extends Component {
     return (
       <div style='font-size:0;width:228px;'>
         <Palette ref={this.paletteRef}></Palette>
-        <Hue paletteRef={this.paletteRef}></Hue>
+        <Hue color={this.props.color} paletteRef={this.paletteRef}></Hue>
       </div>
     )
   }
