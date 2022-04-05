@@ -1,4 +1,6 @@
-import { update } from './render'
+import enqueueSetState from './enqueueSetState'
+import createElement from '../createElement'
+import { patch } from '../patch'
 const propsKey = Symbol('props')
 const insKey = Symbol('key')
 export default class Component {
@@ -25,13 +27,19 @@ export default class Component {
     throw Error('dom is readonly')
   }
   setState(partialState) {
-    this.state = Object.assign(this.state, partialState)
-    update(this)
+    enqueueSetState(partialState, this)
+    this._update_()
   }
   _render_(h) {
     const vnode = this.render(h)
     if (vnode._isVnode) vnode.vm = this
     return vnode
+  }
+  _update_() {
+    const oldVnode = this.vnode
+    const newVnode = this._render_(createElement)
+    this.vnode = newVnode
+    patch(newVnode, oldVnode)
   }
   render() {
     throw Error('Component does not implement a required interface "render"')

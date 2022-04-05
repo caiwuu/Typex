@@ -10,7 +10,7 @@ function pauseEvent(e) {
 export default class Palette extends Component {
   constructor(props) {
     super(props)
-    this.state = { hue: 0, x: 228, y: 0 }
+    this.state = { hue: 0, x: 228, y: 0, test: 0 }
     this.containerRef = createRef()
   }
   render() {

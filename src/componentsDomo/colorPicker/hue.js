@@ -66,7 +66,7 @@ export default class Hue extends Component {
     this.setState({ x: left <= 6 ? 6 : left, bg: `rgba(${R},${G},${B},${this.state.A};)` })
     this.props.paletteRef.current.setPalette(hue)
   }, 30)
-
+  setOpacity = (A) => {}
   handleHueMouseDown = (e) => {
     pauseEvent(e)
     this.handleHueChange(e)

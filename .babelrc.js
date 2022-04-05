@@ -10,5 +10,5 @@ module.exports = {
       },
     ],
   ],
-  plugins: [editorJsx],
+  plugins: [[editorJsx, { scoped: false }]],
 }

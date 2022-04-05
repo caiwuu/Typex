@@ -43,7 +43,7 @@ module.exports = function (babel) {
     },
   }
   function isConvertable(path, state) {
-    if (state.opts.nameSpace) {
+    if (state.opts.scoped) {
       return (
         path.node.params.length &&
         // 在参数最后一个位置写上 __editor__ 来标记这个函数使用该plugin转换，主要为了避免和vue。react等的jsx插件冲突
