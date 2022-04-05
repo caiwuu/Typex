@@ -28,7 +28,6 @@ export default class Component {
   }
   setState(partialState) {
     enqueueSetState(partialState, this)
-    this._update_()
   }
   _render_(h) {
     const vnode = this.render(h)

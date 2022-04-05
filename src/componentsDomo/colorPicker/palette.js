@@ -1,5 +1,6 @@
 import { Component, createRef } from '../../core'
-import { throttle } from '../../core/share/utils'
+import { throttle, isDef } from '../../core/share/utils'
+import { rgbToCoordinates, coordinatesToRgb } from './utils'
 function pauseEvent(e) {
   if (e.stopPropagation) e.stopPropagation()
   if (e.preventDefault) e.preventDefault()
@@ -10,14 +11,13 @@ function pauseEvent(e) {
 export default class Palette extends Component {
   constructor(props) {
     super(props)
-    this.state = { hue: 0, x: 228, y: 0, test: 0 }
+    this.state = { hue: 0, x: 228, y: 0, px: 1, py: 1 }
     this.containerRef = createRef()
   }
   render() {
     return (
       <div
         style={`background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent), linear-gradient(to left, hsla(${this.state.hue}, 100%, 50%, 1), rgba(255, 255, 255, 1))`}
-        onClick={this.handerClick}
         onMousedown={this.handleMouseDown}
         class='palette'
         ref={this.containerRef}
@@ -32,10 +32,17 @@ export default class Palette extends Component {
     const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
     const left = x - (this.containerRef.current.getBoundingClientRect().left + window.pageXOffset)
     const top = y - (this.containerRef.current.getBoundingClientRect().top + window.pageYOffset)
+    const px = (228 - left) / 228
+    const py = (150 - top) / 150
     this.setState({
       x: left >= 228 ? 228 : left <= 0 ? 0 : left,
       y: top >= 150 ? 150 : top <= 0 ? 0 : top,
+      px,
+      py,
     })
+    const [R, G, B] = coordinatesToRgb(this.state.hue, px, py)
+    this.props.hue.current.color = `rgba(${R},${G},${B},${this.props.hue.current.state.A})`
+    this.props.hue.current.setState({ R, G, B })
   }, 32)
 
   handleMouseDown = (e) => {
@@ -54,11 +61,11 @@ export default class Palette extends Component {
     window.removeEventListener('mousemove', this.handleChange)
     window.removeEventListener('mouseup', this.handleMouseUp)
   }
-  setPalette(hue) {
-    this.setState({ hue: hue })
-  }
-  handerClick = (e) => {
-    const { offsetX: x, offsetY: y } = e
-    this.setState({ x, y })
+  setPalette(H, R, G, B) {
+    if (isDef(B)) {
+      const [x, y] = rgbToCoordinates(H, R, G, B)
+      this.setState({ x: (1 - x) * 228, y: (1 - y) * 150, px: x, py: y })
+    }
+    this.setState({ hue: H })
   }
 }

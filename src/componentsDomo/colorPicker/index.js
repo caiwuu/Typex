@@ -1,17 +1,17 @@
 import Palette from './palette'
 import Hue from './hue'
 import { Component, createRef } from '../../core'
-import { rgbToCoordinates } from './utils'
 export default class ColorPicker extends Component {
   constructor(props) {
     super(props)
     this.paletteRef = createRef()
+    this.hueRef = createRef()
   }
   render() {
     return (
       <div style='font-size:0;width:228px;'>
-        <Palette ref={this.paletteRef}></Palette>
-        <Hue color={this.props.color} paletteRef={this.paletteRef}></Hue>
+        <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
+        <Hue ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></Hue>
       </div>
     )
   }
@@ -19,4 +19,3 @@ export default class ColorPicker extends Component {
     console.log('ColorPicker')
   }
 }
-rgbToCoordinates(128, 74, 74)

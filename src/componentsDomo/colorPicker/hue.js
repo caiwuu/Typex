@@ -1,6 +1,6 @@
 import { Component, createRef } from '../../core'
-import { throttle } from '../../core/share/utils'
-import { toRGBArray, HSLToRGB } from './utils'
+import { throttle, isDef } from '../../core/share/utils'
+import { toRGBArray, HSLToRGB, RGBToHSL, coordinatesToRgb } from './utils'
 function pauseEvent(e) {
   if (e.stopPropagation) e.stopPropagation()
   if (e.preventDefault) e.preventDefault()
@@ -11,7 +11,8 @@ function pauseEvent(e) {
 export default class Hue extends Component {
   constructor(props) {
     super(props)
-    this.state = { x: 200, x2: 200, R: 255, bg: this.props.color, A: 1 }
+    this.color = this.props.color
+    this.state = { x: 200, x2: 200, R: 255, G: 0, B: 0, A: 1 }
     this.colorBlock = createRef()
     this.hueContainer = createRef()
     this.transparencyContainer = createRef()
@@ -30,7 +31,7 @@ export default class Hue extends Component {
           >
             <div
               class='transparency-picker-bg'
-              style={`background: linear-gradient(to right, #FF000000 0%, #FF0000FF`}
+              style={`background: linear-gradient(to right, rgba(${this.state.R},${this.state.G},${this.state.B},0) 0%, rgba(${this.state.R},${this.state.G},${this.state.B},1)`}
             ></div>
             <div ref={this.transparencyContainer} style='position:absolute;top:0'>
               <div style={`left:${this.state.x2}px;`} class='transparency-picker'></div>
@@ -39,21 +40,25 @@ export default class Hue extends Component {
         </div>
         <div class='right'>
           <div class='color-block-bg'></div>
-          <div
-            style={`background:${this.state.bg};`}
-            ref={this.colorBlock}
-            class='color-block'
-          ></div>
+          <div style={`background:${this.color};`} ref={this.colorBlock} class='color-block'></div>
         </div>
       </div>
     )
   }
   onMounted() {
-    console.log('hue', toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor))
-    const [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
-    // const A = getComputedStyle(this.colorBlock.current).opacity / 1
-    console.log(A)
-    this.setState({ bg: this.props.color, A, x2: A * 200 })
+    let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
+    const [hue] = RGBToHSL(R, G, B)
+    A = isDef(A) ? A : 1
+    this.props.paletteRef.current.setPalette(hue, R, G, B)
+    const x = 200 - (hue * 5) / 9
+    this.setState({
+      A,
+      x2: A * 200 <= 6 ? 6 : A * 200,
+      x: x <= 6 ? 6 : x,
+      R,
+      G,
+      B,
+    })
   }
   // hue
   handleHueChange = throttle((e) => {
@@ -61,12 +66,16 @@ export default class Hue extends Component {
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
     let left = x - (this.hueContainer.current.getBoundingClientRect().left + window.pageXOffset)
     left = left >= 200 ? 200 : left <= 0 ? 0 : left
-    const hue = (left * 360) / 200
-    const [R, G, B] = HSLToRGB(hue, 100, 50)
-    this.setState({ x: left <= 6 ? 6 : left, bg: `rgba(${R},${G},${B},${this.state.A};)` })
+    const hue = (1 - left / 200) * 360
+    const [R, G, B] = coordinatesToRgb(
+      hue,
+      this.props.paletteRef.current.state.px,
+      this.props.paletteRef.current.state.py
+    )
+    this.color = `rgba(${R},${G},${B},${this.state.A})`
+    this.setState({ x: left <= 6 ? 6 : left, R, G, B })
     this.props.paletteRef.current.setPalette(hue)
-  }, 30)
-  setOpacity = (A) => {}
+  }, 32)
   handleHueMouseDown = (e) => {
     pauseEvent(e)
     this.handleHueChange(e)
@@ -81,8 +90,10 @@ export default class Hue extends Component {
     let left =
       x - (this.transparencyContainer.current.getBoundingClientRect().left + window.pageXOffset)
     left = left >= 200 ? 200 : left <= 0 ? 0 : left
-    this.setState({ x2: left <= 6 ? 6 : left, A: left / 200 })
-  }, 30)
+    const A = left / 200
+    this.color = `rgba(${this.state.R},${this.state.G},${this.state.B},${A})`
+    this.setState({ x2: left <= 6 ? 6 : left, A })
+  }, 32)
 
   handleTransparencyMouseDown = (e) => {
     pauseEvent(e)

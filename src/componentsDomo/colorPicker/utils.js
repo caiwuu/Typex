@@ -23,9 +23,8 @@ export function RGBToHSL(r, g, b) {
     (100 * (2 * l - s)) / 2,
   ].map((ele) => round(ele))
 }
-export function rgbToCoordinates(R, G, B) {
+export function rgbToCoordinates(H, R, G, B) {
   const rgbMap = { R, G, B }
-  const [H, S, L] = RGBToHSL(R, G, B)
   const [PR, PG, PB] = HSLToRGB(H, 100, 50)
   let low, high, x, y
   ;[PR, PG, PB].forEach((i, index) => {
@@ -38,6 +37,13 @@ export function rgbToCoordinates(R, G, B) {
   } else {
     x = rgbMap[low] / y / 255
   }
-  console.log(round(x, 2), round(y, 2))
+  return [round(x, 2), round(y, 2)]
+}
+export function coordinatesToRgb(H, px, py) {
+  const [PR, PG, PB] = HSLToRGB(H, 100, 50)
+  const R = ((255 - PR) * px + PR) * py
+  const G = ((255 - PG) * px + PG) * py
+  const B = ((255 - PB) * px + PB) * py
+  return [round(R), round(G), round(B)]
 }
 export const toRGBArray = (rgbStr) => rgbStr.match(/[\d||\.]+/g).map(Number)
