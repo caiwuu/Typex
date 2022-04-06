@@ -27,6 +27,7 @@ export default class Component {
     throw Error('dom is readonly')
   }
   setState(partialState) {
+    console.log('setState')
     enqueueSetState(partialState, this)
   }
   _render_(h) {
@@ -35,6 +36,7 @@ export default class Component {
     return vnode
   }
   _update_() {
+    console.log('_update_')
     const oldVnode = this.vnode
     const newVnode = this._render_(createElement)
     this.vnode = newVnode

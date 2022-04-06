@@ -6,7 +6,6 @@ window.h = h
 class ToolBar extends Component {
   constructor(props) {
     super(props)
-    this.dialogRef = createRef()
   }
   render() {
     const { tools } = this.props
@@ -17,15 +16,11 @@ class ToolBar extends Component {
             <ToolBarItem {...{ ...ele, onCommand: this.onCommand }}></ToolBarItem>
           </Tooltip>
         ))}
-        <Dialog ref={this.dialogRef}>
-          <span style='color:red'>dialog</span>
-        </Dialog>
       </div>
     )
   }
   onCommand = (command, ...args) => {
     this.props.onCommand(command, ...args)
-    // this.dialogRef.current.toggle()
   }
 }
 // // 工具栏-元素
@@ -33,6 +28,7 @@ class ToolBarItem extends Component {
   constructor(props) {
     super(props)
     this.state = { value: true }
+    this.dialogRef = createRef()
   }
   render() {
     return (
@@ -44,15 +40,21 @@ class ToolBarItem extends Component {
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
+        <Dialog ref={this.dialogRef}>
+          <span style='color:red'>dialog</span>
+        </Dialog>
       </span>
     )
   }
   click = () => {
+    this.dialogRef.current.toggle()
     console.log('click')
-    this.props.onCommand('fontStyle', this.props.command, true)
-    this.setState({
-      value: !this.state.value,
-    })
+    // this.props.onCommand('fontStyle', this.props.command, true)
+    setTimeout(() => {
+      this.setState({
+        value: !this.state.value,
+      })
+    }, 2000)
   }
 }
 // UI外框
