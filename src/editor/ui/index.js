@@ -47,7 +47,6 @@ class ToolBarItem extends Component {
     )
   }
   click = () => {
-    this.dialogRef.current.toggle()
     console.log('click')
     // this.props.onCommand('fontStyle', this.props.command, true)
     setTimeout(() => {
@@ -55,6 +54,7 @@ class ToolBarItem extends Component {
         value: !this.state.value,
       })
     }, 2000)
+    this.dialogRef.current.toggle()
   }
 }
 // UI外框

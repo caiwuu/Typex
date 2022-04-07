@@ -80,7 +80,7 @@ export function updateChildren(parentElm, newCh, oldCh) {
   let idxInOld
   let elmToMove
   let before
-
+  console.log(oldCh)
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
     if (oldStartVnode == null) {
       oldStartVnode = oldCh[++oldStartIdx] // Vnode might have been moved left
@@ -92,17 +92,20 @@ export function updateChildren(parentElm, newCh, oldCh) {
       newEndVnode = newCh[--newEndIdx]
       // 新头=旧头
     } else if (sameVnode(newStartVnode, oldStartVnode)) {
+      console.log(oldStartVnode.isDirty)
       patchVnode(newStartVnode, oldStartVnode)
       oldStartVnode = oldCh[++oldStartIdx]
       newStartVnode = newCh[++newStartIdx]
       // 新尾=旧尾
     } else if (sameVnode(newEndVnode, oldEndVnode)) {
+      console.log(oldEndVnode.isDirty)
       patchVnode(newEndVnode, oldEndVnode)
       oldEndVnode = oldCh[--oldEndIdx]
       newEndVnode = newCh[--newEndIdx]
       // 旧头=新尾
     } else if (sameVnode(newEndVnode, oldStartVnode)) {
       // Vnode moved right
+      console.log(oldStartVnode.isDirty)
       patchVnode(newEndVnode, oldStartVnode)
       parentElm.insertBefore(oldStartVnode.elm, oldEndVnode.elm.nextSibling)
       oldStartVnode = oldCh[++oldStartIdx]
@@ -110,6 +113,7 @@ export function updateChildren(parentElm, newCh, oldCh) {
       // 新头=旧尾
     } else if (sameVnode(newStartVnode, oldEndVnode)) {
       // Vnode moved left
+      console.log(oldEndVnode.isDirty)
       patchVnode(newStartVnode, oldEndVnode)
       parentElm.insertBefore(oldEndVnode.elm, oldStartVnode.elm)
       oldEndVnode = oldCh[--oldEndIdx]

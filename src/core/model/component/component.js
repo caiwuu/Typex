@@ -40,6 +40,7 @@ export default class Component {
     const oldVnode = this.vnode
     const newVnode = this._render_(createElement)
     this.vnode = newVnode
+    console.log(oldVnode)
     patch(newVnode, oldVnode)
   }
   render() {

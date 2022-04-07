@@ -9,6 +9,8 @@ export default function enqueueSetState(partialState, component) {
     component,
   })
   if (!componentQueue.some((item) => item === component)) {
+    console.log(component.vnode)
+    component.vnode.isDirty = true
     componentQueue.push(component)
   }
 }
