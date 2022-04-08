@@ -99,7 +99,7 @@ function converJSX(path) {
   if (path.isJSXElement()) {
     const tagName = path.node.openingElement.name.name
     return t.callExpression(t.identifier('h'), [
-      t.stringLiteral(tagName),
+      tagName.charCodeAt(0) < 96 ? t.identifier(tagName) : t.stringLiteral(tagName),
       convertAttribute(path.node.openingElement.attributes),
       t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
     ])
