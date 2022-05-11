@@ -40,21 +40,19 @@ class ToolBarItem extends Component {
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
-        <Dialog ref={this.dialogRef}>
+        {/* <Dialog ref={this.dialogRef}>
           <span style='color:red'>dialog</span>
-        </Dialog>
+        </Dialog> */}
       </span>
     )
   }
   click = () => {
     console.log('click')
-    // this.props.onCommand('fontStyle', this.props.command, true)
-    setTimeout(() => {
-      this.setState({
-        value: !this.state.value,
-      })
-    }, 2000)
-    this.dialogRef.current.toggle()
+    this.setState({
+      value: !this.state.value,
+    })
+    this.props.onCommand('fontStyle', this.props.command, true)
+    // this.dialogRef.current.toggle()
   }
 }
 // UI外框
@@ -74,32 +72,24 @@ class Body extends Component {
     return (
       <div>
         <div id='editor-content' isRoot={true}>
-          <Block></Block>
+          <Block>1.0内核测试版本</Block>
           <Paragraph>
-            普通文本1普通文本2
-            <span style='color:red'>
-              <strong>加粗文本</strong>
-              <em>斜体文本</em>
-            </span>
-            普通文本4
+            <Diseditable>
+              <span style='color:green'>不可编辑文本</span>
+            </Diseditable>
+            可编辑文本
+            <strong>加粗文本</strong>
+            <del>删除线</del>
+            <u>删除线</u>
           </Paragraph>
           <Paragraph>
             <Diseditable>
-              <Editable>可编辑文字😂</Editable>
-              <span style='color:red'>不可编辑</span>
-              <Editable>可编辑文字😂</Editable>
-              <Editable>可编辑文字😂</Editable>
+              <strong style='color:red'>重要变更:</strong>
             </Diseditable>
           </Paragraph>
           <Paragraph>
-            可编辑文字😂
-            <Diseditable>
-              <span style='color:red'>不可编辑</span>
-            </Diseditable>
-            可编辑文字😂 可编辑文字😂
-          </Paragraph>
-          <Paragraph>
-            <span style='color:red'>红色文字红色文字</span>
+            内核重构中,该版本所有功能暂停开发--
+            <a href='https://github.com/caiwuu/editor-core'>新内核地址</a>
           </Paragraph>
         </div>
       </div>
