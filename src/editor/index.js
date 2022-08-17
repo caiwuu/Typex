@@ -1,32 +1,34 @@
-import { EventProxy, Selection, registerActions } from '../core'
 import emit from 'mitt'
-import UI from './ui'
+import { mountContent } from './renderRoot'
+import { Selection, EventProxy, registerActions, queryPath } from '@/core'
+import { initIntercept } from '@/platform'
+import './formats'
 export default class Editor {
-  tools = []
-  constructor() {
-    this.ui = new UI(this)
+  ui = {
+    body: null,
+  }
+  constructor(id) {
+    this.setup(id)
+  }
+  setup(id) {
+    // 这里执行顺序非常重要
     this.emitter = emit()
+    this.ui.body = document.getElementById(id)
+    mountContent(id, this)
+    initIntercept(this)
     this.selection = new Selection(this)
-  }
-  mount(id) {
-    this.host = id
-    this.ui.render()
-    new EventProxy(this)
     registerActions(this)
-  }
-  setTools(tools) {
-    this.tools = [...tools]
-  }
-  execComand(command, ...args) {
-    this.emit(command, ...args)
   }
   on(eventName, fn) {
     this.emitter.on(eventName, fn)
   }
-  emit(eventName, ...args) {
+  emit(eventName, args) {
     this.emitter.emit(eventName, args)
   }
   focus() {
     this.emitter.emit('focus')
+  }
+  queryPath(elm, offset = 0) {
+    return queryPath(elm, this.path, offset)
   }
 }

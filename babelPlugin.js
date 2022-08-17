@@ -1,27 +1,37 @@
 const babel = require('@babel/core')
 const t = require('@babel/types')
 const code = `
-class ToolBar extends Component {
+const aa=function(){
+  return (<div style='font-size:0;width:228px;'>
+        <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
+        <Hue ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></Hue>
+      </div>)
+}
+export default class ColorPicker extends Component {
   constructor(props) {
     super(props)
-    this.dialogRef = createRef()
+    this.paletteRef = createRef()
+    this.hueRef = createRef()
+    const aa = <span>111</span>
   }
   render() {
-    const { tools } = this.props
     return (
-      <Paragraph>
-        <span style='color:red'>123</span>
-      </Paragraph>
+      <div style='font-size:0;width:228px;'>
+        <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
+        <Hue ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></Hue>
+      </div>
     )
   }
-  onCommand = (command) => {
-    this.props.onCommand(command)
-    this.dialogRef.current.toggle()
+  onMounted() {
+    console.log('ColorPicker')
   }
 }
 `
 const visitor = {
-  'ClassMethod|FunctionDeclaration'(path, state) {
+  JSXElement(path) {
+    path.replaceWith(converJSX(path))
+  },
+  'ClassMethod|FunctionDeclaration'(path) {
     const jsxChecker = {
       hasJsx: false,
     }
@@ -37,36 +47,33 @@ const visitor = {
     if (!jsxChecker.hasJsx) {
       return
     }
-    if (isConvertable(path, state)) {
-      if (path.node.params.length && path.node.params[0].name !== 'h') {
-        path
-          .get('body')
-          .unshiftContainer(
-            'body',
-            t.variableDeclaration('const', [
-              t.variableDeclarator(
-                t.identifier('h'),
-                t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
-              ),
-            ])
-          )
-      }
-      path.traverse({
-        JSXElement(path, state) {
-          path.replaceWith(converJSX(path))
-        },
-      })
+    if (
+      !path.node.params.length ||
+      (path.node.params.length &&
+        path.node.params[0].name !== 'h' &&
+        path.node.key.name !== 'constructor')
+    ) {
+      path
+        .get('body')
+        .unshiftContainer(
+          'body',
+          t.variableDeclaration('const', [
+            t.variableDeclarator(
+              t.identifier('h'),
+              t.memberExpression(
+                t.identifier('arguments'),
+                t.binaryExpression(
+                  '-',
+                  t.memberExpression(t.identifier('arguments'), t.identifier('length'), false),
+                  t.numericLiteral(1)
+                ),
+                true
+              )
+            ),
+          ])
+        )
     }
   },
-}
-function isConvertable(path, state) {
-  if (state.opts.nameSpace) {
-    return (
-      path.node.params.length && path.node.params[path.node.params.length - 1].name === '__editor__'
-    )
-  } else {
-    return true
-  }
 }
 function convertAttrName(node) {
   if (t.isJSXNamespacedName(node.name)) {
@@ -101,10 +108,17 @@ function converJSX(path) {
     return t.callExpression(t.identifier('h'), [
       tagName.charCodeAt(0) < 96 ? t.identifier(tagName) : t.stringLiteral(tagName),
       convertAttribute(path.node.openingElement.attributes),
-      t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
+      t.ArrayExpression(
+        path
+          .get('children')
+          .map((ele) => converJSX(ele))
+          .filter((ele) => ele)
+      ),
     ])
   } else if (path.isJSXText()) {
-    return t.stringLiteral(path.node.value.replace(/\n\s+/g, ''))
+    return path.node.value.replace(/\n\s+/g, '')
+      ? t.stringLiteral(path.node.value.replace(/\n\s+/g, ''))
+      : null
   } else if (path.isJSXExpressionContainer()) {
     return path.node.expression
   }

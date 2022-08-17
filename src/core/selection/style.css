@@ -2,6 +2,7 @@ html,
 body {
   overflow: hidden;
   overflow-y: auto;
+  background-color: red;
 }
 .icon {
   width: 1.2em;

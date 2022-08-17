@@ -1,66 +1,60 @@
-import Caret from './caret'
-import { getNextPoint, getPrevPoint, getPrev, getNext } from '../../actions/caret'
-function formatPoint(nativeRange) {
-  const nr = {
-    endVNode: nativeRange.endContainer.vnode,
-    startVNode: nativeRange.startContainer.vnode,
-    endOffset: nativeRange.endOffset,
-    startOffset: nativeRange.startOffset,
-  }
-  if (!nr.endVNode.isEditable || nr.endOffset === 0) {
-    const { node, pos, flag } = getPrev(nativeRange.endContainer.vnode, nativeRange.endOffset)
-    if (flag === 404) return
-    nr.endVNode = node
-    nr.endOffset = pos
-  }
-  if (!nr.startVNode.isEditable) {
-    const { node, pos, flag } = getNext(nativeRange.startContainer.vnode, nativeRange.startOffset)
-    if (flag === 404) return
-    nr.startVNode = node
-    nr.startOffset = pos
-  }
-  return nr
-}
+import { Caret } from '@/platform'
 export default class Range {
+  // 输入状态
   inputState = {
-    // 输入框状态
     value: '',
     isComposing: false,
   }
   _d = 0
+  _endContainer = null
+  _startContainer = null
   constructor(nativeRange, editor) {
-    const { startVNode, endVNode, startOffset, endOffset } = formatPoint(nativeRange)
-    this.endVNode = endVNode
-    this.startVNode = startVNode
+    const { startContainer, endContainer, startOffset, endOffset } = nativeRange
+    this.endContainer = endContainer
+    this.startContainer = startContainer
     this.endOffset = endOffset
     this.startOffset = startOffset
     this.editor = editor
     this.caret = new Caret(this)
   }
-  get collapsed() {
-    return this.endVNode === this.startVNode && this.endOffset === this.startOffset
+  get endContainer () {
+    return this._endContainer.elm || this._endContainer
   }
-  setEnd(endVNode, endOffset) {
-    this.endVNode = endVNode
+  set endContainer (value) {
+    this._endContainer = value
+  }
+  get startContainer () {
+    return this._startContainer.elm || this._startContainer
+  }
+  set startContainer (value) {
+    this._startContainer = value
+  }
+  get collapsed () {
+    return this.endContainer === this.startContainer && this.endOffset === this.startOffset
+  }
+  setEnd (endContainer, endOffset) {
+    this._endContainer = endContainer
     this.endOffset = endOffset
   }
-  setStart(startVNode, startOffset) {
-    this.startVNode = startVNode
+  setStart (startContainer, startOffset) {
+    this._startContainer = startContainer
     this.startOffset = startOffset
   }
-  collapse(toStart) {
+  collapse (toStart) {
     if (toStart) {
-      this.endVNode = this.startVNode
+      this._endContainer = this._startContainer
       this.endOffset = this.startOffset
     } else {
       this.startOffset = this.endOffset
-      this.startVNode = this.endVNode
+      this._startContainer = this._endContainer
     }
+    this._d = 0
+    this.editor.selection.drawRangeBg()
   }
-  updateCaret(drawCaret = true) {
+  updateCaret (drawCaret = true) {
     this.caret.update(this, drawCaret)
   }
-  remove() {
+  remove () {
     const index = this.editor.selection.ranges.findIndex((i) => i === this)
     this.caret.remove()
     this.editor.selection.ranges.splice(index, 1)

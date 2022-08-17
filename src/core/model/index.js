@@ -1,8 +1,3 @@
-export { default as createElement } from './createElement'
-export { default as Component } from './component/component'
-export { patch, createElm, updateChildren } from './patch'
-export { mount } from './mount'
-export { default as transfer } from './transfer'
-export const createRef = () => {
-  return { current: null }
-}
+export { createPath, queryPath } from './path'
+export { default as formater } from './formater'
+export { default as Content } from './content'

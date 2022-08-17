@@ -3,7 +3,10 @@ module.exports = function (babel) {
   return {
     inherits: require('@babel/plugin-syntax-jsx').default,
     visitor: {
-      'ClassMethod|FunctionDeclaration'(path, state) {
+      JSXElement(path) {
+        path.replaceWith(converJSX(path))
+      },
+      'ClassMethod|FunctionDeclaration|ObjectMethod'(path, state) {
         const jsxChecker = {
           hasJsx: false,
         }
@@ -19,39 +22,34 @@ module.exports = function (babel) {
         if (!jsxChecker.hasJsx) {
           return
         }
-        if (isConvertable(path, state)) {
-          if (path.node.params.length && path.node.params[0].name !== 'h') {
-            path
-              .get('body')
-              .unshiftContainer(
-                'body',
-                t.variableDeclaration('const', [
-                  t.variableDeclarator(
-                    t.identifier('h'),
-                    t.memberExpression(t.identifier('arguments'), t.numericLiteral(0), true)
-                  ),
-                ])
-              )
-          }
-          path.traverse({
-            JSXElement(path, state) {
-              path.replaceWith(converJSX(path))
-            },
-          })
+        if (
+          !path.node.params.length ||
+          (path.node.params.length &&
+            path.node.params[path.node.params.length - 1].name !== 'h' &&
+            path.node.key.name !== 'constructor')
+        ) {
+          path
+            .get('body')
+            .unshiftContainer(
+              'body',
+              t.variableDeclaration('const', [
+                t.variableDeclarator(
+                  t.identifier('h'),
+                  t.memberExpression(
+                    t.identifier('arguments'),
+                    t.binaryExpression(
+                      '-',
+                      t.memberExpression(t.identifier('arguments'), t.identifier('length'), false),
+                      t.numericLiteral(1)
+                    ),
+                    true
+                  )
+                ),
+              ])
+            )
         }
       },
     },
-  }
-  function isConvertable(path, state) {
-    if (state.opts.scoped) {
-      return (
-        path.node.params.length &&
-        // 在参数最后一个位置写上 __editor__ 来标记这个函数使用该plugin转换，主要为了避免和vue。react等的jsx插件冲突
-        path.node.params[path.node.params.length - 1].name === '__editor__'
-      )
-    } else {
-      return true
-    }
   }
   function convertAttrName(node) {
     if (t.isJSXNamespacedName(node.name)) {
@@ -91,10 +89,17 @@ module.exports = function (babel) {
         // 首字母大写的被视作组件处理
         tagName.charCodeAt(0) < 96 ? t.identifier(tagName) : t.stringLiteral(tagName),
         convertAttribute(path.node.openingElement.attributes),
-        t.ArrayExpression(path.get('children').map((ele) => converJSX(ele))),
+        t.ArrayExpression(
+          path
+            .get('children')
+            .map((ele) => converJSX(ele))
+            .filter((ele) => ele)
+        ),
       ])
     } else if (path.isJSXText()) {
-      return t.stringLiteral(path.node.value.replace(/\n\s+/g, ''))
+      return path.node.value.replace(/\n\s+/g, '')
+        ? t.stringLiteral(path.node.value.replace(/\n\s+/g, ''))
+        : null
     } else if (path.isJSXExpressionContainer()) {
       // 注释转化成空字符串节点，空串不会被渲染函数处理
       if (path.get('expression').isJSXEmptyExpression()) {

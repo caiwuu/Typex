@@ -6,7 +6,7 @@
         "jsx": "preserve",
         "strictFunctionTypes": true,
         "paths":{
-            "@/*":["src/*"]
+            "@/*":["src3/*"]
         }
     },
     "exclude": [

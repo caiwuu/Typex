@@ -1,15 +1,14 @@
-import './style.styl'
-export { default as Range } from './selection/range'
-export { default as Selection } from './selection'
-export { EventProxy } from './eventProxy'
+/*
+ * @Author: caiwu
+ * @Description:
+ * @CreateDate:
+ * @LastEditor:
+ * @LastEditTime: 2022-08-11 10:35:05
+ */
+export { createPath, queryPath, formater, Content } from './model'
 export { default as registerActions } from './actions'
-export {
-  createRef,
-  createElement,
-  Component,
-  mount,
-  transfer,
-  patch,
-  createElm,
-  updateChildren,
-} from './model'
+export { default as Selection } from './selection'
+export { createRef, createVnode, patch, Component, insertedInsQueue } from './view'
+export { run } from './run'
+export * as utils from './utils.js'
+export { setVnElm, setVnIns, setVnMark, getVnOrElm, getVnOrMark, getVnOrIns } from './mappings'

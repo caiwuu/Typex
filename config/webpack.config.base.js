@@ -8,6 +8,12 @@ module.exports = {
     filename: '[name].js', //输入的文件名是什么，生成的文件名也是什么
     path: path.resolve(__dirname, '../dist'), //指定生成的文件目录
   },
+  resolve: {
+    // 设置别名
+    alias: {
+      '@': path.resolve('src'), // 这样配置后 @ 可以指向 src 目录
+    },
+  },
   module: {
     rules: [
       {
