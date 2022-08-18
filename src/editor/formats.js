@@ -1,4 +1,5 @@
-import { formater } from '@/core'
+import { Formater } from '@/core'
+export const formater = new Formater()
 import { Table, Row, Col, Image, Paragraph, Root } from './components'
 const root = {
   name: 'root',

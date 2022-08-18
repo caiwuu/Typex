@@ -212,4 +212,4 @@ class Formater {
     return r
   }
 }
-export default new Formater()
+export default Formater

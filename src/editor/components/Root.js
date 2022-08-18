@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-11 11:04:57
  */
-import { formater } from '@/core'
+import { formater } from '../formats'
 import Block from './Block'
 // 根组件
 export default class Root extends Block {

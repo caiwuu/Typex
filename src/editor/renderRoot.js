@@ -5,14 +5,15 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-12 10:51:44
  */
-import { createVnode as h, patch, createPath, formater } from '@/core'
+import { createVnode as h, patch, createPath } from '@/core'
+import { formater } from './formats'
 import { mockData } from './data'
 /**
  * @desc: 渲染根节点
  * @param {*} h
  * @return {*}
  */
-function renderRoot(h) {
+function renderRoot() {
   return <div id='editor-root'>{formater.render([mockData])}</div>
 }
 /**
