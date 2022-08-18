@@ -1,0 +1,72 @@
+src
+├─index.js
+├─style.styl
+├─platform
+|    ├─index.js
+|    ├─web
+|    |  ├─caret.js
+|    |  ├─createElm.js
+|    |  ├─dom.js
+|    |  ├─index.js
+|    |  ├─utils.js
+|    |  ├─updateProps
+|    |  |      ├─index.js
+|    |  |      ├─modules
+|    |  |      |    ├─attributes.js
+|    |  |      |    ├─classes.js
+|    |  |      |    ├─listeners.js
+|    |  |      |    └styles.js
+|    |  ├─intercept
+|    |  |     ├─del.js
+|    |  |     ├─index.js
+|    |  |     ├─input.js
+|    |  |     ├─keyboardIntercept.js
+|    |  |     └mouseIntercept.js
+├─modelTestDemo
+|       ├─index.js
+|       ├─colorPicker
+|       |      ├─hue.js
+|       |      ├─index.js
+|       |      ├─palette.js
+|       |      └utils.js
+├─editor
+|   ├─data.js
+|   ├─index.js
+|   ├─renderRoot.js
+|   ├─formats
+|   |    ├─index.js
+|   |    ├─components
+|   |    |     ├─Block.js
+|   |    |     ├─Image.js
+|   |    |     ├─index.js
+|   |    |     ├─Inline.js
+|   |    |     ├─Paragraph.js
+|   |    |     ├─Root.js
+|   |    |     └Table.js
+├─core
+|  ├─index.js
+|  ├─mappings.js
+|  ├─utils.js
+|  ├─view
+|  |  ├─component.js
+|  |  ├─index.js
+|  |  ├─vdom
+|  |  |  ├─createRef.js
+|  |  |  ├─createVnode.js
+|  |  |  ├─enqueueSetState.js
+|  |  |  └patch.js
+|  ├─selection
+|  |     ├─index.js
+|  |     ├─style.css
+|  |     ├─range
+|  |     |   └index.js
+|  ├─model
+|  |   ├─content.js
+|  |   ├─formater.js
+|  |   ├─index.js
+|  |   └path.js
+|  ├─actions
+|  |    ├─caretMove.js
+|  |    ├─delete.js
+|  |    ├─index.js
+|  |    └insert.js

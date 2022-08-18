@@ -16,9 +16,11 @@ export default function insert({ range, data }) {
     }
     const component = path.parent.component
     path.node.data = path.node.data.slice(0, pos) + data + path.node.data.slice(pos)
-    component.updateState(this, path)
-    range.setStart(path, range.startOffset + data.length)
-    range.collapse(true)
+    component.updateState(this, path).then(() => {
+      range.setStart(path, range.startOffset + data.length)
+      range.collapse(true)
+      range.updateCaret()
+    })
   } else {
     console.error('mark查找失败')
   }

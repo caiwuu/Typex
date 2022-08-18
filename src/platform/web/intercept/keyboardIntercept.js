@@ -9,7 +9,7 @@ export default class KeyboardIntercept {
     this._initInput()
     this._initEvent()
   }
-  _initIframe () {
+  _initIframe() {
     this.iframe = document.createElement('iframe')
     this.iframe.classList.add('custom-input-iframe')
     this.editor.ui.body.appendChild(this.iframe)
@@ -34,13 +34,13 @@ export default class KeyboardIntercept {
     `
     iframedocument.head.appendChild(style)
   }
-  _initInput () {
+  _initInput() {
     const iframedocument = this.iframe.contentDocument
     this.input = iframedocument.createElement('input')
     this.input.classList.add('custom-input')
     iframedocument.body.appendChild(this.input)
   }
-  focus () {
+  focus() {
     const range = this.editor.selection.getRangeAt(0)
     if (!range) return
     let container = range.startContainer
@@ -57,19 +57,19 @@ export default class KeyboardIntercept {
     setStyle(this.iframe, style)
     this.input.focus()
   }
-  destroy () {
+  destroy() {
     this.input.removeEventListener('compositionstart', this._inputEvent.bind(this))
     this.input.removeEventListener('compositionend', this._inputEvent.bind(this))
     this.input.removeEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.removeEventListener('keydown', this._handGolobalKeydown.bind(this))
   }
-  _initEvent () {
+  _initEvent() {
     this.input.addEventListener('compositionstart', this._inputEvent.bind(this))
     this.input.addEventListener('compositionend', this._inputEvent.bind(this))
     this.input.addEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
   }
-  _inputEvent (event) {
+  _inputEvent(event) {
     this.editor.selection.ranges.forEach((range) => {
       input.call(range, {
         type: event.type,
@@ -79,15 +79,8 @@ export default class KeyboardIntercept {
         },
       })
     })
-    Promise.resolve().then(() => {
-      this.editor.selection.ranges.forEach((range) => {
-        range.updateCaret()
-      })
-      // this.editor.selection.distinct()
-      this.editor.focus()
-    })
   }
-  _handGolobalKeydown (event) {
+  _handGolobalKeydown(event) {
     const key = event.key
     switch (key) {
       case 'ArrowRight':

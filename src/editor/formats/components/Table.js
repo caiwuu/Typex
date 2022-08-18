@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-08-11 11:05:01
  */
 import { Content, createRef } from '@/core'
-import { formater } from '../formats'
+import { formater } from '..'
 import Block from './Block'
 export class Table extends Content {
   render() {

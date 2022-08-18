@@ -6,10 +6,10 @@
  * @LastEditTime: 2022-08-15 10:10:10
 -->
 ## 特点
-- 自绘光标、选区
 - 不依赖contentEditable
+- 自主实现光标、选区、输入
 - 状态驱动、自建数据模型
-- 组件化、跨平台、高拓展性
+- 组件化、跨平台、高拓展性、高性能
 ## 目录结构
 ```js
 src
@@ -47,15 +47,17 @@ src
 |   ├─data.js 模拟数据
 |   ├─formats.js 格式定义
 |   ├─index.js
-|   ├─renderRoot.js 根渲染
-|   ├─components 格式组件
-|   |     ├─Block.js 块
-|   |     ├─Image.js 图片
-|   |     ├─index.js
-|   |     ├─Inline.js 行内块
-|   |     ├─Paragraph.js 段落
-|   |     ├─Root.js 根
-|   |     └Table.js 表格
+|   ├─mount.js 根挂载渲染
+|   ├─formats 格式
+|   |    ├─index.js 格式定义和注册
+|   |    ├─components 格式组件
+|   |    |     ├─Block.js 块
+|   |    |     ├─Image.js 图片
+|   |    |     ├─index.js 
+|   |    |     ├─Inline.js 行内块
+|   |    |     ├─Paragraph.js 段落
+|   |    |     ├─Root.js 根
+|   |    |     └Table.js 表格 
 ├─core 内核层
 |  ├─index.js
 |  ├─mappings.js 关系映射器
