@@ -23,8 +23,8 @@ export function isPrimitive(value) {
 export function computeLen(path) {
   if (isPrimitive(path.node.data)) {
     return path.node.data.length
-  } else if (path.node.data.marks) {
-    return path.node.data.marks.reduce((prevSibling, ele) => {
+  } else if (path.children) {
+    return path.children.reduce((prevSibling, ele) => {
       return prevSibling + computeLen(ele)
     }, 0)
   } else {

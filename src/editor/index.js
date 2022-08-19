@@ -3,7 +3,6 @@ import mount from './mount'
 import { Selection, registerActions, queryPath, createPath } from '@/core'
 import { initIntercept } from '@/platform'
 import './formats'
-let path = null
 class Editor {
   ui = {
     body: null,
@@ -12,7 +11,7 @@ class Editor {
     this.init(options)
   }
   init(options) {
-    this.$marks = options.marks
+    this.$path = options.path
     this.$emitter = emit()
     this.selection = new Selection(this)
     registerActions(this)
@@ -32,7 +31,7 @@ class Editor {
     this.$emitter.emit('focus')
   }
   queryPath(elm, offset = 0) {
-    return queryPath(elm, path, offset)
+    return queryPath(elm, this.$path, offset)
   }
 }
 function initMarks(data) {
@@ -41,17 +40,24 @@ function initMarks(data) {
       marks: [
         {
           data: {
-            marks: [{ data, formats: { color: 'green' } }],
+            marks: [
+              {
+                data: {
+                  marks: [{ data, formats: { color: 'green' } }],
+                },
+                formats: { paragraph: true },
+              },
+            ],
           },
-          formats: { paragraph: true },
+          formats: { root: true },
         },
       ],
     },
-    formats: { root: true },
   }
 }
 export default function createEditor(options = {}) {
   const marks = initMarks(options.data)
-  path = createPath(marks)
-  return new Editor({ marks })
+  const path = createPath(marks)
+  console.log(path)
+  return new Editor({ path })
 }

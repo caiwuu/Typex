@@ -6,10 +6,10 @@ class Formater {
   register(format) {
     this.formatMap.set(format.name, format)
   }
-  render(marks) {
+  render(path) {
     const gs = this.group(
       {
-        marks: marks,
+        paths: path.children,
         restFormats: this.types,
       },
       0
@@ -20,16 +20,15 @@ class Formater {
   invokeRender(vn, current) {
     return current.fmt.render(vn, current.value, h)
   }
-  mergeTextMark(marks) {
-    const baseMark = marks[0]
-    const marksLen = marks.length
-    if (marksLen === 1) return baseMark
-    const basePath = this.editor.queryPath(baseMark)
-    for (let i = 0; i < marksLen - 1; i++) {
-      baseMark.data += basePath.nextSibling.node.data
+  mergeTextPath(paths) {
+    const basePath = paths[0]
+    const pathsLen = paths.length
+    if (pathsLen === 1) return basePath
+    for (let i = 0; i < pathsLen - 1; i++) {
+      basePath.node.data += basePath.nextSibling.node.data
       basePath.nextSibling.delete()
     }
-    return baseMark
+    return basePath
   }
   generateGroups(gs) {
     return gs.map((g) => {
@@ -37,11 +36,11 @@ class Formater {
       const formatQuene = this.getFormats(g.commonFormats)
       // 文本格式
       if (g.commonFormats.length === 0) {
-        if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
+        if (g.children.findIndex((path) => typeof path.node.data === 'object') !== -1)
           throw '格式标记不合法,文本格式不可用于标记非文本的结构'
-        const mergedMark = this.mergeTextMark(g.children)
-        const text = h('text', {}, [mergedMark.data])
-        setVnPath(mergedMark, text)
+        const mergedTextPath = this.mergeTextPath(g.children)
+        const text = h('text', {}, [mergedTextPath.node.data])
+        setVnPath(mergedTextPath, text)
         return text
 
         // 组件格式
@@ -49,11 +48,11 @@ class Formater {
         (componentQuene = formatQuene.filter((ele) => ele.fmt.type === 'component')).length
       ) {
         // 组件类型单独占一个分组
-        const mark = g.children[0]
+        const path = g.children[0]
         const fmt = componentQuene[0].fmt
-        const pv = fmt.render(null, mark.data, h)
-        // 为所有component类型的mark映射vnode
-        setVnPath(mark, pv)
+        const pv = fmt.render(null, path, h)
+        // 为所有component类型的path映射vnode
+        setVnPath(path, pv)
         return pv
 
         // 属性和标签格式
@@ -86,9 +85,9 @@ class Formater {
         } else {
           if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
             throw '格式标记不合法,文本格式不可用于标记非文本的结构'
-          const mergedMark = this.mergeTextMark(g.children)
-          const text = h('text', {}, [mergedMark.data])
-          setVnPath(mergedMark, text)
+          const mergedTextPath = this.mergeTextPath(g.children)
+          const text = h('text', {}, [mergedTextPath.node.data])
+          setVnPath(mergedTextPath, text)
           vn.children = [text]
         }
         return pv
@@ -110,35 +109,35 @@ class Formater {
   get(key) {
     return this.formatMap.get(key) || {}
   }
-  canAdd(mark, prevMark, key) {
+  canAdd(path, prevPath, key) {
     /**
      * 当前无格式
      */
-    if (!mark.formats[key]) return false
+    if (!path.node.formats[key]) return false
     /**
      * 当前有格式，上一个没格式
      */
-    if (!prevMark.formats[key]) return true
+    if (!prevPath.node.formats[key]) return true
     /**
      * 当前格式和上一个相同
      */
-    if (mark.formats[key] === prevMark.formats[key]) return true
+    if (prevPath.node.formats[key] === prevPath.node.formats[key]) return true
   }
   // 公共格式提取分组法
   group(group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
-    let prevMark = null
+    let prevPath = null
     let counter = {}
     let prevMaxCounter = 0
-    for (index; index < group.marks.length; index++) {
+    for (index; index < group.paths.length; index++) {
       let cacheCounter = { ...counter }
-      const mark = group.marks[index]
+      const path = group.paths[index]
       group.restFormats.forEach((key) => {
-        if (!prevMark) {
+        if (!prevPath) {
           counter[key] = 0
-          if (mark.formats[key]) counter[key]++
-        } else if (this.canAdd(mark, prevMark, key)) {
+          if (path.node.formats[key]) counter[key]++
+        } else if (this.canAdd(path, prevPath, key)) {
           counter[key]++
         }
       })
@@ -147,40 +146,42 @@ class Formater {
        * 块格式 不嵌套
        */
       if (
-        prevMark &&
-        Object.keys(mark.formats).some((key) => ['block', 'component'].includes(this.get(key).type))
-      ) {
-        prevMark = null
-        break
-      }
-      if (
-        prevMark &&
-        Object.keys(prevMark.formats).some((key) =>
+        prevPath &&
+        Object.keys(path.node.formats).some((key) =>
           ['block', 'component'].includes(this.get(key).type)
         )
       ) {
-        prevMark = null
+        prevPath = null
+        break
+      }
+      if (
+        prevPath &&
+        Object.keys(prevPath.node.formats).some((key) =>
+          ['block', 'component'].includes(this.get(key).type)
+        )
+      ) {
+        prevPath = null
         break
       }
       /**
        * 上一个是纯文本,下一个有格式
        */
-      if (prevMark && prevMaxCounter === 0 && maxCounter > prevMaxCounter) {
+      if (prevPath && prevMaxCounter === 0 && maxCounter > prevMaxCounter) {
         counter = cacheCounter
         break
       }
       /**
        * 上一个和当前比没有格式增长
        */
-      if (prevMark && maxCounter === prevMaxCounter && maxCounter !== 0) {
+      if (prevPath && maxCounter === prevMaxCounter && maxCounter !== 0) {
         counter = cacheCounter
         break
       }
       // 无格式也是一个分组
-      grouped.children.push(mark)
+      grouped.children.push(path)
       grouped.commonFormats = Object.entries(counter)
         .filter((ele) => ele[1] && ele[1] === maxCounter)
-        .map((ele) => ({ [ele[0]]: group.marks[index].formats[ele[0]] }))
+        .map((ele) => ({ [ele[0]]: group.paths[index].node.formats[ele[0]] }))
       restFormats = group.restFormats.filter(
         (ele) =>
           !grouped.commonFormats.some((i) => {
@@ -189,7 +190,7 @@ class Formater {
       )
 
       prevMaxCounter = maxCounter
-      prevMark = mark
+      prevPath = path
     }
     /**
      * 递归边界
@@ -199,14 +200,14 @@ class Formater {
     if (grouped.commonFormats.length > 0 && grouped.children.length > 1) {
       grouped.children = this.group(
         {
-          marks: grouped.children,
+          paths: grouped.children,
           restFormats,
         },
         0
       )
     }
     r.push(grouped)
-    if (index < group.marks.length) {
+    if (index < group.paths.length) {
       this.group(group, index, r)
     }
     return r

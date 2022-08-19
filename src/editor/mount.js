@@ -13,7 +13,7 @@ import { formater } from './formats'
  * @return {*}
  */
 function renderRoot(editor) {
-  return <div id='editor-root'>{formater.render([editor.$marks])}</div>
+  return <div id='editor-root'>{formater.render(editor.$path)}</div>
 }
 /**
  * @desc: 挂载
@@ -23,5 +23,7 @@ function renderRoot(editor) {
  */
 export default function mount(id) {
   formater.editor = this
-  patch(renderRoot(this, h), document.getElementById(id))
+  const vn = renderRoot(this, h)
+  console.log(vn, this.$path)
+  patch(vn, document.getElementById(id))
 }

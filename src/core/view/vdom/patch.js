@@ -195,6 +195,7 @@ function patchVnode(vnode, oldVnode) {
   }
 }
 export default function patch(vnode, oldVnode) {
+  console.log(vnode, oldVnode)
   insertedInsQueue.length = 0
   // 没有oldvnode 直接创建新dom
   if (isUndef(oldVnode)) {

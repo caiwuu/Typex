@@ -4,16 +4,16 @@ import { Table, Row, Col, Image, Paragraph, Root } from './components'
 const root = {
   name: 'root',
   type: 'component',
-  render(vnode, data) {
-    console.log(data)
-    return <Root data={data}></Root>
+  render(vnode, path) {
+    console.log(path)
+    return <Root path={path}></Root>
   },
 }
 const paragraph = {
   name: 'paragraph',
   type: 'component',
-  render(vnode, data) {
-    const vn = <Paragraph data={data}></Paragraph>
+  render(vnode, path) {
+    const vn = <Paragraph path={path}></Paragraph>
     if (vnode) {
       vnode.children.push(vn)
     }

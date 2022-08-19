@@ -1,7 +1,7 @@
 import { getVnOrElm, getVnOrPath, getVnOrIns } from '../mappings'
 import { computeLen } from '../utils'
 /**
- * @desc: path mark的链表树
+ * @desc: path的链表树
  * @return {*}
  */
 class Path {
@@ -14,10 +14,10 @@ class Path {
     this.children = children
   }
   get component() {
-    return this.node.data.__component || this.parent.component
+    return this._$component || this.parent.component
   }
   get len() {
-    return computeLen(this.node)
+    return computeLen(this)
   }
   get elm() {
     if (typeof this.vn.type === 'function') {
@@ -26,7 +26,7 @@ class Path {
     return getVnOrElm(this.vn)
   }
   get vn() {
-    return getVnOrPath(this.node)
+    return getVnOrPath(this)
   }
   get isLeaf() {
     return this.children.length === 0
@@ -68,7 +68,7 @@ class Path {
     if (!this.parent) {
       return
     }
-    // 为了保持链表的连续性 marks长度不能为零
+    // 为了保持链表的连续性 paths 子集长度不能为零
     if (this.parent.node.data.marks.length === 1) {
       this.format()
       return
@@ -156,16 +156,16 @@ export function createPath(
  * @param {number} offset
  * @return {path}
  */
-export function queryPath(target, path, offset = 0) {
+export function queryPath(target, path) {
   let position
-  if (!target) return
+  if (!target) return null
   // 通过elm查询
   if (target.nodeType) {
     const vn = getVnOrElm(target)
     if (!vn) return null
-    const mark = getVnOrPath(vn)
-    if (!mark) return null
-    position = mark.position
+    const path = getVnOrPath(vn)
+    if (!path) return null
+    return path
   } else {
     // 通过mark或者position查询
     position = target.position || target

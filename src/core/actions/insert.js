@@ -7,10 +7,9 @@
  */
 import { getVnOrElm, getVnOrPath } from '../mappings'
 export default function insert({ range, data }) {
-  const { startOffset: pos, startContainer: node } = range
-  const path = getVnOrPath(getVnOrElm(node))
+  const { startOffset: pos, startContainer: elm } = range
+  let path = getVnOrPath(getVnOrElm(elm))
   if (path) {
-    // let path = this.queryPath(mark)
     if (path.node.type !== 'text') {
       path = path.firstLeaf
     }
@@ -22,6 +21,6 @@ export default function insert({ range, data }) {
       range.updateCaret()
     })
   } else {
-    console.error('mark查找失败')
+    console.error('无效path')
   }
 }
