@@ -1,6 +1,9 @@
 const babel = require('@babel/core')
 const t = require('@babel/types')
 const code = `
+function renderRoot(editor) {
+  return <div id='editor-root'>{formater.render([editor.$marks])}</div>
+}
 const aa=function(){
   return (<div style='font-size:0;width:228px;'>
         <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
@@ -50,8 +53,8 @@ const visitor = {
     if (
       !path.node.params.length ||
       (path.node.params.length &&
-        path.node.params[0].name !== 'h' &&
-        path.node.key.name !== 'constructor')
+        path.node.params[path.node.params.length - 1].name !== 'h' &&
+        path.node.key?.name !== 'constructor')
     ) {
       path
         .get('body')

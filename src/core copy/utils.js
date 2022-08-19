@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-19 12:01:36
+ * @LastEditTime: 2022-08-11 14:55:43
  */
 export function isUndef(v) {
   return v === undefined || v === null
@@ -20,11 +20,11 @@ export function isPrimitive(value) {
     typeof value === 'boolean'
   )
 }
-export function computeLen(path) {
-  if (isPrimitive(path.node.data)) {
-    return path.node.data.length
-  } else if (path.node.data.marks) {
-    return path.node.data.marks.reduce((prevSibling, ele) => {
+export function computeLen(mark) {
+  if (isPrimitive(mark.data)) {
+    return mark.data.length
+  } else if (mark.data.marks) {
+    return mark.data.marks.reduce((prevSibling, ele) => {
       return prevSibling + computeLen(ele)
     }, 0)
   } else {

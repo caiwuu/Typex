@@ -1,5 +1,5 @@
 import { default as h } from '../view/vdom/createVnode'
-import { setVnPath } from '../mappings'
+import { setVnMark } from '../mappings'
 
 class Formater {
   formatMap = new Map()
@@ -41,7 +41,7 @@ class Formater {
           throw '格式标记不合法,文本格式不可用于标记非文本的结构'
         const mergedMark = this.mergeTextMark(g.children)
         const text = h('text', {}, [mergedMark.data])
-        setVnPath(mergedMark, text)
+        setVnMark(mergedMark, text)
         return text
 
         // 组件格式
@@ -53,7 +53,7 @@ class Formater {
         const fmt = componentQuene[0].fmt
         const pv = fmt.render(null, mark.data, h)
         // 为所有component类型的mark映射vnode
-        setVnPath(mark, pv)
+        setVnMark(mark, pv)
         return pv
 
         // 属性和标签格式
@@ -88,7 +88,7 @@ class Formater {
             throw '格式标记不合法,文本格式不可用于标记非文本的结构'
           const mergedMark = this.mergeTextMark(g.children)
           const text = h('text', {}, [mergedMark.data])
-          setVnPath(mergedMark, text)
+          setVnMark(mergedMark, text)
           vn.children = [text]
         }
         return pv

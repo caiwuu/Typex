@@ -26,7 +26,7 @@ module.exports = function (babel) {
           !path.node.params.length ||
           (path.node.params.length &&
             path.node.params[path.node.params.length - 1].name !== 'h' &&
-            path.node.key.name !== 'constructor')
+            path.node.key?.name !== 'constructor')
         ) {
           path
             .get('body')

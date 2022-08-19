@@ -3,14 +3,14 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-19 12:02:27
+ * @LastEditTime: 2022-08-11 10:58:19
  */
-import { getVnOrElm, getVnOrPath } from '../mappings'
+import { getVnOrElm, getVnOrMark } from '../mappings'
 export default function insert({ range, data }) {
   const { startOffset: pos, startContainer: node } = range
-  const path = getVnOrPath(getVnOrElm(node))
-  if (path) {
-    // let path = this.queryPath(mark)
+  const mark = getVnOrMark(getVnOrElm(node))
+  if (mark) {
+    let path = this.queryPath(mark)
     if (path.node.type !== 'text') {
       path = path.firstLeaf
     }

@@ -3,47 +3,54 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-19 12:00:06
+ * @LastEditTime: 2022-08-09 16:06:14
  */
 const VNElmMap = new WeakMap()
 const VNInsMap = new WeakMap()
-const pathVNMap = new WeakMap()
+const markVNMap = new WeakMap()
 
-function getVnOrPath(key) {
-  // 通过vn找path
+function getVnOrMark (key) {
+  // 通过vn找mark
   if (key._isVnode) {
     if (key.type === 'text') {
-      return pathVNMap.get(key)
+      return markVNMap.get(key)
     } else {
       const ins = getVnOrIns(key)
-      return pathVNMap.get(ins._$pv)
+      return markVNMap.get(ins._$pv)
     }
 
-    // 通过path找vn
+    // 通过mark找vn
   } else {
-    let vn = pathVNMap.get(key)
+    let vn = markVNMap.get(key)
     if (typeof vn.type === 'function') {
       vn = getVnOrIns(vn.ins)
     }
     return vn
   }
 }
-function getVnOrIns(key) {
+function getVnOrIns (key) {
   return VNInsMap.get(key)
 }
-function getVnOrElm(key) {
+function getVnOrElm (key) {
   return VNElmMap.get(key)
 }
-function setVnElm(vn, elm) {
+function setVnElm (vn, elm) {
   VNElmMap.set(elm, vn).set(vn, elm)
 }
-function setVnIns(vn, ins) {
+function setVnIns (vn, ins) {
   VNInsMap.set(ins, vn).set(vn, ins)
 }
-function setVnPath(vn, path) {
-  pathVNMap.set(vn, path).set(path, vn)
+function setVnMark (vn, mark) {
+  markVNMap.set(vn, mark).set(mark, vn)
 }
 
 window.VNElmMap = VNElmMap
 window.VNInsMap = VNInsMap
-export { setVnElm, setVnIns, setVnPath, getVnOrElm, getVnOrPath, getVnOrIns }
+export {
+  setVnElm,
+  setVnIns,
+  setVnMark,
+  getVnOrElm,
+  getVnOrMark,
+  getVnOrIns,
+}

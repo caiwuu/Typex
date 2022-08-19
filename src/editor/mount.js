@@ -3,17 +3,16 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-12 10:51:44
+ * @LastEditTime: 2022-08-19 09:27:43
  */
 import { createVnode as h, patch } from '@/core'
 import { formater } from './formats'
-import { mockData } from './data'
 /**
  * @desc: 渲染根节点
  * @param {*} h
  * @return {*}
  */
-function renderRoot(editor, h) {
+function renderRoot(editor) {
   return <div id='editor-root'>{formater.render([editor.$marks])}</div>
 }
 /**

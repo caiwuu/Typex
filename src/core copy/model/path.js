@@ -1,4 +1,4 @@
-import { getVnOrElm, getVnOrPath, getVnOrIns } from '../mappings'
+import { getVnOrElm, getVnOrMark, getVnOrIns } from '../mappings'
 import { computeLen } from '../utils'
 /**
  * @desc: path mark的链表树
@@ -26,7 +26,7 @@ class Path {
     return getVnOrElm(this.vn)
   }
   get vn() {
-    return getVnOrPath(this.node)
+    return getVnOrMark(this.node)
   }
   get isLeaf() {
     return this.children.length === 0
@@ -163,7 +163,7 @@ export function queryPath(target, path, offset = 0) {
   if (target.nodeType) {
     const vn = getVnOrElm(target)
     if (!vn) return null
-    const mark = getVnOrPath(vn)
+    const mark = getVnOrMark(vn)
     if (!mark) return null
     position = mark.position
   } else {
