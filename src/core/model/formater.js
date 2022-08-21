@@ -6,10 +6,10 @@ class Formater {
   register(format) {
     this.formatMap.set(format.name, format)
   }
-  render(path) {
+  render(paths) {
     const gs = this.group(
       {
-        paths: path.children,
+        paths: paths,
         restFormats: this.types,
       },
       0

@@ -2,7 +2,8 @@ import emit from 'mitt'
 import mount from './mount'
 import { Selection, registerActions, queryPath, createPath } from '@/core'
 import { initIntercept } from '@/platform'
-import './formats'
+import formater from './formats'
+import { mockData } from './data'
 class Editor {
   ui = {
     body: null,
@@ -35,6 +36,25 @@ class Editor {
   }
 }
 function initMarks(data) {
+  // return {
+  //   data: {
+  //     marks: [
+  //       {
+  //         data: {
+  //           marks: [
+  //             {
+  //               data: {
+  //                 marks: [{ data, formats: { color: 'green', fontSize: '22px', del: true } }],
+  //               },
+  //               formats: { paragraph: true },
+  //             },
+  //           ],
+  //         },
+  //         formats: { root: true },
+  //       },
+  //     ],
+  //   },
+  // }
   return {
     data: {
       marks: [
@@ -42,21 +62,30 @@ function initMarks(data) {
           data: {
             marks: [
               {
+                data,
+                formats: { color: 'green', fontSize: '22px', del: true },
+              },
+              {
                 data: {
-                  marks: [{ data, formats: { color: 'green' } }],
+                  src: 'https://img2.baidu.com/it/u=3979034437,2878656671&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+                  alt: 'test image',
+                  width: '50px',
+                  height: '50px',
                 },
-                formats: { paragraph: true },
+                formats: { image: true },
               },
             ],
           },
-          formats: { root: true },
+          formats: { paragraph: true },
         },
       ],
     },
+    formats: { root: true },
   }
 }
 export default function createEditor(options = {}) {
-  const marks = initMarks(options.data)
+  // const marks = initMarks(options.data)
+  const marks = mockData
   const path = createPath(marks)
   console.log(path)
   return new Editor({ path })

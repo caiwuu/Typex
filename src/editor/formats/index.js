@@ -1,5 +1,5 @@
 import { Formater } from '@/core'
-export const formater = new Formater()
+const formater = new Formater()
 import { Table, Row, Col, Image, Paragraph, Root } from './components'
 const root = {
   name: 'root',
@@ -92,8 +92,8 @@ const sup = {
 const table = {
   name: 'table',
   type: 'component',
-  render(vnode, data) {
-    const vn = <Table data={data}></Table>
+  render(vnode, path) {
+    const vn = <Table path={path}></Table>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -103,8 +103,8 @@ const table = {
 const row = {
   name: 'row',
   type: 'component',
-  render(vnode, data) {
-    const vn = <Row data={data}></Row>
+  render(vnode, path) {
+    const vn = <Row path={path}></Row>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -114,8 +114,8 @@ const row = {
 const col = {
   name: 'col',
   type: 'component',
-  render(vnode, data) {
-    const vn = <Col data={data}></Col>
+  render(vnode, path) {
+    const vn = <Col path={path}></Col>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -126,8 +126,8 @@ const image = {
   name: 'image',
   isLeaf: true,
   type: 'component',
-  render(vnode, data) {
-    const vn = <Image data={data}></Image>
+  render(vnode, path) {
+    const vn = <Image path={path}></Image>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -139,3 +139,4 @@ const image = {
     formater.register(ele)
   }
 )
+export default formater

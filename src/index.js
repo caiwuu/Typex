@@ -11,5 +11,5 @@
 import createEditor from './editor'
 import './style.styl'
 window.editor = createEditor({
-  data: 'hello world2',
+  data: 'hello world',
 }).mount('editor-root')

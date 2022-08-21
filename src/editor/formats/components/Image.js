@@ -8,20 +8,18 @@
 import { Content } from '@/core'
 export default class Image extends Content {
   render() {
-    const { src, alt, height, width } = this.state
-    return <img onClick={this.sizeChange} {...this.state}></img>
+    console.log(this)
+    return <img onClick={this.sizeChange} {...this.state.path.node.data}></img>
   }
   sizeChange = () => {
-    if (this.state.width === '50px') {
-      this.setState({
-        width: '200px',
-        height: '200px',
-      })
+    if (this.state.path.node.data.width === '50px') {
+      this.state.path.node.data.width = '200px'
+      this.state.path.node.data.height = '200px'
+      this.setState()
     } else {
-      this.setState({
-        width: '50px',
-        height: '50px',
-      })
+      this.state.path.node.data.width = '50px'
+      this.state.path.node.data.height = '50px'
+      this.setState()
     }
   }
   onCaretEnter(path, range, isStart) {
