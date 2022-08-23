@@ -1,8 +1,14 @@
+/*
+ * @Author: caiwu
+ * @Description:
+ * @CreateDate:
+ * @LastEditor:
+ * @LastEditTime: 2022-08-23 13:39:31
+ */
 import emit from 'mitt'
 import mount from './mount'
 import { Selection, registerActions, queryPath, createPath } from '@/core'
-import { initIntercept } from '@/platform'
-import formater from './formats'
+// import formater from './formats'
 import { mockData } from './data'
 class Editor {
   ui = {
@@ -18,8 +24,6 @@ class Editor {
     registerActions(this)
   }
   mount(id) {
-    this.ui.body = document.getElementById(id)
-    initIntercept(this)
     mount.call(this, id)
   }
   on(eventName, fn) {

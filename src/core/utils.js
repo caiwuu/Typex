@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-19 12:01:36
+ * @LastEditTime: 2022-08-23 13:56:46
  */
 export function isUndef(v) {
   return v === undefined || v === null
@@ -62,12 +62,6 @@ const _toString = Object.prototype.toString
 
 export function toRawType(value) {
   return _toString.call(value).slice(8, -1).toLowerCase()
-}
-export function times(n, fn, context = undefined, ...args) {
-  let i = 0
-  while (i++ < n) {
-    fn.call(context, ...args)
-  }
 }
 
 export function setStyle(dom, style) {

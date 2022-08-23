@@ -3,9 +3,10 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-19 09:27:43
+ * @LastEditTime: 2022-08-23 13:37:19
  */
 import { createVnode as h, patch } from '@/core'
+import { initIntercept } from '@/platform'
 import formater from './formats'
 /**
  * @desc: 渲染根节点
@@ -22,8 +23,9 @@ function renderRoot(editor) {
  * @return {*}
  */
 export default function mount(id) {
+  this.ui.body = document.getElementById(id)
+  initIntercept(this)
   formater.editor = this
   const vn = renderRoot(this, h)
-  console.log(vn, this.$path)
-  patch(vn, document.getElementById(id))
+  patch(vn, this.ui.body)
 }

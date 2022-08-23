@@ -3,9 +3,9 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-15 09:53:30
+ * @LastEditTime: 2022-08-23 13:57:44
  */
-import { times } from '../../../core/utils'
+import { times } from '../utils'
 import del from './del'
 export default function input({ data, type, clear }) {
   if (!this.collapsed) {
