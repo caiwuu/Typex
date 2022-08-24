@@ -89,7 +89,7 @@ src
 ```
 ## 总体架构
 
-#### 三层架构
+### 三层架构
 
 ![image-20220824155836618](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220824155836618.png)
 
@@ -172,13 +172,13 @@ formater.register(image)
 
 ![image-20220824230634086](https://cdn.jsdelivr.net/gh/caiwuu/image/202208242308180.png)
 
-#### 重要概念
+### 重要概念
 
-##### Selection（ 选区 ）
+#### Selection（ 选区 ）
 
 selection 若干个范围（range）包含的区域称为选区,可通过`editor.selection`获取编辑器选区
 
-##### Range（范围）
+#### Range（范围）
 
 由起始边界和结尾边界包含的一段范围；起始边界由startContainer和startOffset定位，结尾边界由endContainer和endOffset定位。
 
@@ -201,7 +201,7 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 - updateCaret(*drawCaret*) 更新光标位置
 - remove() 移除范围
 
-##### mapping 关系映射器
+#### mapping 关系映射器
 
 关系映射器用来记录和查找各种数据的踪迹。如根据dom找到vnode，通过vndoe找到path等等
 
@@ -212,7 +212,7 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 - getVnOrPath 获取虚拟dom或者path，参数为dom则返回path，反之亦然
 - getVnOrIns 获取虚拟dom或者组件实例，参数为dom则返回组件实例，反之亦然
 
-##### 数据模型
+#### 数据模型
 
 本内核独创了一种格式标记模型mark用来描述文档的内容和格式，其中data为内容，formats为格式
 
@@ -253,7 +253,7 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 - reArrange()
 - traverse()
 
-##### Content 内容管理组件
+#### Content 内容管理组件
 
 内容管理组件是所有格式组件的基类，该组件定义了各种事件钩子，应用层中的组件只需要继承该组件，然后根据业务需求重写各种钩子即可实现各种各样定制化的功能。内置钩子目前有：
 
@@ -267,7 +267,7 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 - onEnter 回车
 - onInsert 内容插入
 
-##### Formater 格式排版器
+####  Formater 格式排版器
 
 ##### 格式排版器Formater负责对mark数据进行解析，合并相同格式，通过公共格式提取分组法解决脏标签问题，最终翻译成vnode，交给视图层渲染。
 
