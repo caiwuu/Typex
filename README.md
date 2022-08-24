@@ -172,6 +172,101 @@ formater.register(image)
 
 ![image-20220824230634086](https://cdn.jsdelivr.net/gh/caiwuu/image/202208242308180.png)
 
+#### 重要概念
+
+##### Selection（ 选区 ）
+
+selection 若干个范围（range）包含的区域称为选区,可通过`editor.selection`获取编辑器选区
+
+##### Range（范围）
+
+由起始边界和结尾边界包含的一段范围；起始边界由startContainer和startOffset定位，结尾边界由endContainer和endOffset定位。
+
+当container为文本节点时，偏移量是指文字偏移量；其他情况为container相对于父节点的偏移量。Range列表可由`selection.ranges获取`。
+
+常用api和属性有：
+
+- startContainer 起始边界容器
+- endContainer 结尾边界容器
+- startOffset 起始边界偏移量
+- endOffset 结尾边界偏移量
+- container 边界容器，是startContainer 和 endContainer 中的一个，由d属性决定
+- offset 偏移量，是 startOffset 和 endOffset  中的一个，由d属性决定
+- collapsed 选区是否折叠，折叠指startContainer 和endContainer 相同，startOffset 和endOffset  相同
+- d 范围方向，折叠状态为0，结尾边界不动，向左移动起始边界产生范围，d为-1；起始边界不动，向右移结尾始边界产生范围，d为1
+- setEnd(endContainer ，endOffset ) 设置结尾边界
+- setStart(startContainer ，startOffset ) 设置起始边界
+- set(container ，offset ) 设置边界，具体设置哪个由d决定
+- collapse(toStart) 折叠范围
+- updateCaret(*drawCaret*) 更新光标位置
+- remove() 移除范围
+
+##### mapping 关系映射器
+
+关系映射器用来记录和查找各种数据的踪迹。如根据dom找到vnode，通过vndoe找到path等等
+
+- setVnElm 设置虚拟dom和真实dom的映射关系
+- setVnIns 设置虚拟dom和组件实例的映射关系
+- setVnPath 设置虚拟dom和path的映射关系
+- getVnOrElm 获取虚拟dom或者dom，参数为dom则返回vnode，反之亦然
+- getVnOrPath 获取虚拟dom或者path，参数为dom则返回path，反之亦然
+- getVnOrIns 获取虚拟dom或者组件实例，参数为dom则返回组件实例，反之亦然
+
+##### 数据模型
+
+本内核独创了一种格式标记模型mark用来描述文档的内容和格式，其中data为内容，formats为格式
+
+```javascript
+// 文本mark，描述了一个红色的、加粗的、字体大小为12px的文字“hello world”
+{
+    data:'hello world',
+    formats:{color：red，bold:true,fontSize: '12px'}
+}
+// 组件格式，描述了一个段落，它的内容为一个红色的、加粗的、字体大小为12px的文字“hello world”
+{
+    data: {
+        marks: [
+            { data: 'hello world', formats: { color: 'green' } },
+        ],
+    },
+    formats: { paragraph: true },
+},
+```
+
+但是，这种格式并不适合操作，也不方便查找父级、兄弟节点，因此把这种数据包装成了path格式，path是内核中数据操作的模型，mark是数据传输的模型，path和mark是对应的。path.node 即对于当前mark。path是一个链表树。采用api或属性有
+
+- component 属于的组件
+- node 对应的mark
+- parent 父级
+- position 从根到当前位置的索引链 如0-1-2-0-1
+- prevSibling 上一个兄弟节点
+- nextSibling 下一个兄弟节点
+- children 子集
+- len 内容长度
+- elm  path对应的真实dom
+- vn path对应的虚拟节点
+- isLeaf 是否是叶子节点
+- firstLeaf 第一个子叶子节点
+- lastLeaf 最后一个子叶子节点
+- index 同级索引
+- delete()
+- reArrange()
+- traverse()
+
+##### Content 内容管理组件
+
+内容管理组件是所有格式组件的基类，该组件定义了各种事件钩子，应用层中的组件只需要继承该组件，然后根据业务需求重写各种钩子即可实现各种各样定制化的功能。内置钩子目前有：
+
+- onBackspace 删除（退格键）
+- onCaretEnter 光标进入
+- onCaretLeave 光标离开
+- onArrowUp 上箭头
+- onArrowDown 下箭头
+- onArrowRight 右箭头
+- onArrowLeft 左箭头
+- onEnter 回车
+- onInsert 内容插入
+
 ## TODO
 
 - 完善action（上下移动,回车,加粗,颜色设置....）
