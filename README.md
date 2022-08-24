@@ -168,7 +168,9 @@ formater.register(image)
 - 关系映射维护了vnode、path、dom、ins之间的映射关系，并且提供了相互的查找方法。
 - 历史记录（TODO）
 
+![image-20220824224127235](https://cdn.jsdelivr.net/gh/caiwuu/image/202208242241362.png)
 
+![image-20220824230634086](https://cdn.jsdelivr.net/gh/caiwuu/image/202208242308180.png)
 
 ## TODO
 
