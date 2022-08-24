@@ -93,6 +93,68 @@ src
 
 ![image-20220824155836618](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220824155836618.png)
 
+1. 应用层
+
+应用层主要实现了编辑器的各种功能，举个日常开发举例，内核相当于vue、react,应用层相当于我们基于他们开发的各种产品。在应用层可以实现各种各样的组件、格式，如表格、图片、时间线组件、todoList等等。应用层最主要的内容就是编写组件，定义格式，注册格式。举个例子编写一个图片组件，给图片组件实现一个点击放大缩小的功能，注册图片组件到内核。
+
+```javascript
+// formats/components/Image.js
+import { Content } from '@/core'
+export default class Image extends Content {
+  render() {
+    console.log(this)
+    return <img onClick={this.sizeChange} {...this.state.path.node.data}></img>
+  }
+  sizeChange = () => {
+    if (this.state.path.node.data.width === '50px') {
+      this.state.path.node.data.width = '200px'
+      this.state.path.node.data.height = '200px'
+      this.setState()
+    } else {
+      this.state.path.node.data.width = '50px'
+      this.state.path.node.data.height = '50px'
+      this.setState()
+    }
+  }
+  onCaretEnter(path, range, isStart) {
+    range.setStart(path.parent, path.index + isStart ? 0 : 1)
+  }
+  get contentLength() {
+    return 1
+  }
+}
+// format/index.js
+import { Formater } from '@/core'
+const formater = new Formater()
+import { Image } from './components'
+const image = {
+  name: 'image',
+  isLeaf: true,
+  type: 'component',
+  render(vnode, path) {
+    const vn = <Image path={path}></Image>
+    if (vnode) {
+      vnode.children.push(vn)
+    }
+    return vn
+  },
+}
+formater.register(image)
+
+// 这样image这个格式就生效了，当你插入一张图片，它在mark（内核数据模型）中的表示是这样的
+{
+  data: {
+    src: 'https://img2.baidu.com/it/u=3979034437,2878656671&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+    alt: 'test image',
+    width: '50px',
+    height: '50px',
+  },
+  formats: { image: true },
+},
+```
+
+
+
 ## TODO
 
 - 完善action（上下移动,回车,加粗,颜色设置....）
