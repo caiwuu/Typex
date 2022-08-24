@@ -267,6 +267,15 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 - onEnter 回车
 - onInsert 内容插入
 
+##### Formater 格式排版器
+
+##### 格式排版器Formater负责对mark数据进行解析，合并相同格式，通过公共格式提取分组法解决脏标签问题，最终翻译成vnode，交给视图层渲染。
+
+![image-20220825010359677](https://cdn.jsdelivr.net/gh/caiwuu/image/202208250103792.png)
+
+- register(format) 注册格式
+- render(paths) 渲染path
+
 ## TODO
 
 - 完善action（上下移动,回车,加粗,颜色设置....）
