@@ -15,29 +15,17 @@ export default class Caret {
     this.dom.classList.add('custom-caret')
     this.setStyle(this.dom)
   }
-  setStyle (style = {}) {
+  setStyle(style = {}) {
     const mergeStyle = Object.assign({}, defaultStyle, style)
     setStyle(this.dom, mergeStyle)
   }
-  remove () {
+  remove() {
     this.dom.remove()
   }
-  getRect (range) {
-    let container, offset
-    switch (range._d) {
-      case 0:
-      case 1:
-        container = range.startContainer
-        offset = range.startOffset
-        break
-      case 2:
-        container = range.endContainer
-        offset = range.endOffset
-        break
-    }
-    return this.measure.measure(container, offset)
+  getRect(range) {
+    return this.measure.measure(range.container, range.offset)
   }
-  update (range, drawCaret = true) {
+  update(range, drawCaret = true) {
     this.rect = this.getRect(range)
     if (!drawCaret) return
     range.editor.ui.body.appendChild(this.dom)
@@ -71,7 +59,7 @@ class Measure {
       return Measure.instance
     }
   }
-  measure (container, offset) {
+  measure(container, offset) {
     // splitText(0)会使原dom销毁造成startContainer向上逃逸
     let temp
     if (container.nodeType === 3) {
@@ -92,7 +80,7 @@ class Measure {
     }
     return this._getRect(container, offset, temp)
   }
-  computeOffset (dom, res = { x: 0, y: 0, h: null }) {
+  computeOffset(dom, res = { x: 0, y: 0, h: null }) {
     res.h = res.h ?? dom.offsetHeight
     res.x += dom.offsetLeft
     res.y += dom.offsetTop
@@ -101,7 +89,7 @@ class Measure {
     }
     return res
   }
-  _getRect (container, offset, temp) {
+  _getRect(container, offset, temp) {
     let con = container
     if (!(container instanceof Element)) {
       con = container.parentNode

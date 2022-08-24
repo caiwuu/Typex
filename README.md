@@ -87,7 +87,14 @@ src
 |  |    ├─index.js
 |  |    └insert.js 内容插入
 ```
+## 总体架构
+
+#### 三层架构
+
+![image-20220824155836618](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220824155836618.png)
+
 ## TODO
+
 - 完善action（上下移动,回车,加粗,颜色设置....）
 - 丰富和完善组件类型
 - 复制粘贴

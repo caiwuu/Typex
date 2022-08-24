@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-11 14:33:41
+ * @LastEditTime: 2022-08-24 15:04:01
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -11,7 +11,7 @@ const actionMap = {
   up: 'arrowUp',
   down: 'arrowDown',
 }
-export default function caretMove ({ direction, drawCaret, shiftKey }) {
+export default function caretMove({ direction, drawCaret, shiftKey }) {
   switch (direction) {
     case 'left':
     case 'right':
@@ -20,18 +20,16 @@ export default function caretMove ({ direction, drawCaret, shiftKey }) {
         if (!range.collapsed && !shiftKey) {
           range.collapse(direction === 'left')
         } else {
-          const { startContainer, startOffset, endContainer, endOffset } = range
-          const container = direction === 'left' ? endContainer : startContainer
-          const offset = direction === 'left' ? endOffset : startOffset
+          const { container, offset } = range
           // 非文本
           if (container.nodeType !== 3) {
             const path = this.queryPath(container.childNodes[(offset || 1) - 1])
-            path.component.dispatch(actionMap[direction], path, range, this, shiftKey)
+            path.component.caretMove(actionMap[direction], path, range, this, shiftKey)
           } else {
             // 文本
             let path = this.queryPath(container)
             const component = path.component
-            component.dispatch(actionMap[direction], path, range, this, shiftKey)
+            component.caretMove(actionMap[direction], path, range, this, shiftKey)
           }
           // setTimeout(() => {
           // this.selection.drawRangeBg(11)

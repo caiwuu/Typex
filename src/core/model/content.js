@@ -79,9 +79,9 @@ export default class Content extends Component {
   onCaretEnter(path, range, isStart) {
     // debugger
     if (isStart) {
-      range.setEnd(path, 0)
+      range.set(path, 0)
     } else {
-      range.setStart(path, path.len)
+      range.set(path, path.len)
     }
     return { path, range }
   }
@@ -126,7 +126,7 @@ export default class Content extends Component {
    * @memberof Content
    */
   onArrowRight(path, range, editor) {
-    range.endOffset += 1
+    range.offset += 1
   }
   /**
    *
@@ -137,7 +137,7 @@ export default class Content extends Component {
    * @memberof Content
    */
   onArrowLeft(path, range, editor, shiftKey) {
-    range.startOffset -= 1
+    range.offset -= 1
   }
   /**
    *
@@ -156,28 +156,28 @@ export default class Content extends Component {
   getNextPath(path) {
     return path.nextSibling || this.getNextPath(path.parent)
   }
-  dispatch(name, path, range, editor, ...args) {
+  caretMove(name, path, range, editor, ...args) {
     const method =
       this[`on${name.replace(/(\w)(\w+)/, ($0, $1, $2) => `${$1.toUpperCase()}${$2}`)}`]
+    const [shiftKey] = args
     if (method) {
       switch (name) {
         case 'arrowLeft':
         case 'arrowRight':
+          if (range.d === 0) {
+            range.d = name === 'arrowLeft' ? -1 : name === 'arrowRight' ? 1 : 0
+          }
           if (
-            (range.startOffset === 0 && name === 'arrowLeft') ||
-            (range.startOffset === path.len && name === 'arrowRight')
+            (range.offset === 0 && name === 'arrowLeft') ||
+            (range.offset === path.len && name === 'arrowRight')
           ) {
-            this.onCaretLeave(path, range, range.startOffset === 0)
+            this.onCaretLeave(path, range, range.offset === 0)
           } else {
             this._invokeAction(method, path, range, editor, ...args)
           }
-          const shiftKey = args[0]
           if (!shiftKey) {
             range.collapse(name === 'arrowLeft')
-          } else {
           }
-          // !args[0] && range.collapse(true) // 如果没有shiftKey，则折叠
-          // this.updateState(path, range, editor) // 更新状态
           break
 
         default:
