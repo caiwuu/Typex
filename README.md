@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-08-15 10:10:10
+ * @LastEditTime: 2022-08-25 17:42:17
 -->
 ## 特点
 - 不依赖contentEditable
@@ -95,7 +95,7 @@ src
 
 1. 应用层
 
-应用层主要实现了编辑器的各种功能，举个日常开发举例，内核相当于vue、react,应用层相当于我们基于他们开发的各种产品。在应用层可以实现各种各样的组件、格式，如表格、图片、时间线组件、todoList等等。应用层最主要的内容就是编写组件，定义格式，注册格式。举个例子编写一个图片组件，给图片组件实现一个点击放大缩小的功能，注册图片组件到内核。
+应用层主要实现了编辑器的各种功能，以日常开发举例，内核相当于vue、react,应用层相当于我们基于他们开发的各种产品。在应用层可以实现各种各样的组件、格式，如表格、图片、时间线组件、todoList等等。应用层最主要的内容就是编写组件，定义格式，注册格式。举个例子编写一个图片组件，给图片组件实现一个点击放大缩小的功能，注册图片组件到内核。
 
 ```javascript
 // formats/components/Image.js
@@ -103,18 +103,31 @@ import { Content } from '@/core'
 export default class Image extends Content {
   render() {
     console.log(this)
-    return <img onClick={this.sizeChange} {...this.state.path.node.data}></img>
+    return (
+      <img
+        onMousedown={this.onMousedown}
+        onClick={this.sizeChange}
+        {...this.state.path.node.data}
+      ></img>
+    )
   }
-  sizeChange = () => {
+  // 阻止事件冒泡导致光标移动
+  onMousedown = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  sizeChange = (e) => {
     if (this.state.path.node.data.width === '50px') {
       this.state.path.node.data.width = '200px'
       this.state.path.node.data.height = '200px'
-      this.setState()
     } else {
       this.state.path.node.data.width = '50px'
       this.state.path.node.data.height = '50px'
-      this.setState()
     }
+    this.setState().then(() => {
+      this.props.editor.selection.updateCaret()
+      console.log(this.props.editor.selection)
+    })
   }
   onCaretEnter(path, range, isStart) {
     range.setStart(path.parent, path.index + isStart ? 0 : 1)
@@ -233,7 +246,7 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 },
 ```
 
-但是，这种格式并不适合操作，也不方便查找父级、兄弟节点，因此把这种数据包装成了path格式，path是内核中数据操作的模型，mark是数据传输的模型，path和mark是对应的。path.node 即对于当前mark。path是一个链表树。采用api或属性有
+但是，这种格式并不适合操作，也不方便查找父级、兄弟节点，因此把这种数据包装成了path格式，path是内核中数据操作的模型，mark是数据传输的模型，path和mark是对应的。path.node 即对于当前mark。path是一个链表树。常用api或属性有
 
 - component 属于的组件
 - node 对应的mark
@@ -275,6 +288,7 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 
 - register(format) 注册格式
 - render(paths) 渲染path
+- inject() 属性注入
 
 ## TODO
 

@@ -4,16 +4,15 @@ import { Table, Row, Col, Image, Paragraph, Root } from './components'
 const root = {
   name: 'root',
   type: 'component',
-  render(vnode, path) {
-    console.log(path)
-    return <Root path={path}></Root>
+  render(vnode, props) {
+    return <Root {...props}></Root>
   },
 }
 const paragraph = {
   name: 'paragraph',
   type: 'component',
-  render(vnode, path) {
-    const vn = <Paragraph path={path}></Paragraph>
+  render(vnode, props) {
+    const vn = <Paragraph {...props}></Paragraph>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -92,8 +91,8 @@ const sup = {
 const table = {
   name: 'table',
   type: 'component',
-  render(vnode, path) {
-    const vn = <Table path={path}></Table>
+  render(vnode, props) {
+    const vn = <Table {...props}></Table>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -103,8 +102,8 @@ const table = {
 const row = {
   name: 'row',
   type: 'component',
-  render(vnode, path) {
-    const vn = <Row path={path}></Row>
+  render(vnode, props) {
+    const vn = <Row {...props}></Row>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -114,8 +113,8 @@ const row = {
 const col = {
   name: 'col',
   type: 'component',
-  render(vnode, path) {
-    const vn = <Col path={path}></Col>
+  render(vnode, props) {
+    const vn = <Col {...props}></Col>
     if (vnode) {
       vnode.children.push(vn)
     }
@@ -126,8 +125,8 @@ const image = {
   name: 'image',
   isLeaf: true,
   type: 'component',
-  render(vnode, path) {
-    const vn = <Image path={path}></Image>
+  render(vnode, props) {
+    const vn = <Image {...props}></Image>
     if (vnode) {
       vnode.children.push(vn)
     }

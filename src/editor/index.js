@@ -3,12 +3,12 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-23 13:39:31
+ * @LastEditTime: 2022-08-25 13:30:39
  */
 import emit from 'mitt'
 import mount from './mount'
 import { Selection, registerActions, queryPath, createPath } from '@/core'
-// import formater from './formats'
+import formater from './formats'
 import { mockData } from './data'
 class Editor {
   ui = {
@@ -18,6 +18,7 @@ class Editor {
     this.init(options)
   }
   init(options) {
+    formater.inject('editor', this)
     this.$path = options.path
     this.$emitter = emit()
     this.selection = new Selection(this)

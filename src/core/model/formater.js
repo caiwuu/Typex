@@ -6,6 +6,9 @@ class Formater {
   register(format) {
     this.formatMap.set(format.name, format)
   }
+  inject(propName, prop) {
+    this[propName] = prop
+  }
   render(paths) {
     const gs = this.group(
       {
@@ -50,7 +53,7 @@ class Formater {
         // 组件类型单独占一个分组
         const path = g.children[0]
         const fmt = componentQuene[0].fmt
-        const pv = fmt.render(null, path, h)
+        const pv = fmt.render(null, { path, editor: this.editor }, h)
         // 为所有component类型的path映射vnode
         setVnPath(path, pv)
         return pv

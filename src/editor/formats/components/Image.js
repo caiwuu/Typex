@@ -3,24 +3,37 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-11 14:35:22
+ * @LastEditTime: 2022-08-25 14:11:21
  */
 import { Content } from '@/core'
 export default class Image extends Content {
   render() {
     console.log(this)
-    return <img onClick={this.sizeChange} {...this.state.path.node.data}></img>
+    return (
+      <img
+        onMousedown={this.onMousedown}
+        onClick={this.sizeChange}
+        {...this.state.path.node.data}
+      ></img>
+    )
   }
-  sizeChange = () => {
+  // 阻止事件冒泡导致光标移动
+  onMousedown = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+  sizeChange = (e) => {
     if (this.state.path.node.data.width === '50px') {
       this.state.path.node.data.width = '200px'
       this.state.path.node.data.height = '200px'
-      this.setState()
     } else {
       this.state.path.node.data.width = '50px'
       this.state.path.node.data.height = '50px'
-      this.setState()
     }
+    this.setState().then(() => {
+      this.props.editor.selection.updateCaret()
+      console.log(this.props.editor.selection)
+    })
   }
   onCaretEnter(path, range, isStart) {
     range.setStart(path.parent, path.index + isStart ? 0 : 1)

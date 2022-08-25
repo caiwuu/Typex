@@ -1,3 +1,10 @@
+/*
+ * @Author: caiwu
+ * @Description:
+ * @CreateDate:
+ * @LastEditor:
+ * @LastEditTime: 2022-08-25 14:06:46
+ */
 const nativeSelection = document.getSelection()
 export default class MouseIntercept {
   constructor(editor) {

@@ -1,7 +1,7 @@
 import Component from '../view/component'
 import { computeLen } from '../utils'
 export default class Content extends Component {
-  $next = (fn) => {
+  $nextTick = (fn) => {
     return Promise.resolve().then(fn)
   }
   constructor(props) {
