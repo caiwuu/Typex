@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-08 10:11:21
+ * @LastEditTime: 2022-08-26 13:28:37
  */
 export default function del({ range }) {
   // debugger
@@ -17,7 +17,7 @@ export default function del({ range }) {
       // 文本
       let path = this.queryPath(startContainer, startOffset)
       const component = path.component
-      component.dispatch('backspace', path, range, this)
+      component.onBackspace(path, range, this)
     }
   } else {
     range.collapse()
