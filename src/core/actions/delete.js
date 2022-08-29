@@ -3,9 +3,10 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-26 13:28:37
+ * @LastEditTime: 2022-08-29 16:51:10
  */
-export default function del({ range }) {
+export default function del({ range, force = false }) {
+  if (range.inputState.isComposing && !force) return
   // debugger
   if (range.collapsed) {
     const { startContainer, startOffset } = range
@@ -20,6 +21,6 @@ export default function del({ range }) {
       component.onBackspace(path, range, this)
     }
   } else {
-    range.collapse()
+    range.collapse(true)
   }
 }

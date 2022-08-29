@@ -1,6 +1,5 @@
 import { setStyle, multiplication } from '../utils'
-import input from './input'
-import del from './del'
+import input from '../../common/input'
 export default class KeyboardIntercept {
   input = null
   constructor(editor) {
@@ -71,7 +70,7 @@ export default class KeyboardIntercept {
   }
   _inputEvent(event) {
     this.editor.selection.ranges.forEach((range) => {
-      input.call(range, {
+      input(range, {
         type: event.type,
         data: event.data,
         clear: () => {
@@ -116,7 +115,7 @@ export default class KeyboardIntercept {
       case 'Backspace':
         event.preventDefault()
         this.editor.selection.ranges.forEach((range) => {
-          del.call(range, false)
+          this.editor.emit('delete', { range, force: false })
         })
         Promise.resolve().then(() => {
           this.editor.selection.ranges.forEach((range) => {

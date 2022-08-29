@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-23 13:57:14
+ * @LastEditTime: 2022-08-29 17:10:16
  */
 export function multiplication(str, times) {
   return str.replace(/(\d*).*/, function ($0, $1) {
@@ -25,10 +25,4 @@ export function styleToObj(str) {
       prev[kv[0].trim()] = kv[1].trim()
       return prev
     }, {})
-}
-export function times(n, fn, context = undefined, ...args) {
-  let i = 0
-  while (i++ < n) {
-    fn.call(context, ...args)
-  }
 }
