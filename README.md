@@ -91,7 +91,7 @@ src
 
 ### 三层架构
 
-![image-20220824155836618](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220824155836618.png)
+![image-20220829155441312](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220829155441312.png)
 
 1. 应用层
 
