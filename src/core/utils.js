@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-23 13:56:46
+ * @LastEditTime: 2022-08-29 15:07:04
  */
 export function isUndef(v) {
   return v === undefined || v === null
@@ -12,6 +12,7 @@ export function isUndef(v) {
 export function isDef(v) {
   return v !== undefined && v !== null
 }
+
 export function isPrimitive(value) {
   return (
     typeof value === 'string' ||
@@ -20,6 +21,7 @@ export function isPrimitive(value) {
     typeof value === 'boolean'
   )
 }
+
 export function computeLen(path) {
   if (isPrimitive(path.node.data)) {
     return path.node.data.length
@@ -31,6 +33,7 @@ export function computeLen(path) {
     return 1
   }
 }
+
 export function throttle(fn, wait) {
   let inThrottle, lastFn, lastTime
   return function () {
@@ -51,6 +54,7 @@ export function throttle(fn, wait) {
     }
   }
 }
+
 export function debounce(fn, ms = 0) {
   let timeoutId
   return function (...args) {
@@ -58,6 +62,7 @@ export function debounce(fn, ms = 0) {
     timeoutId = setTimeout(() => fn.apply(this, args), ms)
   }
 }
+
 const _toString = Object.prototype.toString
 
 export function toRawType(value) {
@@ -69,6 +74,7 @@ export function setStyle(dom, style) {
     dom.style[key] = style[key]
   }
 }
+
 export function multiplication(str, times) {
   return str.replace(/(\d*).*/, function ($0, $1) {
     return $1 * times
@@ -91,6 +97,7 @@ export function stringify(obj) {
   cache = null // 清空变量，便于垃圾回收机制回收
   return res
 }
+
 export function styleToObj(str) {
   str = str.trim()
   return str

@@ -1,9 +1,6 @@
 import Component from '../view/component'
 import { computeLen } from '../utils'
 export default class Content extends Component {
-  $nextTick = (fn) => {
-    return Promise.resolve().then(fn)
-  }
   constructor(props) {
     super(props)
     this.initState()
@@ -13,24 +10,22 @@ export default class Content extends Component {
    */
   initState() {
     this.props.path._$component = this
-    this.state = { path: this.props.path }
   }
 
   /**
    * 更新状态
    * @param {*} path
    * @param {*} range
-   * @param {*} editor
    * @memberof Content
    */
-  updateState(path, range, editor) {
-    this.beforeUpdateState && this.beforeUpdateState({ path, range, editor })
+  update(path, range) {
+    this.onBeforeUpdate && this.onBeforeUpdate({ path, range })
     // 同步更新
     // this.syncUpdate()
 
     // 异步更新
     return this.setState().then(() => {
-      this.afterUpdateState && this.afterUpdateState({ range, editor, path })
+      this.onAfterUpdate && this.onAfterUpdate({ range, path })
     })
   }
 
@@ -40,7 +35,7 @@ export default class Content extends Component {
    * @memberof Content
    */
   get contentLength() {
-    return this.state.path.children.reduce((prev, path) => {
+    return this.props.path.children.reduce((prev, path) => {
       return prev + computeLen(path)
     }, 0)
   }
@@ -50,10 +45,9 @@ export default class Content extends Component {
    * 删除动作
    * @param {*} path 路径
    * @param {*} range 区间
-   * @param {*} editor 编辑器
    * @memberof Content
    */
-  onBackspace(path, range, editor) {
+  onBackspace(path, range) {
     const startOffset = range.startOffset
     if (startOffset > 0) {
       path.node.data = path.node.data.slice(0, startOffset - 1) + path.node.data.slice(startOffset)
@@ -73,7 +67,7 @@ export default class Content extends Component {
       }
     }
     range.collapse(true)
-    this.updateState(path, range, editor)
+    this.update(path, range)
   }
   // 光标进入
   onCaretEnter(path, range, isStart) {
@@ -100,10 +94,9 @@ export default class Content extends Component {
    * 箭头上动作
    * @param {*} path 路径
    * @param {*} range 区间
-   * @param {*} editor 编辑器
    * @memberof Content
    */
-  onArrowUp(path, range, editor) {
+  onArrowUp(path, range) {
     console.error('组件未实现onArrowUp方法')
   }
   /**
@@ -111,10 +104,9 @@ export default class Content extends Component {
    * 箭头下动作
    * @param {*} path 路径
    * @param {*} range 区间
-   * @param {*} editor 编辑器
    * @memberof Content
    */
-  onArrowDown(path, range, editor) {
+  onArrowDown(path, range) {
     console.error('组件未实现onArrowDown方法')
   }
   /**
@@ -122,10 +114,9 @@ export default class Content extends Component {
    * 箭头右动作
    * @param {*} path 路径
    * @param {*} range 区间
-   * @param {*} editor 编辑器
    * @memberof Content
    */
-  onArrowRight(path, range, editor) {
+  onArrowRight(path, range) {
     range.offset += 1
   }
   /**
@@ -133,10 +124,9 @@ export default class Content extends Component {
    * 箭头左动作
    * @param {*} path 路径
    * @param {*} range 区间
-   * @param {*} editor 编辑器
    * @memberof Content
    */
-  onArrowLeft(path, range, editor, shiftKey) {
+  onArrowLeft(path, range, shiftKey) {
     range.offset -= 1
   }
   /**
@@ -144,10 +134,9 @@ export default class Content extends Component {
    * 回车动作
    * @param {*} path 路径
    * @param {*} range 区间
-   * @param {*} editor 编辑器
    * @memberof Content
    */
-  onEnter(path, range, editor) {
+  onEnter(path, range) {
     console.error('组件未实现onEnter方法')
   }
   getPrevPath(path) {
@@ -156,7 +145,7 @@ export default class Content extends Component {
   getNextPath(path) {
     return path.nextSibling || this.getNextPath(path.parent)
   }
-  caretMove(name, path, range, editor, ...args) {
+  caretMove(name, path, range, ...args) {
     const method =
       this[`on${name.replace(/(\w)(\w+)/, ($0, $1, $2) => `${$1.toUpperCase()}${$2}`)}`]
     const [shiftKey] = args
@@ -173,7 +162,7 @@ export default class Content extends Component {
           ) {
             this.onCaretLeave(path, range, range.offset === 0)
           } else {
-            this._invokeAction(method, path, range, editor, ...args)
+            this._invokeAction(method, path, range, ...args)
           }
           if (!shiftKey) {
             range.collapse(name === 'arrowLeft')
@@ -181,12 +170,12 @@ export default class Content extends Component {
           break
 
         default:
-          this._invokeAction(method, path, range, editor, ...args)
+          this._invokeAction(method, path, range, ...args)
           break
       }
     }
   }
-  _invokeAction(method, path, range, editor, ...args) {
-    method.call(this, path, range, editor, ...args)
+  _invokeAction(method, path, range, ...args) {
+    method.call(this, path, range, ...args)
   }
 }

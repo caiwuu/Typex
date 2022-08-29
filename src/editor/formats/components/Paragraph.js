@@ -9,6 +9,6 @@ import formater from '../index'
 import Block from './Block'
 export default class Paragraph extends Block {
   render() {
-    return <div>{this.state.path.len ? formater.render(this.state.path.children) : <br />}</div>
+    return <div>{this.props.path.len ? formater.render(this.props.path.children) : <br />}</div>
   }
 }

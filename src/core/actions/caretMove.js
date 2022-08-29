@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-24 15:04:01
+ * @LastEditTime: 2022-08-29 10:53:41
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -31,9 +31,6 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
             const component = path.component
             component.caretMove(actionMap[direction], path, range, this, shiftKey)
           }
-          // setTimeout(() => {
-          // this.selection.drawRangeBg(11)
-          // }, 0)
         }
       })
       break

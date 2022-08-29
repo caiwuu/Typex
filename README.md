@@ -3,7 +3,7 @@
  * @Description: 
  * @CreateDate: 
  * @LastEditor: 
- * @LastEditTime: 2022-08-25 17:42:17
+ * @LastEditTime: 2022-08-29 14:06:03
 -->
 ## 特点
 - 不依赖contentEditable
@@ -117,17 +117,17 @@ export default class Image extends Content {
     e.stopPropagation()
   }
   sizeChange = (e) => {
-    if (this.state.path.node.data.width === '50px') {
-      this.state.path.node.data.width = '200px'
-      this.state.path.node.data.height = '200px'
+    if (this.props.path.node.data.width === '50px') {
+      this.props.path.node.data.width = '200px'
+      this.props.path.node.data.height = '200px'
     } else {
-      this.state.path.node.data.width = '50px'
-      this.state.path.node.data.height = '50px'
+      this.props.path.node.data.width = '50px'
+      this.props.path.node.data.height = '50px'
     }
-    this.setState().then(() => {
-      this.props.editor.selection.updateCaret()
-      console.log(this.props.editor.selection)
-    })
+    this.update()
+  }
+  onAfterUpdate() {
+    this.props.editor.selection.updateCaret()
   }
   onCaretEnter(path, range, isStart) {
     range.setStart(path.parent, path.index + isStart ? 0 : 1)
@@ -268,8 +268,11 @@ selection 若干个范围（range）包含的区域称为选区,可通过`editor
 
 #### 5.Content 内容管理组件
 
-内容管理组件是所有格式组件的基类，该组件定义了各种事件钩子，应用层中的组件只需要继承该组件，然后根据业务需求重写各种钩子即可实现各种各样定制化的功能。内置钩子目前有：
+内容管理组件是所有格式组件的基类，该组件定义了各种事件钩子，应用层中的组件只需要继承该组件，然后根据业务需求重写各种钩子即可实现各种各样定制化的功能。内置钩子/方法目前有：
 
+- update() 组件更新
+- onBeforeUpdate 组件更新前
+- onAfterUpdate 组件更新后
 - onBackspace 删除（退格键）
 - onCaretEnter 光标进入
 - onCaretLeave 光标离开

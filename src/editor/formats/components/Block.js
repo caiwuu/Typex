@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-11 11:04:29
+ * @LastEditTime: 2022-08-29 15:17:14
  */
 import { Content, getVnOrIns, getVnOrElm } from '@/core'
 export default class Block extends Content {
@@ -12,17 +12,15 @@ export default class Block extends Content {
    * @return {*}
    */
   getBlockRoot() {
-    if (this.state._$root) return this.state._$root.current
     return getVnOrElm(getVnOrIns(this))
   }
   /**
    * @desc: 删除动作
    * @param {*} path
    * @param {*} range
-   * @param {*} editor
    * @return {*}
    */
-  onBackspace(path, range, editor) {
+  onBackspace(path, range) {
     const startOffset = range.startOffset
     if (startOffset > 0) {
       path.node.data = path.node.data.slice(0, startOffset - 1) + path.node.data.slice(startOffset)
@@ -46,6 +44,6 @@ export default class Block extends Content {
       }
     }
     range.collapse(true)
-    this.updateState(path, range, editor)
+    this.update(path, range)
   }
 }

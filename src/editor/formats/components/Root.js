@@ -12,8 +12,8 @@ export default class Root extends Block {
   render() {
     const vn = (
       <div id='editor-content'>
-        {this.state.path.children.length
-          ? formater.render(this.state.path.children)
+        {this.props.path.children.length
+          ? formater.render(this.props.path.children)
           : this.state.placeholder(h)}
       </div>
     )
