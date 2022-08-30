@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-29 10:53:41
+ * @LastEditTime: 2022-08-30 13:26:37
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -24,13 +24,16 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
           // 非文本
           if (container.nodeType !== 3) {
             const path = this.queryPath(container.childNodes[(offset || 1) - 1])
-            path.component.caretMove(actionMap[direction], path, range, this, shiftKey)
+            path.component.caretMove(actionMap[direction], path, range, shiftKey)
           } else {
             // 文本
             let path = this.queryPath(container)
             const component = path.component
-            component.caretMove(actionMap[direction], path, range, this, shiftKey)
+            component.caretMove(actionMap[direction], path, range, shiftKey)
           }
+          // setTimeout(() => {
+          // this.selection.drawRangeBg(11)
+          // }, 0)
         }
       })
       break

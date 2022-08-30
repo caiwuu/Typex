@@ -1,5 +1,4 @@
 import { setStyle, multiplication } from '../utils'
-import input from '../../common/input'
 export default class KeyboardIntercept {
   input = null
   constructor(editor) {
@@ -69,14 +68,12 @@ export default class KeyboardIntercept {
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
   }
   _inputEvent(event) {
-    this.editor.selection.ranges.forEach((range) => {
-      input(range, {
-        type: event.type,
-        data: event.data,
-        clear: () => {
-          event.target.value = ''
-        },
-      })
+    this.editor.emit('insert', {
+      type: event.type,
+      data: event.data,
+      clear: () => {
+        event.target.value = ''
+      },
     })
   }
   _handGolobalKeydown(event) {
@@ -114,14 +111,7 @@ export default class KeyboardIntercept {
         break
       case 'Backspace':
         event.preventDefault()
-        this.editor.selection.ranges.forEach((range) => {
-          this.editor.emit('delete', { range, force: false })
-        })
-        Promise.resolve().then(() => {
-          this.editor.selection.ranges.forEach((range) => {
-            range.updateCaret()
-          })
-        })
+        this.editor.emit('delete')
         break
       case 'Enter':
         event.preventDefault()

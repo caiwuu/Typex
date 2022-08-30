@@ -3,9 +3,9 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-29 16:51:10
+ * @LastEditTime: 2022-08-30 15:10:31
  */
-export default function del({ range, force = false }) {
+export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
   // debugger
   if (range.collapsed) {
@@ -23,4 +23,16 @@ export default function del({ range, force = false }) {
   } else {
     range.collapse(true)
   }
+}
+
+export default function () {
+  this.selection.ranges.forEach((range) => {
+    // this.editor.emit('delete', { range, force: false })
+    del.call(this, range, false)
+  })
+  Promise.resolve().then(() => {
+    this.selection.ranges.forEach((range) => {
+      range.updateCaret()
+    })
+  })
 }
