@@ -3,11 +3,11 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-25 13:30:39
+ * @LastEditTime: 2022-08-31 17:12:53
  */
 import emit from 'mitt'
 import mount from './mount'
-import { Selection, registerActions, queryPath, createPath } from '@/core'
+import { Selection, registerActions, queryPath, queryCommonPath, createPath } from '@/core'
 import formater from './formats'
 import { mockData } from './data'
 class Editor {
@@ -33,11 +33,16 @@ class Editor {
   emit(eventName, args) {
     this.$emitter.emit(eventName, args)
   }
-  focus() {
-    this.$emitter.emit('focus')
+  focus(range) {
+    this.$emitter.emit('focus', range)
   }
-  queryPath(elm, offset = 0) {
-    return queryPath(elm, this.$path, offset)
+  queryPath(v) {
+    return queryPath(v, this.$path)
+  }
+  queryCommonPath(v1, v2) {
+    const path1 = this.queryPath(v1)
+    const path2 = this.queryPath(v2)
+    return queryCommonPath(path1, path2)
   }
 }
 function initMarks(data) {

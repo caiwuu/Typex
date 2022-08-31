@@ -6,6 +6,9 @@ export default class Selection {
   constructor(editor) {
     this.editor = editor
   }
+  get isCollapsed() {
+    return this.ranges.every((range) => range.collapsed)
+  }
   get rangeCount() {
     return this.ranges.length
   }

@@ -38,8 +38,8 @@ export default class KeyboardIntercept {
     this.input.classList.add('custom-input')
     iframedocument.body.appendChild(this.input)
   }
-  focus() {
-    const range = this.editor.selection.getRangeAt(0)
+  focus(range) {
+    range = range || this.editor.selection.getRangeAt(0)
     if (!range) return
     let container = range.startContainer
     if (!(container instanceof Element)) {

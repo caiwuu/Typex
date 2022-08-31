@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-24 15:23:10
+ * @LastEditTime: 2022-08-31 14:57:01
  */
 import { Caret } from '@/platform'
 export default class Range {
@@ -88,6 +88,7 @@ export default class Range {
   }
   updateCaret(drawCaret = true) {
     this.caret.update(this, drawCaret)
+    this.editor.focus()
   }
   remove() {
     const index = this.editor.selection.ranges.findIndex((i) => i === this)

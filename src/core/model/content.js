@@ -19,12 +19,10 @@ export default class Content extends Component {
    * @memberof Content
    */
   update(path, range) {
+    // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path, range })
-    // 同步更新
-    // this.syncUpdate()
-
-    // 异步更新
     return this.setState().then(() => {
+      // 执行更新后钩子
       this.onAfterUpdate && this.onAfterUpdate({ range, path })
     })
   }
@@ -38,6 +36,22 @@ export default class Content extends Component {
     return this.props.path.children.reduce((prev, path) => {
       return prev + computeLen(path)
     }, 0)
+  }
+
+  /**
+   * 输入处理
+   * @param {*} path 路径
+   * @param {*} range 区间
+   * @param {*} range 输入数据
+   */
+  onInput({ path, range, data }) {
+    const pos = range.offset
+    path.node.data = path.node.data.slice(0, pos) + data + path.node.data.slice(pos)
+    this.update().then(() => {
+      range.setStart(path, range.startOffset + data.length)
+      range.collapse(true)
+      range.updateCaret()
+    })
   }
 
   /**

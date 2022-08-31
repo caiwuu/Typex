@@ -149,29 +149,61 @@ export function createPath(
   }
   return path
 }
+
+function queryRootPath(path) {
+  while (path.parent) {
+    path = path.parent
+  }
+  return path
+}
 /**
- * @desc:
- * @param {elm|mark|position} target
+ * @desc: 查找共同祖先path
+ * @param {elm|vn|position} target
  * @param {path} path
- * @param {number} offset
+ * @return {path}
+ */
+export function queryCommonPath(path1, path2) {
+  if (path1.position === '0') return path1
+  if (path2.position === '0') return path2
+  const rootPath = queryRootPath(path1)
+  const posArr1 = path1.position.split('-')
+  const posArr2 = path2.position.split('-')
+  const minLen = Math.min(posArr1.length, posArr2.length)
+  let i
+  for (i = 0; i < minLen; i++) {
+    const element1 = posArr1[i]
+    const element2 = posArr2[i]
+    if (element1 !== element2) break
+  }
+  const commonPosition = path1.position.slice(0, i * 2 - 1)
+  return queryPathByPosition(commonPosition, rootPath)
+}
+/**
+ * @desc: path查找
+ * @param {elm|vn|position} target
+ * @param {path} path
  * @return {path}
  */
 export function queryPath(target, path) {
-  let position
-  if (!target) return null
-  // 通过elm查询
-  if (target.nodeType) {
-    const vn = getVnOrElm(target)
-    if (!vn) return null
-    const path = getVnOrPath(vn)
-    if (!path) return null
-    return path
-  } else {
-    // 通过mark或者position查询
-    position = target.position || target
-  }
+  if (target instanceof Path) return target
+  if (target.nodeType) return queryPathByElm(target)
+  if (target._isVnode) return queryPathByVn(target)
+  if (typeof target === 'string') return queryPathByPosition(target, path)
+  throw 'queryPath的参数必须是elm|vn|position'
+}
+function queryPathByElm(elm) {
+  const vn = getVnOrElm(elm)
+  if (!vn) return null
+  return queryPathByVn(vn)
+}
+function queryPathByVn(vn) {
+  const path = getVnOrPath(vn)
+  if (!path) return null
+  return path
+}
+function queryPathByPosition(position, rootPath) {
   const posArr = position.split('-')
   return posArr.slice(1).reduce((prev, index) => {
     return prev.children[index]
-  }, path)
+  }, rootPath)
 }

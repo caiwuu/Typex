@@ -3,37 +3,44 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-30 15:28:31
+ * @LastEditTime: 2022-08-31 16:23:16
  */
 import { getVnOrElm, getVnOrPath } from '../mappings'
 import { del } from './delete'
-
-function times(n, fn, context = undefined, ...args) {
-  let i = 0
-  while (i++ < n) {
-    fn.call(context, ...args)
-  }
-}
-// 文本插入
-function insertText(range, data) {
-  const { startOffset: pos, startContainer: elm } = range
+import { isPrimitive } from '../utils'
+// 执行输入型插入
+function input(range, data) {
+  const { startContainer: elm } = range
   let path = getVnOrPath(getVnOrElm(elm))
   if (path) {
     if (path.node.type !== 'text') {
       path = path.firstLeaf
     }
     const component = path.parent.component
-    path.node.data = path.node.data.slice(0, pos) + data + path.node.data.slice(pos)
-    component.update(this, path).then(() => {
-      range.setStart(path, range.startOffset + data.length)
-      range.collapse(true)
-      range.updateCaret()
-    })
+    component.onInput({ path, range, data })
   } else {
     console.error('无效path')
   }
 }
-function preInsert(range, { data, type, clear }) {
+// n次执行
+function times(n, fn, context = undefined, ...args) {
+  let i = 0
+  while (i++ < n) {
+    fn.call(context, ...args)
+  }
+}
+function transformOps(ops) {
+  if (isPrimitive(ops)) {
+    return {
+      type: 'input',
+      data: ops,
+    }
+  }
+  return ops
+}
+// 插入类型处理
+function insert(range, ops) {
+  const { data, type, clear } = transformOps(ops)
   if (!range.collapsed) {
     range.editor.emit('delete', { range, force: false })
   }
@@ -50,7 +57,7 @@ function preInsert(range, { data, type, clear }) {
       range.inputState.value = inputData
     }
     times(prevInputValue.length, del, range.editor, range, true)
-    inputData !== '' && insertText(range, inputData)
+    inputData !== '' && input(range, inputData)
   } else if (type === 'compositionstart') {
     // console.log('开始聚合输入:', data)
     range.inputState.isComposing = true
@@ -68,6 +75,6 @@ function preInsert(range, { data, type, clear }) {
 
 export default function (ops) {
   this.selection.ranges.forEach((range) => {
-    preInsert(range, ops)
+    insert(range, ops)
   })
 }
