@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-11 11:04:57
+ * @LastEditTime: 2022-09-01 11:10:24
  */
 import formater from '../index'
 import Block from './Block'
@@ -17,7 +17,6 @@ export default class Root extends Block {
           : this.state.placeholder(h)}
       </div>
     )
-    console.log(vn)
     return vn
   }
 }

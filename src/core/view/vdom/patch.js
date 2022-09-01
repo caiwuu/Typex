@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-11 14:34:45
+ * @LastEditTime: 2022-09-01 11:10:05
  */
 import { default as h, insertedInsQueue } from './createVnode'
 import {
@@ -195,7 +195,6 @@ function patchVnode(vnode, oldVnode) {
   }
 }
 export default function patch(vnode, oldVnode) {
-  console.log(vnode, oldVnode)
   insertedInsQueue.length = 0
   // 没有oldvnode 直接创建新dom
   if (isUndef(oldVnode)) {
