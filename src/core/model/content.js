@@ -62,25 +62,30 @@ export default class Content extends Component {
    * @memberof Content
    */
   onBackspace(path, range) {
-    const startOffset = range.startOffset
-    if (startOffset > 0) {
-      path.node.data = path.node.data.slice(0, startOffset - 1) + path.node.data.slice(startOffset)
-      if (path.node.data === '') {
+    const { startContainer, startOffset, endContainer, endOffset, collapsed } = range
+    // 选区折叠
+    if (collapsed) {
+      if (endOffset > 0) {
+        path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
+        if (path.node.data === '') {
+          const prevSibling = this.getPrevPath(path).lastLeaf
+          path.delete()
+          if (prevSibling) {
+            range.setStart(prevSibling, prevSibling.node.data.length)
+          }
+        } else {
+          range.endOffset -= 1
+        }
+      } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
-        path.delete()
         if (prevSibling) {
           range.setStart(prevSibling, prevSibling.node.data.length)
         }
-      } else {
-        range.startOffset -= 1
       }
+      range.collapse(true)
     } else {
-      const prevSibling = this.getPrevPath(path).lastLeaf
-      if (prevSibling) {
-        range.setStart(prevSibling, prevSibling.node.data.length)
-      }
+      console.log('TODO')
     }
-    range.collapse(true)
     this.update(path, range)
   }
   // 光标进入

@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-31 14:57:01
+ * @LastEditTime: 2022-09-02 10:20:39
  */
 import { Caret } from '@/platform'
 export default class Range {
