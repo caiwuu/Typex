@@ -17,9 +17,7 @@ src
 |    |  |      |    ├─listeners.js
 |    |  |      |    └styles.js
 |    |  ├─intercept
-|    |  |     ├─del.js
 |    |  |     ├─index.js
-|    |  |     ├─input.js
 |    |  |     ├─keyboardIntercept.js
 |    |  |     └mouseIntercept.js
 ├─modelTestDemo
@@ -32,17 +30,17 @@ src
 ├─editor
 |   ├─data.js
 |   ├─index.js
-|   ├─renderRoot.js
+|   ├─mount.js
 |   ├─formats
 |   |    ├─index.js
 |   |    ├─components
 |   |    |     ├─Block.js
 |   |    |     ├─Image.js
-|   |    |     ├─index.js
 |   |    |     ├─Inline.js
 |   |    |     ├─Paragraph.js
 |   |    |     ├─Root.js
-|   |    |     └Table.js
+|   |    |     ├─Table.js
+|   |    |     └index.js
 ├─core
 |  ├─index.js
 |  ├─mappings.js

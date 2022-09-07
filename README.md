@@ -30,10 +30,8 @@ src
 |    |  |      |    ├─classes.js
 |    |  |      |    ├─listeners.js
 |    |  |      |    └styles.js
-|    |  ├─intercept 事件拦截器
-|    |  |     ├─del.js 删除处理
+|    |  ├─intercept
 |    |  |     ├─index.js
-|    |  |     ├─input.js 键盘输入处理
 |    |  |     ├─keyboardIntercept.js 键盘拦截
 |    |  |     └mouseIntercept.js 鼠标拦截
 ├─modelTestDemo view模块复杂组件测试
@@ -61,7 +59,6 @@ src
 ├─core 内核层
 |  ├─index.js
 |  ├─mappings.js 关系映射器
-|  ├─run.js 内核启动器
 |  ├─utils.js
 |  ├─view 视图层
 |  |  ├─component.js 组件基类
