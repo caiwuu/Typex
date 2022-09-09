@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-30 13:26:37
+ * @LastEditTime: 2022-09-09 16:29:36
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -46,6 +46,6 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
     this.selection.ranges.forEach((range) => {
       range.updateCaret(drawCaret)
     })
-    this.selection.drawRangeBg(11)
+    drawCaret && this.selection.drawRangeBg()
   })
 }
