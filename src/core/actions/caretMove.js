@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-09 16:29:36
+ * @LastEditTime: 2022-09-13 10:07:43
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -31,9 +31,6 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
             const component = path.component
             component.caretMove(actionMap[direction], path, range, shiftKey)
           }
-          // setTimeout(() => {
-          // this.selection.drawRangeBg(11)
-          // }, 0)
         }
       })
       break
@@ -43,9 +40,6 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
       break
   }
   Promise.resolve().then(() => {
-    this.selection.ranges.forEach((range) => {
-      range.updateCaret(drawCaret)
-    })
-    drawCaret && this.selection.drawRangeBg()
+    this.selection.updateCaret(drawCaret)
   })
 }

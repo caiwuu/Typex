@@ -115,11 +115,11 @@ export default class Selection {
         this._resetRanges()
       }
       this.updateCaret()
-      this.drawRangeBg()
     })
   }
-  updateCaret() {
-    this.ranges.forEach((range) => range.updateCaret())
+  updateCaret(drawCaret = true) {
+    this.ranges.forEach((range) => range.updateCaret(drawCaret))
+    drawCaret && this.drawRangeBg()
   }
   _isCoverd(rectA, rectB) {
     return rectA.y < rectB.y

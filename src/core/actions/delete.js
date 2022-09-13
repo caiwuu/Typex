@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-02 09:49:35
+ * @LastEditTime: 2022-09-13 14:31:30
  */
 export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return

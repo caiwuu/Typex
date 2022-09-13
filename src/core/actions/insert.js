@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-31 16:23:16
+ * @LastEditTime: 2022-09-13 15:04:24
  */
 import { getVnOrElm, getVnOrPath } from '../mappings'
 import { del } from './delete'
@@ -57,7 +57,8 @@ function insert(range, ops) {
       range.inputState.value = inputData
     }
     times(prevInputValue.length, del, range.editor, range, true)
-    inputData !== '' && input(range, inputData)
+    // inputData !== '' && input(range, inputData)
+    input(range, inputData)
   } else if (type === 'compositionstart') {
     // console.log('开始聚合输入:', data)
     range.inputState.isComposing = true

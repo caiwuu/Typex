@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-31 15:43:37
+ * @LastEditTime: 2022-09-13 14:58:55
  */
 const nativeSelection = document.getSelection()
 export default class MouseIntercept {

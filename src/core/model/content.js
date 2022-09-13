@@ -65,8 +65,9 @@ export default class Content extends Component {
     const { startContainer, startOffset, endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
-      if (endOffset > 0) {
-        path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
+      if (startOffset > 0) {
+        path.node.data =
+          path.node.data.slice(0, startOffset - 1) + path.node.data.slice(startOffset)
         if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
@@ -74,7 +75,7 @@ export default class Content extends Component {
             range.setStart(prevSibling, prevSibling.node.data.length)
           }
         } else {
-          range.endOffset -= 1
+          range.startOffset -= 1
         }
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
