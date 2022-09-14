@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-02 10:20:39
+ * @LastEditTime: 2022-09-14 16:55:56
  */
 import { Caret } from '@/platform'
 export default class Range {
@@ -16,12 +16,13 @@ export default class Range {
   _endContainer = null
   _startContainer = null
   constructor(nativeRange, editor) {
-    const { startContainer, endContainer, startOffset, endOffset } = nativeRange
+    const { startContainer, endContainer, startOffset, endOffset, d } = nativeRange
     this.endContainer = endContainer
     this.startContainer = startContainer
     this.endOffset = endOffset
     this.startOffset = startOffset
     this.editor = editor
+    this.d = d
     this.caret = new Caret(this)
   }
   get endContainer() {

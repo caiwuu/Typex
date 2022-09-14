@@ -3,15 +3,15 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-13 14:31:30
+ * @LastEditTime: 2022-09-14 10:19:01
  */
 export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
   // if (range.collapsed) {
-  const { startContainer, startOffset, endContainer } = range
+  const { endContainer, endOffset, startContainer } = range
   // 非文本
-  if (startContainer.nodeType !== 3) {
-    console.log(this.queryPath(startContainer.childNodes[startOffset - 1]))
+  if (endContainer.nodeType !== 3) {
+    console.log(this.queryPath(endContainer.childNodes[endOffset - 1]))
     return
   } else {
     // 文本
@@ -20,8 +20,8 @@ export function del(range, force = false) {
     component.onBackspace(path, range, this)
   }
   // } else {
-  console.log(this.queryCommonPath(startContainer, endContainer))
-  range.collapse(true)
+  console.log(this.queryCommonPath(endContainer, endContainer))
+  range.collapse(false)
   // }
 }
 

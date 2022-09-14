@@ -32,57 +32,51 @@ export default class Selection {
     })
     return points
   }
-  _resetRanges() {
-    this.clearRanges()
-    const count = nativeSelection.rangeCount
-    for (let i = 0; i < count; i++) {
-      const nativeRange = nativeSelection.getRangeAt(i)
-      this.pushRange(nativeRange)
-    }
-  }
   clearRanges() {
     while (this.ranges.length) {
       this.ranges.pop().caret.remove()
     }
   }
-  pushRange(nativeRange) {
-    const { focusNode, focusOffset } = nativeSelection
-    const cloneRange = new Range(nativeRange, this.editor)
-    if (cloneRange.collapsed) {
-      cloneRange.d = 0
-    } else if (focusNode === cloneRange.endContainer && focusOffset === cloneRange.endOffset) {
-      cloneRange.d = 1
-    } else {
-      cloneRange.d = -1
-    }
-    this.ranges.push(cloneRange)
+  createRange(ops) {
+    return new Range(ops, this.editor)
   }
-  // 注意chrome不支持多选区,需要在此之前调用 removeAllRanges
-  addRange(nativeRange) {
-    nativeSelection.addRange(nativeRange)
-    this.pushRange(nativeRange)
+  createRangeFromNativeRange(nativeRange) {
+    const { startContainer, endContainer, startOffset, endOffset, collapsed } = nativeRange
+    const { focusNode, focusOffset } = nativeSelection
+    let d = 0
+    if (collapsed) {
+      d = 0
+    } else if (focusNode === endContainer && focusOffset === endOffset) {
+      d = 1
+    } else {
+      d = -1
+    }
+    return this.createRange({
+      startContainer,
+      endContainer,
+      startOffset,
+      endOffset,
+      d,
+    })
+  }
+  addRange(range) {
+    this.ranges.push(range)
   }
   collapse(parentNode, offset) {
     nativeSelection.collapse(parentNode, offset)
-    this._resetRanges()
+    this._resetRangesFromNative()
   }
-  _resetRanges() {
+  // 从native重新设置选区
+  _resetRangesFromNative() {
     this.clearRanges()
     const count = nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
       const nativeRange = nativeSelection.getRangeAt(i)
-      this.pushRange(nativeRange)
+      this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
   }
-  getRangeAt(index = 0) {
-    return this.ranges[index]
-  }
-  removeAllRanges() {
-    nativeSelection.removeAllRanges()
-    this.clearRanges()
-  }
-  // 多选区支持
-  _extendRanges() {
+  // 从native选区扩增，多选区支持
+  _extendRangesFromNative() {
     const count = nativeSelection.rangeCount
     if (count > 0) {
       const nativeRange = nativeSelection.getRangeAt(count - 1)
@@ -97,8 +91,15 @@ export default class Selection {
         }
       })
       if (flag) return
-      this.pushRange(nativeRange)
+      this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
+  }
+  getRangeAt(index = 0) {
+    return this.ranges[index]
+  }
+  removeAllRanges() {
+    nativeSelection.removeAllRanges()
+    this.clearRanges()
   }
   createNativeRange({ startContainer, startOffset, endContainer, endOffset }) {
     const range = document.createRange()
@@ -110,13 +111,16 @@ export default class Selection {
     // 选区的创建结果需要在宏任务中获取.
     setTimeout(() => {
       if (multiple) {
-        this._extendRanges()
+        // 不清除ranges，从nativeSelection增加ranges
+        this._extendRangesFromNative()
       } else {
-        this._resetRanges()
+        // 清除ranges,再从nativeSelection同步ranges
+        this._resetRangesFromNative()
       }
       this.updateCaret()
     })
   }
+  // 光标更新
   updateCaret(drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
     drawCaret && this.drawRangeBg()
@@ -126,7 +130,7 @@ export default class Selection {
       ? rectA.y + rectA.h >= rectB.y + rectB.h
       : rectB.y + rectB.h >= rectA.y + rectA.h
   }
-  // 高性能去重;
+  // range高性能去重;
   distinct() {
     let tempObj = {}
     let len = this.ranges.length
@@ -157,8 +161,9 @@ export default class Selection {
     }
     tempObj = null
   }
-  drawRangeBg(flag) {
-    const currRange = this.ranges[0]
+  // 默认以第一个range同步到native来绘制拖蓝
+  drawRangeBg(range) {
+    const currRange = range || this.ranges[0]
     if (!currRange) return
     nativeSelection.removeAllRanges()
     nativeSelection.addRange(this.createNativeRange(currRange))
