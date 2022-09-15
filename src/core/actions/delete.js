@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-14 10:19:01
+ * @LastEditTime: 2022-09-15 10:11:45
  */
 export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
@@ -30,8 +30,6 @@ export default function () {
     del.call(this, range, false)
   })
   Promise.resolve().then(() => {
-    this.selection.ranges.forEach((range) => {
-      range.updateCaret()
-    })
+    this.selection.updateCaret()
   })
 }

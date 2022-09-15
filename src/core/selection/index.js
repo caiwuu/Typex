@@ -20,13 +20,13 @@ export default class Selection {
           container: range.startContainer,
           offset: range.startOffset,
           range,
-          flag: 'start',
+          pointName: 'start',
         },
         {
           container: range.endContainer,
           offset: range.endOffset,
           range,
-          flag: 'end',
+          pointName: 'end',
         }
       )
     })
@@ -107,6 +107,23 @@ export default class Selection {
     range.setEnd(endContainer, endOffset)
     return range
   }
+  /**
+   * 在指定容器指定位置发生内容平移，该位置右侧的range锚点需要跟随平移
+   * @param {*} container 容器
+   * @param {*} position 位置
+   * @param {*} distance 平移距离 负左正右
+   */
+  updatePoints(container, position, distance) {
+    this.rangePoints.forEach((point) => {
+      if (point.container === container && position <= point.offset) {
+        point.range[point.pointName + 'Offset'] += distance
+      }
+    })
+  }
+  /**
+   * range更新 追加ranges或者重新设置ranges
+   * @param {*} multiple
+   */
   updateRanges(multiple) {
     // 选区的创建结果需要在宏任务中获取.
     setTimeout(() => {
@@ -120,9 +137,13 @@ export default class Selection {
       this.updateCaret()
     })
   }
-  // 光标更新
+  /**
+   * 光标视图更新
+   * @param {*} drawCaret
+   */
   updateCaret(drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
+    this.distinct()
     drawCaret && this.drawRangeBg()
   }
   _isCoverd(rectA, rectB) {
@@ -130,13 +151,16 @@ export default class Selection {
       ? rectA.y + rectA.h >= rectB.y + rectB.h
       : rectB.y + rectB.h >= rectA.y + rectA.h
   }
-  // range高性能去重;
+  // 光标高性能去重;
   distinct() {
     let tempObj = {}
     let len = this.ranges.length
+    if (len < 2) return
     for (let index = 0; index < len; index++) {
       const range = this.ranges[index]
-      const key = range.startContainer.position + range.caret.rect.x + range.caret.rect.y
+      const path = this.editor.queryPath(range.startContainer)
+      const key = `${path.position}-${range.caret.rect.x}-${range.caret.rect.y}`
+      console.log(key)
       if (!tempObj[key]) {
         // 这里解决当两个光标在同一行又不在同一个节点上却又重合的情况，通常在跨行内节点会出现，这时应该当作重复光标去重
         const covereds = Object.entries(tempObj).filter(
@@ -163,8 +187,8 @@ export default class Selection {
   }
   // 默认以第一个range同步到native来绘制拖蓝
   drawRangeBg(range) {
-    const currRange = range || this.ranges[0]
-    if (!currRange) return
+    const currRange = range || this.getRangeAt(0)
+    if (!currRange || currRange.collapsed) return
     nativeSelection.removeAllRanges()
     nativeSelection.addRange(this.createNativeRange(currRange))
   }

@@ -1,9 +1,9 @@
 /*
  * @Author: caiwu
- * @Description:
+ * @Description: op 原子操作
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-14 14:34:49
+ * @LastEditTime: 2022-09-15 10:55:03
  */
 function insert(path, range, str) {
   const { endOffset } = range
@@ -18,6 +18,6 @@ function del(path, range, str) {
   return {
     position: path.position,
     type: 'del',
-    op: [endOffset, str, endOffset + str.length],
+    op: [endOffset, str, endOffset - str.length],
   }
 }

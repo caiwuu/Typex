@@ -74,12 +74,12 @@ export default class Content extends Component {
             range.setStart(prevSibling, prevSibling.node.data.length)
           }
         } else {
-          range.endOffset -= 1
+          this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
         }
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
         if (prevSibling) {
-          range.setStart(prevSibling, prevSibling.node.data.length)
+          range.setEnd(prevSibling, prevSibling.node.data.length)
         }
       }
       // range.collapse(true)
