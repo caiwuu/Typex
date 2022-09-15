@@ -45,11 +45,11 @@ export default class Content extends Component {
    * @param {*} range 输入数据
    */
   onInput({ path, range, data }) {
-    const pos = range.offset
-    path.node.data = path.node.data.slice(0, pos) + data + path.node.data.slice(pos)
+    const { offset, endContainer } = range
+    path.node.data = path.node.data.slice(0, offset) + data + path.node.data.slice(offset)
+    this.props.editor.selection.updatePoints(endContainer, offset, data.length)
     this.update().then(() => {
-      range.setStart(path, range.startOffset + data.length)
-      range.collapse(true)
+      range.collapse(false)
       range.updateCaret()
     })
   }
@@ -62,7 +62,7 @@ export default class Content extends Component {
    * @memberof Content
    */
   onBackspace(path, range) {
-    const { startContainer, startOffset, endContainer, endOffset, collapsed } = range
+    const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
