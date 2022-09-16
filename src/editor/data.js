@@ -3,11 +3,22 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-12 15:26:35
+ * @LastEditTime: 2022-09-16 11:09:28
  */
 export const mockData = {
   data: {
     marks: [
+      {
+        data: {
+          marks: [
+            {
+              data: '多光标支持：按住Alt键 点击',
+              formats: { color: 'red', bold: true },
+            },
+          ],
+        },
+        formats: { paragraph: true },
+      },
       { data: '111', formats: { color: 'red' } },
       { data: '222', formats: { del: true, color: 'green' } },
       {
