@@ -8,6 +8,8 @@
 export const mockData = {
   data: {
     marks: [
+      { data: '111', formats: { color: 'red' } },
+      { data: '222', formats: { del: true, color: 'green' } },
       {
         data: {
           marks: [
@@ -19,8 +21,6 @@ export const mockData = {
         },
         formats: { paragraph: true },
       },
-      { data: '111', formats: { color: 'red' } },
-      { data: '222', formats: { del: true, color: 'green' } },
       {
         data: {
           marks: [

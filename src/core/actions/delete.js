@@ -15,6 +15,7 @@ export function del(range, force = false) {
     return
   } else {
     // 文本
+    // debugger
     let path = this.queryCommonPath(startContainer, endContainer)
     const component = path.component
     component.onBackspace(path, range, this)

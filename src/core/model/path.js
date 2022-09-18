@@ -175,7 +175,7 @@ export function queryCommonPath(path1, path2) {
     const element2 = posArr2[i]
     if (element1 !== element2) break
   }
-  const commonPosition = path1.position.slice(0, i * 2 - 1)
+  const commonPosition = posArr1.slice(0, i).join('-')
   return queryPathByPosition(commonPosition, rootPath)
 }
 /**

@@ -124,7 +124,7 @@ class Formater {
     /**
      * 当前格式和上一个相同
      */
-    if (prevPath.node.formats[key] === prevPath.node.formats[key]) return true
+    if (prevPath.node.formats[key] === path.node.formats[key]) return true
   }
   // 公共格式提取分组法
   group(group, index, r = []) {

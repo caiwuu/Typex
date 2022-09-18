@@ -41,6 +41,7 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
     case 'up':
     case 'down':
       const d = direction === 'up' ? 'left' : 'right'
+      const d2 = direction === 'up' ? 'right' : 'left'
       this.selection.ranges.forEach((range) => {
         moveOneRange.call(this, range, d, shiftKey)
       })
