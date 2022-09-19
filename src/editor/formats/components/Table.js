@@ -3,12 +3,12 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-29 13:42:33
+ * @LastEditTime: 2022-09-19 14:39:58
  */
-import { Content, createRef } from '@/core'
+import { createRef } from '@/core'
 import formater from '..'
 import Block from './Block'
-export class Table extends Content {
+export class Table extends Block {
   render() {
     return (
       <table border='1' style='border-collapse:collapse;width:600px'>
@@ -17,7 +17,7 @@ export class Table extends Content {
     )
   }
 }
-export class Row extends Content {
+export class Row extends Block {
   render() {
     return <tr>{formater.render(this.props.path.children)}</tr>
   }

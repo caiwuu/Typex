@@ -3,10 +3,11 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-02 10:19:43
+ * @LastEditTime: 2022-09-19 14:39:32
  */
 import { Content, getVnOrIns, getVnOrElm } from '@/core'
 export default class Block extends Content {
+  _type = 'block'
   /**
    * @desc: 获取块级根节点
    * @return {*}

@@ -144,6 +144,7 @@ export default class Selection {
   updateCaret(drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
     this.distinct()
+    console.log(drawCaret)
     drawCaret && this.drawRangeBg()
   }
   _isCoverd(rectA, rectB) {
@@ -188,7 +189,7 @@ export default class Selection {
   // 默认以第一个range同步到native来绘制拖蓝
   drawRangeBg(range) {
     const currRange = range || this.getRangeAt(0)
-    if (!currRange || currRange.collapsed) return
+    if (!currRange) return
     nativeSelection.removeAllRanges()
     nativeSelection.addRange(this.createNativeRange(currRange))
   }

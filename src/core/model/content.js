@@ -1,6 +1,7 @@
 import Component from '../view/component'
 import { computeLen } from '../utils'
 export default class Content extends Component {
+  _type = 'inline'
   constructor(props) {
     super(props)
     this.initState()
@@ -108,26 +109,26 @@ export default class Content extends Component {
       if (next) return next.component.onCaretEnter(next, range, !isStart)
     }
   }
-  /**
-   *
-   * 箭头上动作
-   * @param {*} path 路径
-   * @param {*} range 区间
-   * @memberof Content
-   */
-  onArrowUp(path, range) {
-    console.error('组件未实现onArrowUp方法')
-  }
-  /**
-   *
-   * 箭头下动作
-   * @param {*} path 路径
-   * @param {*} range 区间
-   * @memberof Content
-   */
-  onArrowDown(path, range) {
-    console.error('组件未实现onArrowDown方法')
-  }
+  // /**
+  //  *
+  //  * 箭头上动作
+  //  * @param {*} path 路径
+  //  * @param {*} range 区间
+  //  * @memberof Content
+  //  */
+  // onArrowUp(path, range) {
+  //   console.error('组件未实现onArrowUp方法')
+  // }
+  // /**
+  //  *
+  //  * 箭头下动作
+  //  * @param {*} path 路径
+  //  * @param {*} range 区间
+  //  * @memberof Content
+  //  */
+  // onArrowDown(path, range) {
+  //   console.error('组件未实现onArrowDown方法')
+  // }
   /**
    *
    * 箭头右动作
@@ -172,6 +173,7 @@ export default class Content extends Component {
       switch (name) {
         case 'arrowLeft':
         case 'arrowRight':
+          let res
           if (range.d === 0) {
             range.d = name === 'arrowLeft' ? -1 : name === 'arrowRight' ? 1 : 0
           }
@@ -179,18 +181,15 @@ export default class Content extends Component {
             (range.offset === 0 && name === 'arrowLeft') ||
             (range.offset === path.len && name === 'arrowRight')
           ) {
-            this.onCaretLeave(path, range, range.offset === 0)
+            res = this.onCaretLeave(path, range, range.offset === 0)
           } else {
             this._invokeAction(method, path, range, ...args)
+            res = { path, range }
           }
           if (!shiftKey) {
             range.collapse(name === 'arrowLeft')
           }
-          break
-
-        default:
-          this._invokeAction(method, path, range, ...args)
-          break
+          return res
       }
     }
   }
