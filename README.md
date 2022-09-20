@@ -401,10 +401,8 @@ this.editor.emit('caretMove', {
        return loop.call(this, range, direction, initialCaretInfo, currCaretInfo, lineChanged, shiftKey)
      }
      ```
-   
-     
 
-​                 ![image-20220919170408491](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220919170408491.png)
+​              ![image-20220919170408491](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220919170408491.png)
 
 ​				
 
