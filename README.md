@@ -328,80 +328,86 @@ this.editor.emit('caretMove', {
 
 4. 光标核心原理
 
-   光标定位：光标位置是通过在range container 的offset位置插入一个空text标签，获取text坐标之后再删除text标签并且重新连接被分割的container。位置测量被单独封装成Measure测量类，源码可在caret.js中查看。
+   - **光标定位**：光标位置是通过在range container 的offset位置插入一个空text标签，获取text坐标之后再删除text标签并且重新连接被分割的container。位置测量被单独封装成Measure测量类，源码可在caret.js中查看。
    
-   ```js
-   getRect(range) {
-       return this.measure.measure(range.container, range.offset)
-    }
-   ```
+     ```
+     getRect(range) {
+         return this.measure.measure(range.container, range.offset)
+      }
+     ```
    
+     
    
+   - **光标移动**：光标移动分为**水平移动**和**垂直移动**
    
-   光标移动：光标移动分为**水平移动**和**垂直移动**
+     水平移动：水平移动比较简单，只需要计算range当前位置offset加减1即可，跨标签的时候需额外设置container。
+   
+     垂直移动：垂直移动可以分解为N步的水平移动，难点在于如何确定N。本编辑器采用状态回溯法确定最佳N。具体过程为让光标朝一个水平方向移动，在检测到跨行之后记录每次移动和初始位置的距离差值。而这其中的难点又在于如何判断跨行，关键代码如下
+   
+     ```
+     // 跨行判断
+     function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
+       // 标识光标是否在同一行移动
+       let sameLine = true
+       // 判断自动折行(非结构层面的换行,如一行文字太长被浏览器自动换行的情况)
+       // 这种情况第一行必定会占满整个屏幕宽度，只需要判断前后光标位置是否为一个屏幕宽度减去一个字符宽度即可
+       // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
+       if (
+         Math.abs(currCaretInfo.x - prevCaretInfo.x) >
+         editor.ui.body.offsetWidth - 2 * currCaretInfo.h
+       ) {
+         sameLine = false
+       }
+       // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
+       if (currCaretInfo.belongBlock !== prevCaretInfo.belongBlock) {
+         sameLine = false
+       }
+       //光标Y坐标和参考点相同说明光标还在本行，最理想的情况放在最后判断
+       if (currCaretInfo.y === initialCaretInfo.y) {
+         sameLine = true
+       }
+       return sameLine
+     }
+     
+     // 循环移动
+     function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, shiftKey) {
+       if (range.collapsed) {
+         range.d = 0
+       }
+       const { path } = horizontalMove.call(this, range, direction, shiftKey) || {}
+       if (!path) return
+       if (!lineChanged) {
+         range.updateCaret(false)
+       } else {
+         range.updateCaret(false)
+         const belongBlock = getBelongBlock(path)
+         const currCaretInfo = { ...range.caret.rect, belongBlock },
+           preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x),
+           currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x),
+           sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
+         if (!(currDistance <= preDistance && sameLine)) {
+           const d = direction === 'left' ? 'right' : 'left'
+           horizontalMove.call(this, range, d, shiftKey)
+           range.updateCaret(false)
+           return
+         }
+       }
+       const belongBlock = getBelongBlock(path)
+       const currCaretInfo = { ...range.caret.rect, belongBlock },
+         sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
+       if (!sameLine) {
+         lineChanged = true
+       }
+       return loop.call(this, range, direction, initialCaretInfo, currCaretInfo, lineChanged, shiftKey)
+     }
+     ```
+   
+     
 
-- 水平移动：水平移动比较简单，只需要计算range当前位置offset加减1即可，跨标签的时候需额外设置container。
-- 垂直移动：垂直移动可以分解为N步的水平移动，难点在于如何确定N。本编辑器采用状态回溯法确定最佳N。具体过程为让光标朝一个水平方向移动，在检测到跨行之后记录每次移动和初始位置的距离差值。而这其中的难点又在于如何判断跨行，关键代码如下
+​              ![image-20220919170408491](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220919170408491.png)
 
-![image-20220919170408491](https://cdn.jsdelivr.net/gh/caiwuu/image/image-20220919170408491.png)
+​				
 
-```js
-// 跨行判断
-function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
-  // 标识光标是否在同一行移动
-  let sameLine = true
-  // 判断自动折行(非结构层面的换行,如一行文字太长被浏览器自动换行的情况)
-  // 这种情况第一行必定会占满整个屏幕宽度，只需要判断前后光标位置是否为一个屏幕宽度减去一个字符宽度即可
-  // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
-  if (
-    Math.abs(currCaretInfo.x - prevCaretInfo.x) >
-    editor.ui.body.offsetWidth - 2 * currCaretInfo.h
-  ) {
-    sameLine = false
-  }
-  // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
-  if (currCaretInfo.belongBlock !== prevCaretInfo.belongBlock) {
-    sameLine = false
-  }
-  //光标Y坐标和参考点相同说明光标还在本行，最理想的情况放在最后判断
-  if (currCaretInfo.y === initialCaretInfo.y) {
-    sameLine = true
-  }
-  return sameLine
-}
-
-// 循环移动
-function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, shiftKey) {
-  if (range.collapsed) {
-    range.d = 0
-  }
-  const { path } = horizontalMove.call(this, range, direction, shiftKey) || {}
-  if (!path) return
-  if (!lineChanged) {
-    range.updateCaret(false)
-  } else {
-    range.updateCaret(false)
-    const belongBlock = getBelongBlock(path)
-    const currCaretInfo = { ...range.caret.rect, belongBlock },
-      preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x),
-      currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x),
-      sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
-    if (!(currDistance <= preDistance && sameLine)) {
-      const d = direction === 'left' ? 'right' : 'left'
-      horizontalMove.call(this, range, d, shiftKey)
-      range.updateCaret(false)
-      return
-    }
-  }
-  const belongBlock = getBelongBlock(path)
-  const currCaretInfo = { ...range.caret.rect, belongBlock },
-    sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
-  if (!sameLine) {
-    lineChanged = true
-  }
-  return loop.call(this, range, direction, initialCaretInfo, currCaretInfo, lineChanged, shiftKey)
-}
-```
 
 
 
