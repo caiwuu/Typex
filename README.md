@@ -326,9 +326,19 @@ this.editor.emit('caretMove', {
 })
 ```
 
-4. 光标位置计算核心原理
+4. 光标核心原理
 
-   光标移动分为**水平移动**和**垂直移动**
+   光标定位：光标位置是通过在range container 的offset位置插入一个空text标签，获取text坐标之后再删除text标签并且重新连接被分割的container。位置测量被单独封装成Measure测量类，源码可在caret.js中查看。
+   
+   ```js
+   getRect(range) {
+       return this.measure.measure(range.container, range.offset)
+    }
+   ```
+   
+   
+   
+   光标移动：光标移动分为**水平移动**和**垂直移动**
 
 - 水平移动：水平移动比较简单，只需要计算range当前位置offset加减1即可，跨标签的时候需额外设置container。
 - 垂直移动：垂直移动可以分解为N步的水平移动，难点在于如何确定N。本编辑器采用状态回溯法确定最佳N。具体过程为让光标朝一个水平方向移动，在检测到跨行之后记录每次移动和初始位置的距离差值。而这其中的难点又在于如何判断跨行，关键代码如下

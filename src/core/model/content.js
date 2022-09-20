@@ -160,9 +160,11 @@ export default class Content extends Component {
     console.error('组件未实现onEnter方法')
   }
   getPrevPath(path) {
+    if (!path) return null
     return path.prevSibling || this.getPrevPath(path.parent)
   }
   getNextPath(path) {
+    if (!path) return null
     return path.nextSibling || this.getNextPath(path.parent)
   }
   caretMove(name, path, range, ...args) {

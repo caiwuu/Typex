@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-29 14:08:19
+ * @LastEditTime: 2022-09-20 14:54:11
  */
 import { Content } from '@/core'
 export default class Image extends Content {
@@ -35,22 +35,9 @@ export default class Image extends Content {
     this.props.editor.selection.updateCaret()
   }
   onCaretEnter(path, range, isStart) {
-    range.setStart(path.parent, path.index + isStart ? 0 : 1)
+    range.set(path.parent, path.index + isStart ? 0 : 1)
+    return { path, range }
   }
-  /**
-   * 箭头左动作
-   * @param {*} path 路径
-   * @param {*} range 区间
-   * @memberof Content
-   */
-  // onArrowLeft(path, range) {
-  //   console.log(path, range)
-  //   range.setStart(path.parent, 0)
-  // }
-  // onArrowLeft(path, range) {
-  //   console.log(path, range)
-  //   range.setStart(path.parent, 0)
-  // }
   get contentLength() {
     return 1
   }

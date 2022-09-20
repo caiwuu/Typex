@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-19 16:02:20
+ * @LastEditTime: 2022-09-20 15:13:38
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -97,17 +97,17 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
   if (range.collapsed) {
     range.d = 0
   }
+  // debugger
   const { path } = horizontalMove.call(this, range, direction, shiftKey) || {}
   if (!path) return
-  if (!lineChanged) {
-    range.updateCaret(false)
-  } else {
-    range.updateCaret(false)
+  range.updateCaret(false)
+  if (lineChanged) {
     const belongBlock = getBelongBlock(path)
-    const currCaretInfo = { ...range.caret.rect, belongBlock },
-      preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x),
-      currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x),
-      sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
+    const currCaretInfo = { ...range.caret.rect, belongBlock }
+    const preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x)
+    const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
+    // 标识前后光标是否在同一行
+    const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
     if (!(currDistance <= preDistance && sameLine)) {
       const d = direction === 'left' ? 'right' : 'left'
       horizontalMove.call(this, range, d, shiftKey)
@@ -116,8 +116,8 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
     }
   }
   const belongBlock = getBelongBlock(path)
-  const currCaretInfo = { ...range.caret.rect, belongBlock },
-    sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
+  const currCaretInfo = { ...range.caret.rect, belongBlock }
+  const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
   if (!sameLine) {
     lineChanged = true
   }
