@@ -143,7 +143,7 @@ export default class Selection {
    */
   updateCaret(drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
-    this.distinct()
+    this.rangeCount > 1 && this.distinct()
     drawCaret && this.drawRangeBg()
   }
   _isCoverd(rectA, rectB) {

@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-20 15:13:38
+ * @LastEditTime: 2022-09-20 17:03:43
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -97,12 +97,11 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
   if (range.collapsed) {
     range.d = 0
   }
-  // debugger
   const { path } = horizontalMove.call(this, range, direction, shiftKey) || {}
   if (!path) return
   range.updateCaret(false)
+  const belongBlock = getBelongBlock(path)
   if (lineChanged) {
-    const belongBlock = getBelongBlock(path)
     const currCaretInfo = { ...range.caret.rect, belongBlock }
     const preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x)
     const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
@@ -115,7 +114,6 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
       return
     }
   }
-  const belongBlock = getBelongBlock(path)
   const currCaretInfo = { ...range.caret.rect, belongBlock }
   const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
   if (!sameLine) {
@@ -160,7 +158,7 @@ export default function caretMove({ direction, drawCaret, shiftKey }) {
 
       break
   }
-  // 在下一个事件循环中绘制更新光标UI
+  // 在事件循环末尾绘制更新光标UI
   Promise.resolve().then(() => {
     this.selection.updateCaret(drawCaret)
   })
