@@ -35,7 +35,7 @@ export default class Image extends Content {
     this.props.editor.selection.updateCaret()
   }
   onCaretEnter(path, range, isStart) {
-    range.set(path.parent, path.index + isStart ? 0 : 1)
+    range.set(path.elm.parentNode, path.index + isStart ? 0 : 1)
     return { path, range }
   }
   get contentLength() {
