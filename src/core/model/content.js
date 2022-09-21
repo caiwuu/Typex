@@ -29,17 +29,6 @@ export default class Content extends Component {
   }
 
   /**
-   * 内容长度
-   * @readonly
-   * @memberof Content
-   */
-  get contentLength() {
-    return this.props.path.children.reduce((prev, path) => {
-      return prev + computeLen(path)
-    }, 0)
-  }
-
-  /**
    * 输入处理
    * @param {*} path 路径
    * @param {*} range 区间
@@ -56,7 +45,6 @@ export default class Content extends Component {
   }
 
   /**
-   *
    * 删除动作
    * @param {*} path 路径
    * @param {*} range 区间
@@ -91,7 +79,6 @@ export default class Content extends Component {
   }
   // 光标进入
   onCaretEnter(path, range, isStart) {
-    // debugger
     if (isStart) {
       range.set(path, 0)
     } else {
@@ -109,26 +96,7 @@ export default class Content extends Component {
       if (next) return next.component.onCaretEnter(next, range, !isStart)
     }
   }
-  // /**
-  //  *
-  //  * 箭头上动作
-  //  * @param {*} path 路径
-  //  * @param {*} range 区间
-  //  * @memberof Content
-  //  */
-  // onArrowUp(path, range) {
-  //   console.error('组件未实现onArrowUp方法')
-  // }
-  // /**
-  //  *
-  //  * 箭头下动作
-  //  * @param {*} path 路径
-  //  * @param {*} range 区间
-  //  * @memberof Content
-  //  */
-  // onArrowDown(path, range) {
-  //   console.error('组件未实现onArrowDown方法')
-  // }
+
   /**
    *
    * 箭头右动作
@@ -146,7 +114,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  onArrowLeft(path, range, shiftKey) {
+  onArrowLeft(path, range) {
     range.offset -= 1
   }
   /**

@@ -3,11 +3,10 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-15 10:11:45
+ * @LastEditTime: 2022-09-21 10:13:55
  */
 export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
-  // if (range.collapsed) {
   const { endContainer, endOffset, startContainer } = range
   // 非文本
   if (endContainer.nodeType !== 3) {
@@ -15,15 +14,12 @@ export function del(range, force = false) {
     return
   } else {
     // 文本
-    // debugger
     let path = this.queryCommonPath(startContainer, endContainer)
     const component = path.component
     component.onBackspace(path, range, this)
   }
-  // } else {
-  console.log(this.queryCommonPath(endContainer, endContainer))
-  range.collapse(false)
-  // }
+  // console.log(this.queryCommonPath(endContainer, endContainer))
+  range.collapse(true)
 }
 
 export default function () {

@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-19 14:39:32
+ * @LastEditTime: 2022-09-21 17:08:27
  */
 import { Content, getVnOrIns, getVnOrElm } from '@/core'
 export default class Block extends Content {
@@ -21,6 +21,34 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
+  onBackspace(path, range) {
+    console.log(this.$BR)
+    const { endContainer, endOffset, collapsed } = range
+    // 选区折叠
+    if (collapsed) {
+      if (endOffset > 0) {
+        path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
+        if (path.node.data === '') {
+          const prevSibling = this.getPrevPath(path).lastLeaf
+          path.delete()
+          if (prevSibling) {
+            range.setStart(prevSibling, prevSibling.node.data.length)
+          }
+        } else {
+          this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
+        }
+      } else {
+        const prevSibling = this.getPrevPath(path).lastLeaf
+        if (prevSibling) {
+          range.setEnd(prevSibling, prevSibling.node.data.length)
+        }
+      }
+      // range.collapse(true)
+    } else {
+      console.log('TODO')
+    }
+    this.update(path, range)
+  }
   // onBackspace(path, range) {
   //   const startOffset = range.startOffset
   //   if (startOffset > 0) {

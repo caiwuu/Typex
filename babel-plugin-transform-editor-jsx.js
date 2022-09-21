@@ -103,7 +103,8 @@ module.exports = function (babel) {
     } else if (path.isJSXExpressionContainer()) {
       // 注释转化成空字符串节点，空串不会被渲染函数处理
       if (path.get('expression').isJSXEmptyExpression()) {
-        return t.stringLiteral('')
+        // t.stringLiteral('')
+        return null
       } else {
         return path.node.expression
       }
