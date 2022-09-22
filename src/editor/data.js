@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-19 10:05:41
+ * @LastEditTime: 2022-09-22 17:30:27
  */
 export const mockData = {
   data: {
@@ -25,8 +25,12 @@ export const mockData = {
         data: {
           marks: [
             {
+              data: '36px',
+              formats: { color: 'green', fontSize: '36px' },
+            },
+            {
               data: '12px',
-              formats: { color: 'green', fontSize: '12px' },
+              formats: { color: 'red', fontSize: '12px' },
             },
           ],
         },

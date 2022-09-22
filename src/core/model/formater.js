@@ -9,7 +9,7 @@ class Formater {
   inject(propName, prop) {
     this[propName] = prop
   }
-  render(paths) {
+  render(paths, flag) {
     const gs = this.group(
       {
         paths: paths,
@@ -17,7 +17,7 @@ class Formater {
       },
       0
     )
-    const vn = this.generateGroups(gs)
+    const vn = this.generateGroups(gs, flag)
     return vn
   }
   invokeRender(vn, current) {
@@ -33,7 +33,7 @@ class Formater {
     }
     return basePath
   }
-  generateGroups(gs) {
+  generateGroups(gs, flag) {
     return gs.map((g) => {
       let componentQuene
       const formatQuene = this.getFormats(g.commonFormats)
@@ -84,7 +84,7 @@ class Formater {
           if (!pv) pv = res
         }
         if (g.children[0].commonFormats) {
-          vn.children = this.generateGroups(g.children)
+          vn.children = this.generateGroups(g.children, flag)
         } else {
           if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
             throw '格式标记不合法,文本格式不可用于标记非文本的结构'

@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-21 17:08:27
+ * @LastEditTime: 2022-09-22 17:31:32
  */
 import { Content, getVnOrIns, getVnOrElm } from '@/core'
 export default class Block extends Content {
@@ -12,8 +12,9 @@ export default class Block extends Content {
    * @desc: 获取块级根节点
    * @return {*}
    */
-  getBlockRoot() {
-    return getVnOrElm(getVnOrIns(this))
+  getContentContainer(elm) {
+    if (elm.nodeName === 'EDITOR-CONTENT') return elm
+    return this.getContentContainer(elm.parentNode)
   }
   /**
    * @desc: 删除动作
@@ -28,7 +29,13 @@ export default class Block extends Content {
     if (collapsed) {
       if (endOffset > 0) {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
-        if (path.node.data === '') {
+        if (!this.props.path.len) {
+          console.log(this.props)
+          const contentContainer = this.getContentContainer(this.props.path.children[0].elm)
+          console.log(contentContainer)
+          // path.delete()
+          range.setStart(contentContainer, 0)
+        } else if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
           if (prevSibling) {
