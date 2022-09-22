@@ -26,6 +26,7 @@ class Editor {
   }
   mount(id) {
     mount.call(this, id)
+    return this
   }
   on(eventName, fn) {
     this.$emitter.on(eventName, fn)

@@ -19,8 +19,8 @@ export default class Paragraph extends Block {
         </Static>
         <editor-content>
           {/* {this.props.path.len ? formater.render(this.props.path.children) : <br />} */}
-          {formater.render(this.props.path.children)}
-          {this.props.path.len ? '' : <br />}
+          {formater.render(this.props.path.children, this.props.path.len)}
+          {/* {this.props.path.len ? '' : <br />} */}
         </editor-content>
       </div>
     )

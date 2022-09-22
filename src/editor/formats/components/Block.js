@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-22 17:31:32
  */
-import { Content, getVnOrIns, getVnOrElm } from '@/core'
+import { Content } from '@/core'
 export default class Block extends Content {
   _type = 'block'
   /**
@@ -30,11 +30,7 @@ export default class Block extends Content {
       if (endOffset > 0) {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
         if (!this.props.path.len) {
-          console.log(this.props)
-          const contentContainer = this.getContentContainer(this.props.path.children[0].elm)
-          console.log(contentContainer)
-          // path.delete()
-          range.setStart(contentContainer, 0)
+          this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
         } else if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
@@ -46,8 +42,17 @@ export default class Block extends Content {
         }
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
+        if (!this.props.path.len) {
+          const p = this.props.path.parent.component
+          console.log(p)
+          this.props.path.delete()
+          console.log(p)
+          p.update().then(() => {
+            console.log(p)
+          })
+        }
         if (prevSibling) {
-          range.setEnd(prevSibling, prevSibling.node.data.length)
+          range.setStart(prevSibling, prevSibling.node.data.length)
         }
       }
       // range.collapse(true)
