@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-13 15:04:24
+ * @LastEditTime: 2022-09-23 12:19:39
  */
 import { getVnOrElm, getVnOrPath } from '../mappings'
 import { del } from './delete'
@@ -13,8 +13,9 @@ function input(range, data) {
   const { startContainer: elm } = range
   let path = getVnOrPath(getVnOrElm(elm))
   if (path) {
-    if (path.node.type !== 'text') {
+    if (path.vn.type !== 'text') {
       path = path.firstLeaf
+      range.setEnd(path, 0)
     }
     const component = path.parent.component
     component.onInput({ path, range, data })

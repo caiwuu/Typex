@@ -3,14 +3,14 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-21 10:13:55
+ * @LastEditTime: 2022-09-23 10:55:36
  */
 export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
   const { endContainer, endOffset, startContainer } = range
   // 非文本
   if (endContainer.nodeType !== 3) {
-    console.log(this.queryPath(endContainer.childNodes[endOffset - 1]))
+    // console.log(this.queryPath(endContainer.childNodes[endOffset - 1]))
     return
   } else {
     // 文本

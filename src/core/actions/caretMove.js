@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-20 17:03:43
+ * @LastEditTime: 2022-09-23 13:57:58
  */
 const actionMap = {
   left: 'arrowLeft',
@@ -20,8 +20,9 @@ const actionMap = {
  * @returns
  */
 function queryPath(ele, offset = 0, editor) {
+  const path = editor.queryPath(ele)
+  if (path) return path
   if (ele.nodeType !== 3) return editor.queryPath(ele.childNodes[(offset || 1) - 1])
-  return editor.queryPath(ele)
 }
 
 /**

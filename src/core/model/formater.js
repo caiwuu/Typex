@@ -61,7 +61,6 @@ class Formater {
           const fmt = componentQuene[0].fmt
           const pv = fmt.render(null, { path, editor: this.editor }, h)
           // 为所有component类型的path映射vnode
-          console.log(pv)
           setVnPath(path, pv)
           return pv
 
@@ -79,7 +78,6 @@ class Formater {
             }
             // 处理标签格式 嵌套处理
             vn = this.invokeRender(vn, current)
-            console.log(vn)
             if (!pv) pv = vn
           }
           // 处理属性格式
@@ -97,10 +95,19 @@ class Formater {
             if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
               throw '格式标记不合法,文本格式不可用于标记非文本的结构'
             const mergedTextPath = this.mergeTextPath(g.children)
-            const vtext = h('text', {}, [mergedTextPath.node.data])
-            setVnPath(mergedTextPath, vtext)
+            // const vtext = h('text', {}, [mergedTextPath.node.data])
+            // setVnPath(mergedTextPath, vtext)
+            // vn.children = [vtext]
+            // if (flag === 0) vn.children.push(h('br'))
+            let vtext
+            if (flag === 0) {
+              vtext = h('br')
+              setVnPath(mergedTextPath, vn)
+            } else {
+              vtext = h('text', {}, [mergedTextPath.node.data])
+              setVnPath(mergedTextPath, vtext)
+            }
             vn.children = [vtext]
-            if (flag === 0) vn.children.push(h('br'))
           }
           return pv
         }

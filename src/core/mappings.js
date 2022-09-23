@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-19 12:00:06
+ * @LastEditTime: 2022-09-23 13:57:07
  */
 const VNElmMap = new WeakMap()
 const VNInsMap = new WeakMap()
@@ -12,11 +12,14 @@ const pathVNMap = new WeakMap()
 function getVnOrPath(key) {
   // 通过vn找path
   if (key._isVnode) {
+    const path = pathVNMap.get(key)
+    if (path) return path
     if (key.type === 'text') {
       return pathVNMap.get(key)
     } else {
       const ins = getVnOrIns(key)
-      return pathVNMap.get(ins._$pv)
+      if (ins) return pathVNMap.get(ins._$pv)
+      return null
     }
 
     // 通过path找vn

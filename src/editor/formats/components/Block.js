@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-22 17:31:32
+ * @LastEditTime: 2022-09-23 10:51:33
  */
 import { Content } from '@/core'
 export default class Block extends Content {
@@ -30,7 +30,7 @@ export default class Block extends Content {
       if (endOffset > 0) {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
         if (!this.props.path.len) {
-          this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
+          range.setStart(path, 0)
         } else if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
