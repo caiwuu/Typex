@@ -95,10 +95,6 @@ class Formater {
             if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
               throw '格式标记不合法,文本格式不可用于标记非文本的结构'
             const mergedTextPath = this.mergeTextPath(g.children)
-            // const vtext = h('text', {}, [mergedTextPath.node.data])
-            // setVnPath(mergedTextPath, vtext)
-            // vn.children = [vtext]
-            // if (flag === 0) vn.children.push(h('br'))
             let vtext
             if (flag === 0) {
               vtext = h('br')

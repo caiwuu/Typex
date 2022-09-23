@@ -3,19 +3,11 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-23 10:51:33
+ * @LastEditTime: 2022-09-23 16:37:39
  */
 import { Content } from '@/core'
 export default class Block extends Content {
   _type = 'block'
-  /**
-   * @desc: 获取块级根节点
-   * @return {*}
-   */
-  getContentContainer(elm) {
-    if (elm.nodeName === 'EDITOR-CONTENT') return elm
-    return this.getContentContainer(elm.parentNode)
-  }
   /**
    * @desc: 删除动作
    * @param {*} path
@@ -23,7 +15,6 @@ export default class Block extends Content {
    * @return {*}
    */
   onBackspace(path, range) {
-    console.log(this.$BR)
     const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
