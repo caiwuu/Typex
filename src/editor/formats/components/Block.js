@@ -21,6 +21,7 @@ export default class Block extends Content {
       if (endOffset > 0) {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
         if (!this.props.path.len) {
+          debugger
           range.setStart(path, 0)
         } else if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
@@ -35,12 +36,9 @@ export default class Block extends Content {
         const prevSibling = this.getPrevPath(path).lastLeaf
         if (!this.props.path.len) {
           const p = this.props.path.parent.component
-          console.log(p)
           this.props.path.delete()
+          p.update()
           console.log(p)
-          p.update().then(() => {
-            console.log(p)
-          })
         }
         if (prevSibling) {
           range.setStart(prevSibling, prevSibling.node.data.length)

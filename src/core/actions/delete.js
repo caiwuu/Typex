@@ -9,16 +9,20 @@ export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
   const { endContainer, endOffset, startContainer } = range
   // 非文本
-  if (endContainer.nodeType !== 3) {
-    // console.log(this.queryPath(endContainer.childNodes[endOffset - 1]))
-    return
-  } else {
-    // 文本
-    let path = this.queryCommonPath(startContainer, endContainer)
-    const component = path.component
-    component.onBackspace(path, range, this)
-  }
+  // if (endContainer.nodeType !== 3) {
+  //   console.log(this.queryCommonPath(startContainer, endContainer))
+  //   return
+  // } else {
+  //   // 文本
+  //   let path = this.queryCommonPath(startContainer, endContainer)
+  //   const component = path.component
+  //   component.onBackspace(path, range, this)
+  // }
   // console.log(this.queryCommonPath(endContainer, endContainer))
+
+  let path = this.queryCommonPath(startContainer, endContainer)
+  const component = path.component
+  component.onBackspace(path, range, this)
   range.collapse(true)
 }
 

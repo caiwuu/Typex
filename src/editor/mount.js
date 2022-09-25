@@ -14,7 +14,7 @@ import formater from './formats'
  * @return {*}
  */
 function renderRoot(editor) {
-  return <div id='editor-root'>{formater.render([editor.$path])}</div>
+  return <div id='editor-content'>{formater.render([editor.$path])}</div>
 }
 /**
  * @desc: 挂载
@@ -23,9 +23,17 @@ function renderRoot(editor) {
  * @return {*}
  */
 export default function mount(id) {
-  this.ui.body = document.getElementById(id)
+  const body = document.getElementById(id)
+  const contentArea = genEditorBody(body)
+  this.ui.body = body
   initIntercept(this)
   formater.editor = this
   const vn = renderRoot(this, h)
-  patch(vn, this.ui.body)
+  patch(vn, contentArea)
+}
+function genEditorBody(body) {
+  const contentArea = document.createElement('div')
+  contentArea.setAttribute('id', 'editor-content')
+  body.appendChild(contentArea)
+  return contentArea
 }

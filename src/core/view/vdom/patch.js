@@ -67,11 +67,16 @@ function invokeDestroyHook(vnode, destoryQueue) {
   }
 }
 function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
+  console.log(oldCh, startIdx, endIdx)
   for (; startIdx <= endIdx; ++startIdx) {
     const vnode = oldCh[startIdx]
     if (vnode != null) {
       let destoryQueue = []
-      const dom = getVnOrElm(vnode)
+      // const dom = getVnOrElm(vnode)
+      let dom = getVnOrElm(vnode)
+      if (!dom) dom = getVnOrElm(getVnOrIns(vnode.ins || {}))
+      console.log(dom, vnode)
+      debugger
       dom && removeChild(parentElm, dom)
       invokeDestroyHook(vnode, destoryQueue)
       destoryQueue.forEach((ins) => {
@@ -163,12 +168,25 @@ function patchVnode(vnode, oldVnode) {
   if (oldVnode === vnode) return
   if (typeof vnode.type === 'function') {
     if (vnode.type.isComponent) {
+      // debugger
       // 常规组件
-      const ins = (vnode.ins = oldVnode.ins)
-      ins._$pv = vnode
-      const oldVn = getVnOrIns(ins)
-      ins.props = vnode.props
+      // const ins = (vnode.ins = oldVnode.ins)
+      // ins._$pv = vnode
+      // const oldVn = getVnOrIns(ins)
+      // ins.props = vnode.props
+      // console.log(oldVnode)
+      // const newVn = ins.render(h)
+      // patchVnode(newVn, oldVn)
+
+      const ins = new vnode.type(vnode.props)
       const newVn = ins.render(h)
+      const oldVn = getVnOrIns(oldVnode.ins)
+      const elm = getVnOrElm(oldVn)
+      vnode.ins = ins
+      ins._$pv = vnode
+      setVnIns(ins, newVn)
+      setVnElm(newVn, elm)
+      console.log(vnode, ins, oldVn)
       patchVnode(newVn, oldVn)
     } else {
       // 函数组件
@@ -195,6 +213,7 @@ function patchVnode(vnode, oldVnode) {
   }
 }
 export default function patch(vnode, oldVnode) {
+  // debugger
   insertedInsQueue.length = 0
   // 没有oldvnode 直接创建新dom
   if (isUndef(oldVnode)) {

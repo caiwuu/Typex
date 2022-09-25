@@ -8,18 +8,18 @@
 export const mockData = {
   data: {
     marks: [
-      {
-        data: {
-          marks: [
-            {
-              data: '多光标支持：按住Alt键 点击',
-              formats: { color: 'red', bold: true },
-            },
-          ],
-        },
-        formats: { paragraph: true },
-      },
-      { data: '111', formats: { color: 'red' } },
+      // {
+      //   data: {
+      //     marks: [
+      //       {
+      //         data: '多光标支持：按住Alt键 点击',
+      //         formats: { color: 'red', bold: true },
+      //       },
+      //     ],
+      //   },
+      //   formats: { paragraph: true },
+      // },
+      // { data: '111', formats: { color: 'red' } },
       { data: '222', formats: { del: true, color: 'green' } },
       {
         data: {
@@ -63,68 +63,68 @@ export const mockData = {
         },
         formats: { paragraph: true },
       },
-      {
-        data: 'world',
-        formats: { del: true, color: 'red' },
-      },
-      { data: 'eee', formats: { del: true, color: 'green' } },
-      {
-        data: 'hhhha',
-        formats: { sup: true, del: true, color: 'green', fontSize: '12px' },
-      },
-      { data: 'qqq', formats: { color: 'green' } },
-      { data: 'www', formats: { color: 'green' } },
-      {
-        data: {
-          marks: [
-            { data: 'qqq', formats: { color: 'green' } },
-            { data: 'www', formats: { color: 'green' } },
-          ],
-        },
-        formats: { paragraph: true },
-      },
-      {
-        data: {
-          marks: [
-            {
-              data: {
-                marks: [
-                  {
-                    data: {
-                      marks: [
-                        {
-                          data: '1111',
-                          formats: { color: 'red', bold: true },
-                        },
-                        {
-                          data: '333',
-                          formats: { del: true, color: 'red' },
-                        },
-                      ],
-                    },
-                    formats: { col: true },
-                  },
-                  {
-                    data: {
-                      marks: [
-                        {
-                          data: '1111',
-                          formats: { color: 'green' },
-                        },
-                      ],
-                    },
-                    formats: { col: true },
-                  },
-                ],
-              },
-              formats: { row: true },
-            },
-          ],
-        },
-        formats: {
-          table: true,
-        },
-      },
+      // {
+      //   data: 'world',
+      //   formats: { del: true, color: 'red' },
+      // },
+      // { data: 'eee', formats: { del: true, color: 'green' } },
+      // {
+      //   data: 'hhhha',
+      //   formats: { sup: true, del: true, color: 'green', fontSize: '12px' },
+      // },
+      // { data: 'qqq', formats: { color: 'green' } },
+      // { data: 'www', formats: { color: 'green' } },
+      // {
+      //   data: {
+      //     marks: [
+      //       { data: 'qqq', formats: { color: 'green' } },
+      //       { data: 'www', formats: { color: 'green' } },
+      //     ],
+      //   },
+      //   formats: { paragraph: true },
+      // },
+      // {
+      //   data: {
+      //     marks: [
+      //       {
+      //         data: {
+      //           marks: [
+      //             {
+      //               data: {
+      //                 marks: [
+      //                   {
+      //                     data: '1111',
+      //                     formats: { color: 'red', bold: true },
+      //                   },
+      //                   {
+      //                     data: '333',
+      //                     formats: { del: true, color: 'red', fontSize: '22px' },
+      //                   },
+      //                 ],
+      //               },
+      //               formats: { col: true },
+      //             },
+      //             {
+      //               data: {
+      //                 marks: [
+      //                   {
+      //                     data: '1111',
+      //                     formats: { color: 'green' },
+      //                   },
+      //                 ],
+      //               },
+      //               formats: { col: true },
+      //             },
+      //           ],
+      //         },
+      //         formats: { row: true },
+      //       },
+      //     ],
+      //   },
+      //   formats: {
+      //     table: true,
+      //   },
+      // },
     ],
   },
   formats: { root: true },

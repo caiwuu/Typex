@@ -1,4 +1,4 @@
-import { isPrimitive, isUndef, styleToObj } from '../../utils'
+import { isPrimitive, isUndef, styleToObj, uuid } from '../../utils'
 const BUILTINPROPS = ['ref', 'key', 'ns']
 const insertedInsQueue = []
 
@@ -33,14 +33,14 @@ function Element(type, key, ref, props, children) {
   let element
   if (type === 'text') {
     element = {
-      _uuid: Date.now().toString(),
+      _uuid: uuid(),
       _isVnode: true,
       type: 'text',
       children: children.join(''),
     }
   } else {
     element = {
-      _uuid: Date.now().toString(),
+      _uuid: uuid(),
       _isVnode: true,
       type,
       key,
