@@ -1,3 +1,10 @@
+/*
+ * @Author: caiwu
+ * @Description:
+ * @CreateDate:
+ * @LastEditor:
+ * @LastEditTime: 2022-09-26 13:58:43
+ */
 import { createVnode } from '@/core'
 export const nativeDocument = document
 export const nativeWindow = window

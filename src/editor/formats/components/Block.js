@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-23 16:37:39
+ * @LastEditTime: 2022-09-26 14:51:36
  */
 import { Content } from '@/core'
 export default class Block extends Content {
@@ -21,13 +21,13 @@ export default class Block extends Content {
       if (endOffset > 0) {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
         if (!this.props.path.len) {
-          debugger
+          // debugger
           range.setStart(path, 0)
         } else if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
           if (prevSibling) {
-            range.setStart(prevSibling, prevSibling.node.data.length)
+            prevSibling.component.onCaretEnter(prevSibling, range, false)
           }
         } else {
           this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
@@ -35,16 +35,14 @@ export default class Block extends Content {
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
         if (!this.props.path.len) {
-          const p = this.props.path.parent.component
+          const parent = this.props.path.parent.component
           this.props.path.delete()
-          p.update()
-          console.log(p)
+          parent.update()
         }
         if (prevSibling) {
-          range.setStart(prevSibling, prevSibling.node.data.length)
+          prevSibling.component.onCaretEnter(prevSibling, range, false)
         }
       }
-      // range.collapse(true)
     } else {
       console.log('TODO')
     }

@@ -1,5 +1,4 @@
 import Component from '../view/component'
-import { computeLen } from '../utils'
 export default class Content extends Component {
   _type = 'inline'
   constructor(props) {
@@ -71,7 +70,6 @@ export default class Content extends Component {
           range.setEnd(prevSibling, prevSibling.node.data.length)
         }
       }
-      // range.collapse(true)
     } else {
       console.log('TODO')
     }
