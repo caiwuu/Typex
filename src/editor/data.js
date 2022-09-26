@@ -25,7 +25,7 @@ export const mockData = {
         data: {
           marks: [
             {
-              data: '3',
+              data: '36px',
               formats: { color: 'green', fontSize: '36px' },
             },
             {

@@ -59,15 +59,20 @@ export default class Content extends Component {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
           if (prevSibling) {
-            range.setStart(prevSibling, prevSibling.node.data.length)
+            prevSibling.component.onCaretEnter(prevSibling, range, false)
           }
         } else {
           this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
         }
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
+        if (!this.props.path.len) {
+          const parent = this.props.path.parent.component
+          this.props.path.delete()
+          parent.update()
+        }
         if (prevSibling) {
-          range.setEnd(prevSibling, prevSibling.node.data.length)
+          prevSibling.component.onCaretEnter(prevSibling, range, false)
         }
       }
     } else {

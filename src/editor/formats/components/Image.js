@@ -9,11 +9,13 @@ import { Content } from '@/core'
 export default class Image extends Content {
   render() {
     return (
-      <img
-        onMousedown={this.onMousedown}
-        onClick={this.sizeChange}
-        {...this.props.path.node.data}
-      ></img>
+      <span>
+        <img
+          onMousedown={this.onMousedown}
+          onClick={this.sizeChange}
+          {...this.props.path.node.data}
+        ></img>
+      </span>
     )
   }
   // 阻止事件冒泡导致光标移动
@@ -33,6 +35,14 @@ export default class Image extends Content {
   }
   onAfterUpdate() {
     this.props.editor.selection.updateCaret()
+  }
+  onBackspace(path, range) {
+    const { endContainer, endOffset, collapsed } = range
+    if (collapsed) {
+      if (endOffset > 0) {
+      } else {
+      }
+    }
   }
   onCaretEnter(path, range, isStart) {
     range.set(path.elm.parentNode, path.index + isStart ? 0 : 1)
