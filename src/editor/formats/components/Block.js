@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-26 14:51:36
+ * @LastEditTime: 2022-09-26 14:53:24
  */
 import { Content } from '@/core'
 export default class Block extends Content {
@@ -21,7 +21,6 @@ export default class Block extends Content {
       if (endOffset > 0) {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
         if (!this.props.path.len) {
-          // debugger
           range.setStart(path, 0)
         } else if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
@@ -48,30 +47,4 @@ export default class Block extends Content {
     }
     this.update(path, range)
   }
-  // onBackspace(path, range) {
-  //   const startOffset = range.startOffset
-  //   if (startOffset > 0) {
-  //     path.node.data = path.node.data.slice(0, startOffset - 1) + path.node.data.slice(startOffset)
-  //     if (!this.contentLength) {
-  //       const $root = this.getBlockRoot()
-  //       path.delete()
-  //       range.setStart($root, 0)
-  //     } else if (path.node.data === '') {
-  //       const prev = this.getPrevPath(path)?.lastLeaf
-  //       path.delete()
-  //       if (prev) {
-  //         range.setStart(prev, prev.node.data.length)
-  //       }
-  //     } else {
-  //       range.startOffset -= 1
-  //     }
-  //   } else {
-  //     const prev = this.getPrevPath(path)?.lastLeaf
-  //     if (prev) {
-  //       range.setStart(prev, prev.node.data.length)
-  //     }
-  //   }
-  //   range.collapse(true)
-  //   this.update(path, range)
-  // }
 }
