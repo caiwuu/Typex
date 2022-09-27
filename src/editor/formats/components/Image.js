@@ -3,19 +3,19 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-20 14:54:11
+ * @LastEditTime: 2022-09-27 10:58:17
  */
 import { Content } from '@/core'
 export default class Image extends Content {
   render() {
     return (
-      <span>
+      <slot>
         <img
           onMousedown={this.onMousedown}
           onClick={this.sizeChange}
           {...this.props.path.node.data}
         ></img>
-      </span>
+      </slot>
     )
   }
   // 阻止事件冒泡导致光标移动
@@ -45,7 +45,7 @@ export default class Image extends Content {
     }
   }
   onCaretEnter(path, range, isStart) {
-    range.set(path.elm.parentNode, path.index + isStart ? 0 : 1)
+    range.set(path.elm, isStart ? 0 : 1)
     return { path, range }
   }
   get contentLength() {

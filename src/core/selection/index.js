@@ -66,12 +66,24 @@ export default class Selection {
     nativeSelection.collapse(parentNode, offset)
     this._resetRangesFromNative()
   }
+  // 选区转化,矫正鼠标点击的落点
+  _transformRange(nativeRange) {
+    const { startContainer, endContainer, startOffset, endOffset } = nativeRange
+    const startPath = this.editor.queryPath(startContainer)
+    const endPath = this.editor.queryPath(endContainer)
+    if (!startPath || !endPath) return null
+    if (startPath.isLeaf) {
+      console.log(222, startPath)
+    }
+    return nativeRange
+  }
   // 从native重新设置选区
   _resetRangesFromNative() {
     this.clearRanges()
     const count = nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
-      const nativeRange = nativeSelection.getRangeAt(i)
+      const nativeRange = this._transformRange(nativeSelection.getRangeAt(i))
+      if (!nativeRange) return
       this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
   }
@@ -79,7 +91,8 @@ export default class Selection {
   _extendRangesFromNative() {
     const count = nativeSelection.rangeCount
     if (count > 0) {
-      const nativeRange = nativeSelection.getRangeAt(count - 1)
+      const nativeRange = this._transformRange(nativeSelection.getRangeAt(count - 1))
+      if (!nativeRange) return
       let flag = false
       this.ranges.forEach((i) => {
         if (

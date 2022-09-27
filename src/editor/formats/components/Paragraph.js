@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-26 14:57:45
+ * @LastEditTime: 2022-09-27 10:56:01
  */
 import formater from '../index'
 import Block from './Block'
@@ -16,9 +16,9 @@ export default class Paragraph extends Block {
         {/* <div>
             <span style='background:#ddd'>静态内容 不可编辑 不可选中 它是组件的一部分</span>
           </div> */}
-        {/* <div>
-            <span style='background:#ddd'>只有通过formater.render的内容才能被编辑</span>
-          </div> */}
+        {/* <div> */}
+        <span style='background:#ddd'>只有通过formater.render的内容才能被编辑</span>
+        {/* </div> */}
         {/* </Static> */}
         {/* <editor-content> */}
         {formater.render(this.props.path.children, this.props.path.len)}
