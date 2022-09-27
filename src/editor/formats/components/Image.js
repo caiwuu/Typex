@@ -9,13 +9,13 @@ import { Content } from '@/core'
 export default class Image extends Content {
   render() {
     return (
-      <slot>
+      <swapper>
         <img
           onMousedown={this.onMousedown}
           onClick={this.sizeChange}
           {...this.props.path.node.data}
         ></img>
-      </slot>
+      </swapper>
     )
   }
   // 阻止事件冒泡导致光标移动
@@ -37,10 +37,18 @@ export default class Image extends Content {
     this.props.editor.selection.updateCaret()
   }
   onBackspace(path, range) {
-    const { endContainer, endOffset, collapsed } = range
+    const { endOffset, collapsed } = range
     if (collapsed) {
       if (endOffset > 0) {
+        const parent = this.props.path.parent.component
+        path.delete()
+        parent.update()
+        parent.onCaretEnter(this.props.path.parent, range, false)
       } else {
+        const prevSibling = this.getPrevPath(path).lastLeaf
+        if (prevSibling) {
+          prevSibling.component.onCaretEnter(prevSibling, range, false)
+        }
       }
     }
   }

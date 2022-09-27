@@ -45,7 +45,9 @@ class Formater {
           const mergedTextPath = this.mergeTextPath(g.children)
           let vtext
           if (mergedTextPath.node.data === '') {
+            console.log(g, '==', mergedTextPath)
             vtext = flag === 0 ? h('br') : false
+            setVnPath(mergedTextPath, mergedTextPath.parent.vn)
           } else {
             vtext = h('text', {}, [mergedTextPath.node.data])
             setVnPath(mergedTextPath, vtext)

@@ -98,6 +98,5 @@ export default function createEditor(options = {}) {
   // const marks = initMarks(options.data)
   const marks = mockData
   const path = createPath(marks)
-  console.log(path)
   return new Editor({ path })
 }

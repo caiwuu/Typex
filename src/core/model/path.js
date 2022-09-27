@@ -58,6 +58,7 @@ class Path {
   format({ data = '', formats = {} } = {}) {
     this.node.data = data
     this.node.formats = formats
+    this._$component = this.parent.component
   }
 
   /**
