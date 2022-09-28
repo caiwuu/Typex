@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-26 14:55:06
+ * @LastEditTime: 2022-09-28 15:20:02
  */
 export const mockData = {
   data: {
@@ -39,6 +39,15 @@ export const mockData = {
       {
         data: {
           marks: [
+            {
+              data: {
+                src: 'https://img2.baidu.com/it/u=3979034437,2878656671&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
+                alt: 'test image',
+                width: '50px',
+                height: '50px',
+              },
+              formats: { image: true },
+            },
             {
               data: {
                 src: 'https://img2.baidu.com/it/u=3979034437,2878656671&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',

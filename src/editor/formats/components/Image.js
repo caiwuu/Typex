@@ -3,18 +3,27 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-27 10:58:17
+ * @LastEditTime: 2022-09-28 15:19:34
  */
 import { Content } from '@/core'
+import Static from './Static'
+
 export default class Image extends Content {
   render() {
     return (
       <swapper>
-        <img
-          onMousedown={this.onMousedown}
-          onClick={this.sizeChange}
-          {...this.props.path.node.data}
-        ></img>
+        <div style='display:inline-block'>
+          {/* <div
+            onMousedown={this.onMousedown}
+            onClick={this.sizeChange}
+            style='display:inline-block;height:10px;width:10px;background:red;user-select:none'
+          ></div> */}
+          <img
+            onMousedown={this.onMousedown}
+            onClick={this.sizeChange}
+            {...this.props.path.node.data}
+          ></img>
+        </div>
       </swapper>
     )
   }

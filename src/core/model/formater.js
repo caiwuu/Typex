@@ -45,8 +45,11 @@ class Formater {
           const mergedTextPath = this.mergeTextPath(g.children)
           let vtext
           if (mergedTextPath.node.data === '') {
-            console.log(g, '==', mergedTextPath)
             vtext = flag === 0 ? h('br') : false
+            // 这里比较绕，设计非常巧妙抽象
+            // 改变path指向，从path层面看选区还在path-0位置
+            // 表现层因为text-0已经不适合聚焦；需要添加br防止块塌陷，光标应该聚焦在父级-0
+            // 表现层看来这里产生了混乱，不符合编程直觉；从更加抽象的path层面看是统一的；
             setVnPath(mergedTextPath, mergedTextPath.parent.vn)
           } else {
             vtext = h('text', {}, [mergedTextPath.node.data])

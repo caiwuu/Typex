@@ -151,10 +151,10 @@ export default class Content extends Component {
             range.d = name === 'arrowLeft' ? -1 : name === 'arrowRight' ? 1 : 0
           }
           if (
-            (range.offset === 0 && name === 'arrowLeft') ||
+            (range.offset <= 1 && name === 'arrowLeft') ||
             (range.offset === path.len && name === 'arrowRight')
           ) {
-            res = this.onCaretLeave(path, range, range.offset === 0 && name === 'arrowLeft')
+            res = this.onCaretLeave(path, range, range.offset <= 1 && name === 'arrowLeft')
           } else {
             this._invokeAction(method, path, range, ...args)
             res = { path, range }

@@ -66,14 +66,23 @@ export default class Selection {
     nativeSelection.collapse(parentNode, offset)
     this._resetRangesFromNative()
   }
+  _queryPath(elm) {
+    const path = this.editor.queryPath(elm)
+    if (path) return path
+    return this._queryPath(elm.parentNode)
+  }
   // 选区转化,矫正鼠标点击的落点
   _transformRange(nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset } = nativeRange
     const startPath = this.editor.queryPath(startContainer)
     const endPath = this.editor.queryPath(endContainer)
-    if (!startPath || !endPath) return null
-    if (startPath.isLeaf) {
-      console.log(222, startPath)
+    if (!startPath) {
+      const path = this._queryPath(startContainer)
+      nativeRange.setStart(path.elm, startOffset)
+    }
+    if (!endPath) {
+      const path = this._queryPath(endContainer)
+      nativeRange.setStart(path.elm, endOffset)
     }
     return nativeRange
   }

@@ -25,6 +25,13 @@ class Path {
     }
     return getVnOrElm(this.vn)
   }
+  get pathType() {
+    return typeof this.node.data === 'string' ? 3 : 1
+  }
+  get blockComponent() {
+    if (this.component._type === 'block') return this.component
+    return this.parent.blockComponent
+  }
   get vn() {
     return getVnOrPath(this)
   }
