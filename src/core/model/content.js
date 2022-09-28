@@ -81,22 +81,38 @@ export default class Content extends Component {
     this.update(path, range)
   }
   // 光标进入
-  onCaretEnter(path, range, isStart) {
+  onCaretEnter(path, range, isStart, isSameBlock) {
     if (isStart) {
-      range.set(path, 0)
+      range.set(path, isSameBlock ? 1 : 0)
     } else {
-      range.set(path, path.len)
+      range.set(path, isSameBlock ? path.len - 1 : path.len)
     }
     return { path, range }
   }
   // 光标离开
   onCaretLeave(path, range, isStart) {
+    // debugger
     if (isStart) {
       let prev = this.getPrevPath(path)?.lastLeaf
-      if (prev) return prev.component.onCaretEnter(prev, range, !isStart)
+      if (!prev) {
+        range.set(range.container, 0)
+        return null
+      }
+      if (path.blockComponent === prev.blockComponent || range.offset === 0) {
+        return prev.component.onCaretEnter(prev, range, !isStart)
+      } else {
+        this.onArrowLeft(path, range)
+        return { path, range }
+      }
     } else {
       let next = this.getNextPath(path)?.firstLeaf
-      if (next) return next.component.onCaretEnter(next, range, !isStart)
+      if (!next) return null
+      return next.component.onCaretEnter(
+        next,
+        range,
+        !isStart,
+        path.blockComponent === next.blockComponent
+      )
     }
   }
 

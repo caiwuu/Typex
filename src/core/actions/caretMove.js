@@ -44,16 +44,6 @@ function horizontalMove(range, direction, shiftKey) {
 }
 
 /**
- * 获取path所在块
- * @param {*} path
- * @returns
- */
-function getBelongBlock(path) {
-  if (path.component._type === 'block') return path.component
-  return getBelongBlock(path.parent)
-}
-
-/**
  * 光标跨行判断
  * @param {*} initialCaretInfo
  * @param {*} prevCaretInfo
@@ -74,7 +64,7 @@ function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
     sameLine = false
   }
   // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
-  if (currCaretInfo.belongBlock !== prevCaretInfo.belongBlock) {
+  if (currCaretInfo.blockComponent !== prevCaretInfo.blockComponent) {
     sameLine = false
   }
   //光标Y坐标和参考点相同说明光标还在本行，最理想的情况放在最后判断
@@ -100,10 +90,9 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
   }
   const { path } = horizontalMove.call(this, range, direction, shiftKey) || {}
   if (!path) return
-  range.updateCaret(false)
-  const belongBlock = getBelongBlock(path)
+  range.updateCaret(true)
   if (lineChanged) {
-    const currCaretInfo = { ...range.caret.rect, belongBlock }
+    const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
     const preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x)
     const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
     // 标识前后光标是否在同一行
@@ -111,11 +100,11 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
     if (!(currDistance <= preDistance && sameLine)) {
       const d = direction === 'left' ? 'right' : 'left'
       horizontalMove.call(this, range, d, shiftKey)
-      range.updateCaret(false)
+      range.updateCaret(true)
       return
     }
   }
-  const currCaretInfo = { ...range.caret.rect, belongBlock }
+  const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
   const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
   if (!sameLine) {
     lineChanged = true
@@ -131,9 +120,9 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
  * @param {*} shiftKey
  */
 function verticalMove(range, direction, shiftKey) {
-  const belongBlock = getBelongBlock(queryPath(range.container, range.offset, this))
-  const initialCaretInfo = { ...range.caret.rect, belongBlock }
-  const prevCaretInfo = { ...range.caret.rect, belongBlock }
+  const path = queryPath(range.container, range.offset, this)
+  const initialCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
+  const prevCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
   const d = direction === 'up' ? 'left' : 'right'
   loop.call(this, range, d, initialCaretInfo, prevCaretInfo, false, shiftKey)
 }
