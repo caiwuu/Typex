@@ -45,10 +45,10 @@ class Formater {
           const mergedTextPath = this.mergeTextPath(g.children)
           let vtext
           if (mergedTextPath.node.data === '') {
-            vtext = flag === 0 ? h('br') : false
-            // 这里比较绕，设计非常巧妙抽象
+            vtext = flag === 0 ? h('br') : null
+            // 这里比较绕，设计比较巧妙抽象
             // 改变path指向，从path层面看选区还在path-0位置
-            // 表现层因为text-0已经不适合聚焦；需要添加br防止块塌陷，光标应该聚焦在父级-0
+            // 表现层因为text-0已经不存在了；需要添加br防止块塌陷，光标应该聚焦在父级-0
             // 表现层看来这里产生了混乱，不符合编程直觉；从更加抽象的path层面看是统一的；
             setVnPath(mergedTextPath, mergedTextPath.parent.vn)
           } else {
@@ -100,7 +100,7 @@ class Formater {
             if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
               throw '格式标记不合法,文本格式不可用于标记非文本的结构'
             const mergedTextPath = this.mergeTextPath(g.children)
-            let vtext
+            let vtext = null
             if (flag === 0) {
               vtext = h('br')
               setVnPath(mergedTextPath, vn)
