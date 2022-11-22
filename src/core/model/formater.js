@@ -9,15 +9,15 @@ class Formater {
   inject(propName, prop) {
     this[propName] = prop
   }
-  render(paths, flag) {
+  render(path) {
     const gs = this.group(
       {
-        paths: paths,
+        paths: path.children,
         restFormats: this.types,
       },
       0
     )
-    const vn = this.generateGroups(gs, flag)
+    const vn = this.generateGroups(gs, path.len)
     return vn
   }
   invokeRender(vn, current) {

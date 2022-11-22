@@ -91,7 +91,6 @@ export default class Content extends Component {
   }
   // 光标离开
   onCaretLeave(path, range, isStart) {
-    // debugger
     if (isStart) {
       let prev = this.getPrevPath(path)?.lastLeaf
       if (!prev) {

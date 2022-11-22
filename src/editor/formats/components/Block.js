@@ -3,7 +3,7 @@
  * @Author: caiwu
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-11-21 16:27:22
+ * @LastEditTime: 2022-11-22 16:20:35
  */
 import { Content } from '@/core'
 export default class Block extends Content {
@@ -22,7 +22,6 @@ export default class Block extends Content {
         path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
         // 操作完，块内容为空的时候，text的vn会指向父级path，在UI层会渲染有个br来防止塌陷
         if (!this.props.path.len) {
-          debugger
           range.setStart(path, 0)
         } else if (path.node.data === '') {
           // 操作完，非空快，当前path为空，则删除当前path，光标移动到前一个path

@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-08-23 13:37:19
+ * @LastEditTime: 2022-11-22 16:21:18
  */
 import { createVnode as h, patch } from '@/core'
 import { initIntercept } from '@/platform'
@@ -14,7 +14,7 @@ import formater from './formats'
  * @return {*}
  */
 function renderRoot(editor) {
-  return <div id='editor-content'>{formater.render([editor.$path])}</div>
+  return <div id='editor-content'>{formater.render(editor.$path)}</div>
 }
 /**
  * @desc: 挂载

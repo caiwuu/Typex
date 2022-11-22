@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-26 14:38:01
+ * @LastEditTime: 2022-11-22 16:20:40
  */
 import { default as h, insertedInsQueue } from './createVnode'
 import {
@@ -84,7 +84,6 @@ function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
   }
 }
 function updateChildren(parentElm, newCh, oldCh) {
-  // debugger
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1

@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-22 10:02:43
+ * @LastEditTime: 2022-11-22 16:21:46
  */
 import formater from '../index'
 import Block from './Block'
@@ -13,7 +13,7 @@ export default class Root extends Block {
     const vn = (
       <div>
         {this.props.path.children.length
-          ? formater.render(this.props.path.children)
+          ? formater.render(this.props.path)
           : this.state.placeholder(h)}
       </div>
     )

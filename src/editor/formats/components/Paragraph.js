@@ -3,7 +3,7 @@
  * @Description:
  * @CreateDate:
  * @LastEditor:
- * @LastEditTime: 2022-09-27 10:56:01
+ * @LastEditTime: 2022-11-22 16:21:40
  */
 import formater from '../index'
 import Block from './Block'
@@ -21,7 +21,7 @@ export default class Paragraph extends Block {
         {/* </div> */}
         {/* </Static> */}
         {/* <editor-content> */}
-        {formater.render(this.props.path.children, this.props.path.len)}
+        {formater.render(this.props.path)}
         {/* </editor-content> */}
       </div>
     )
