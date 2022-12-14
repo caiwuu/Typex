@@ -94,15 +94,13 @@ class Path {
    */
   reArrange() {
     this.children.forEach((path, index) => {
-      const oldPosition = path.position
       const newPosition = this.position + '-' + index
-      if (oldPosition !== newPosition) {
+      if (path.position !== newPosition) {
         path.position = path.node.position = newPosition
         path.reArrange()
       }
     })
   }
-
   /**
    * @desc: 深度优先遍历
    * @param {*} fn
