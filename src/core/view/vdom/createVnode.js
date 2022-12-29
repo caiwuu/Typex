@@ -1,13 +1,16 @@
 import { isPrimitive, isUndef, styleToObj, uuid } from '../../utils'
-const BUILTINPROPS = ['ref', 'key', 'ns']
+const BUILTINPROPSKEY = ['ref', 'key', 'ns']
 const insertedInsQueue = []
+const INHERITPROPSKEY = ['ns']
 
 export default function createVnode(type, config = {}, children = []) {
   const props = {}
-  const ref = config.ref || null
-  const key = config.key || null
+  const builtinProps = {}
+  for (let propName of BUILTINPROPSKEY) {
+    builtinProps[propName] = config[propName] || null
+  }
   for (let propName in config) {
-    if (!BUILTINPROPS.includes(propName)) {
+    if (!BUILTINPROPSKEY.includes(propName)) {
       if (propName === 'style' && isPrimitive(config[propName])) {
         props[propName] = styleToObj(config[propName])
       } else {
@@ -15,9 +18,9 @@ export default function createVnode(type, config = {}, children = []) {
       }
     }
   }
-  return Element(type, key, ref, props, children.flat())
+  return Element(type, builtinProps, props, children.flat())
 }
-const genChildren = (children) =>
+const genChildren = (children, inherit) =>
   children.map((ele) => {
     if (isPrimitive(ele) || isUndef(ele)) {
       return {
@@ -26,10 +29,14 @@ const genChildren = (children) =>
         children: ele,
       }
     } else {
+      // return Object.assign(ele, inherit)
+      // Object.assign(ele, inherit)
+      // console.log(ele)
+      if (!ele.ns) ele.ns = inherit.ns // TODO mergeProps
       return ele
     }
   })
-function Element(type, key, ref, props, children) {
+function Element(type, builtinProps, props, children) {
   let element
   if (type === 'text') {
     element = {
@@ -43,14 +50,17 @@ function Element(type, key, ref, props, children) {
       _uuid: uuid(),
       _isVnode: true,
       type,
-      key,
-      ref,
+      ...builtinProps,
       props,
     }
+    const inherit = {}
+    for (let propName of INHERITPROPSKEY) {
+      inherit[propName] = element[propName]
+    }
     if (typeof type === 'function') {
-      element.props.children = genChildren(children)
+      element.props.children = genChildren(children, inherit)
     } else {
-      element.children = genChildren(children)
+      element.children = genChildren(children, inherit)
     }
   }
   // if (Object.freeze) Object.freeze(props)

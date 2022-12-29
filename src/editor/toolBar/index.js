@@ -37,7 +37,7 @@ class ToolBarItem extends Component {
         style={`color: ${this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
-          <use xlink:href={this.props.icon}></use>
+          <use xlink:href={this.props.icon} ns='http://www.w3.org/2000/svg'></use>
         </svg>
         {/* <Dialog ref={this.dialogRef}>
             <span style='color:red'>dialog</span>

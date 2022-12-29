@@ -7,7 +7,7 @@
  */
 function updateClasses(elm, vnode, oldVnode) {
   const className = (vnode?.props.class || '').trim()
-  if (className) elm.className = className
+  if (className) elm.setAttribute('class', className)
   let oClasses, nclasses
   const oClassName = (oldVnode?.props.class || '').trim()
   const nClassName = (vnode?.props.class || '').trim()

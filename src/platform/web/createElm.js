@@ -28,6 +28,9 @@ export default function createElm(vnode) {
       updateProps(vnode)
     }
   } else {
+    if (vnode.ns) {
+      console.log(vnode.type)
+    }
     elm = vnode.ns
       ? document.createElementNS(vnode.ns, vnode.type)
       : document.createElement(vnode.type)
