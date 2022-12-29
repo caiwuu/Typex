@@ -81,23 +81,31 @@ export default class Content extends Component {
     this.update(path, range)
   }
   // 光标进入
-  onCaretEnter(path, range, isStart, isSameBlock) {
+  onCaretEnter(path, range, isStart) {
     if (isStart) {
+      let prev = this.getPrevPath(path)?.lastLeaf
+      const isSameBlock = path.blockComponent === prev.blockComponent
       range.set(path, isSameBlock ? 1 : 0)
     } else {
-      range.set(path, isSameBlock ? path.len - 1 : path.len)
+      range.set(path, path.len)
     }
     return { path, range }
   }
   // 光标离开
   onCaretLeave(path, range, isStart) {
+    // 从头部离开
     if (isStart) {
       let prev = this.getPrevPath(path)?.lastLeaf
+      // 如果没有前一个path 停留在当前位置
       if (!prev) {
         range.set(range.container, 0)
         return null
       }
-      if (path.blockComponent === prev.blockComponent || range.offset === 0) {
+      /** 细节处理
+       *  同块不同文本光标左移，两个path的交界处 取前一个path的右端点
+       */
+      const isSameBlock = path.blockComponent === prev.blockComponent
+      if (isSameBlock || range.offset === 0) {
         return prev.component.onCaretEnter(prev, range, !isStart)
       } else {
         this.onArrowLeft(path, range)
@@ -106,12 +114,7 @@ export default class Content extends Component {
     } else {
       let next = this.getNextPath(path)?.firstLeaf
       if (!next) return null
-      return next.component.onCaretEnter(
-        next,
-        range,
-        !isStart,
-        path.blockComponent === next.blockComponent
-      )
+      return next.component.onCaretEnter(next, range, !isStart)
     }
   }
 
