@@ -109,8 +109,19 @@ export function styleToObj(str) {
       return prev
     }, {})
 }
+
 export function uuid() {
   return ([1e3] + -1e3 + -4e3 + -8e3).replace(/[018]/g, (c) =>
     (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
   )
+}
+
+export function mergeObj(a, b) {
+  for (let propName in b) {
+    if (b.hasOwnProperty(propName)) {
+      if (isUndef(a[propName]) && !isUndef(b[propName])) {
+        a[propName] = b[propName]
+      }
+    }
+  }
 }

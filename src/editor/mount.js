@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-11-22 16:21:18
  */
-import { createVnode as h, patch } from '@/core'
+import { createVnode as h, patch, createRef } from '@/core'
 import { initIntercept } from '@/platform'
 import formater from './formats'
 import ToolBar from './toolBar'
@@ -106,11 +106,13 @@ const tools = [
  * @param {*} h
  * @return {*}
  */
-function renderRoot(editor) {
+function renderRoot(editor, contentRef) {
   return (
     <div class='editor-wrappe'>
       <ToolBar tools={[...tools]}></ToolBar>
-      <div id='editor-content'>{formater.render(editor.$path)}</div>
+      <div id='editor-content' ref={contentRef}>
+        {formater.render(editor.$path)}
+      </div>
     </div>
   )
 }
@@ -121,17 +123,14 @@ function renderRoot(editor) {
  * @return {*}
  */
 export default function mount(id) {
-  const body = document.getElementById(id)
-  const contentArea = genEditorBody(body)
-  this.ui.body = body
+  this.ui.body = document.getElementById(id)
+  const mountDom = document.createElement('div')
+  const contentRef = createRef()
+
+  this.ui.body.appendChild(mountDom)
   initIntercept(this)
   formater.editor = this
-  const vn = renderRoot(this, h)
-  patch(vn, contentArea)
-}
-function genEditorBody(body) {
-  const contentArea = document.createElement('div')
-  contentArea.setAttribute('id', 'editor-content')
-  body.appendChild(contentArea)
-  return contentArea
+
+  patch(renderRoot(this, contentRef, h), mountDom)
+  this.ui.content = contentRef.current.children[0]
 }

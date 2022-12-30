@@ -59,7 +59,7 @@ function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
   // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
   if (
     Math.abs(currCaretInfo.x - prevCaretInfo.x) >
-    editor.ui.body.offsetWidth - 2 * currCaretInfo.h
+    editor.ui.content.offsetWidth - 2 * currCaretInfo.h
   ) {
     sameLine = false
   }

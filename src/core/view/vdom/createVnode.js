@@ -1,4 +1,4 @@
-import { isPrimitive, isUndef, styleToObj, uuid } from '../../utils'
+import { isPrimitive, isUndef, styleToObj, uuid, mergeObj } from '../../utils'
 const BUILTINPROPSKEY = ['ref', 'key', 'ns']
 const insertedInsQueue = []
 const INHERITPROPSKEY = ['ns']
@@ -32,7 +32,8 @@ const genChildren = (children, inherit) =>
       // return Object.assign(ele, inherit)
       // Object.assign(ele, inherit)
       // console.log(ele)
-      if (!ele.ns) ele.ns = inherit.ns // TODO mergeProps
+      // if (!ele.ns) ele.ns = inherit.ns // TODO mergeProps
+      mergeObj(ele, inherit)
       return ele
     }
   })
@@ -63,7 +64,6 @@ function Element(type, builtinProps, props, children) {
       element.children = genChildren(children, inherit)
     }
   }
-  // if (Object.freeze) Object.freeze(props)
   return element
 }
 

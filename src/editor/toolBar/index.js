@@ -37,11 +37,11 @@ class ToolBarItem extends Component {
         style={`color: ${this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
-          <use xlink:href={this.props.icon} ns='http://www.w3.org/2000/svg'></use>
+          <use xlink:href={this.props.icon}></use>
         </svg>
         {/* <Dialog ref={this.dialogRef}>
-            <span style='color:red'>dialog</span>
-          </Dialog> */}
+          <span style='color:red'>dialog</span>
+        </Dialog> */}
       </span>
     )
   }
@@ -50,7 +50,7 @@ class ToolBarItem extends Component {
     this.setState({
       value: !this.state.value,
     })
-    this.props.onCommand('fontStyle', this.props.command, true)
+    // this.props.onCommand('fontStyle', this.props.command, true)
     // this.dialogRef.current.toggle()
   }
 }

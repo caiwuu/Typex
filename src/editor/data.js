@@ -86,7 +86,10 @@ export const mockData = {
               formats: { sup: true, del: true, color: 'green', fontSize: '12px' },
             },
             { data: 'qqq', formats: { color: 'green' } },
-            { data: 'www', formats: { color: 'green' } },
+            {
+              data: 'www分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词',
+              formats: { color: 'green' },
+            },
             {
               data: {
                 marks: [
