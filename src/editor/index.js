@@ -14,6 +14,7 @@ class Editor {
   ui = {
     body: null,
   }
+  toolBarOption = []
   constructor(options) {
     this.init(options)
   }
@@ -26,6 +27,10 @@ class Editor {
   }
   mount(id) {
     mount.call(this, id)
+    return this
+  }
+  setToolBar(toolBarOption) {
+    this.toolBarOption = toolBarOption
     return this
   }
   on(eventName, fn) {

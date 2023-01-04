@@ -87,7 +87,7 @@ export const mockData = {
             },
             { data: 'qqq', formats: { color: 'green' } },
             {
-              data: 'www分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词器www扩展babel分词',
+              data: '分词器',
               formats: { color: 'green' },
             },
             {
