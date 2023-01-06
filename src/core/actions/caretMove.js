@@ -1,16 +1,10 @@
 /*
  * @Author: caiwu
- * @Description:
+ * @Description: 光标移动功能
  * @CreateDate:
  * @LastEditor:
  * @LastEditTime: 2022-09-23 13:57:58
  */
-const actionMap = {
-  left: 'arrowLeft',
-  right: 'arrowRight',
-  up: 'arrowUp',
-  down: 'arrowDown',
-}
 
 /**
  * 路径查找
@@ -39,7 +33,7 @@ function horizontalMove(range, direction, shiftKey) {
     range.collapse(direction === 'left')
   } else {
     const path = queryPath(range.container, range.offset, this)
-    return path.component.caretMove(actionMap[direction], path, range, shiftKey)
+    return path.component.onCaretMove(direction, path, range, shiftKey)
   }
 }
 
@@ -59,10 +53,12 @@ function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
   // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
   if (
     Math.abs(currCaretInfo.x - prevCaretInfo.x) >
-    editor.ui.content.offsetWidth - 2 * currCaretInfo.h
+    // editor.ui.content.offsetWidth - 2 * currCaretInfo.h
+    currCaretInfo.blockComponent.props.path.elm.offsetWidth - 2 * currCaretInfo.h
   ) {
     sameLine = false
   }
+  // console.log(currCaretInfo.blockComponent.props.path.elm.offsetWidth)
   // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
   if (currCaretInfo.blockComponent !== prevCaretInfo.blockComponent) {
     sameLine = false

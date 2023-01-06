@@ -16,13 +16,13 @@ export function del(range, force = false) {
   //   // 文本
   //   let path = this.queryCommonPath(startContainer, endContainer)
   //   const component = path.component
-  //   component.onBackspace(path, range, this)
+  //   component.onDelete(path, range, this)
   // }
   // console.log(this.queryCommonPath(endContainer, endContainer))
 
   let path = this.queryCommonPath(startContainer, endContainer)
   const component = path.component
-  component.onBackspace(path, range, this)
+  component.onDelete(path, range, this)
   range.collapse(true)
 }
 

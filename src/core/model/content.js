@@ -5,6 +5,9 @@ export default class Content extends Component {
     super(props)
     this.initState()
   }
+  get contentLength() {
+    return this.props.path.len
+  }
   /**
    * 初始化状态
    */
@@ -35,8 +38,8 @@ export default class Content extends Component {
    */
   onInput({ path, range, data }) {
     const { offset, endContainer } = range
-    path.node.data = path.node.data.slice(0, offset) + data + path.node.data.slice(offset)
-    this.props.editor.selection.updatePoints(endContainer, offset, data.length)
+    path.contentInsert(offset, data)
+    this._updatePoints(endContainer, offset, data.length)
     this.update().then(() => {
       range.collapse(false)
       range.updateCaret()
@@ -49,12 +52,12 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  onBackspace(path, range) {
+  onDelete(path, range) {
     const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
-        path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
+        path.contentDelete(endOffset, 1)
         if (path.node.data === '') {
           const prevSibling = this.getPrevPath(path).lastLeaf
           path.delete()
@@ -62,11 +65,11 @@ export default class Content extends Component {
             prevSibling.component.onCaretEnter(prevSibling, range, false)
           }
         } else {
-          this.props.editor.selection.updatePoints(endContainer, endOffset, -1)
+          this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
-        if (!this.props.path.len) {
+        if (!this.contentLength) {
           const parent = this.props.path.parent.component
           this.props.path.delete()
           parent.update()
@@ -108,7 +111,7 @@ export default class Content extends Component {
       if (isSameBlock || range.offset === 0) {
         return prev.component.onCaretEnter(prev, range, !isStart)
       } else {
-        this.onArrowLeft(path, range)
+        this.onCaretBackward(path, range)
         return { path, range }
       }
     } else {
@@ -122,10 +125,10 @@ export default class Content extends Component {
    *
    * 箭头右动作
    * @param {*} path 路径
-   * @param {*} range 区间
+   * @param {*} range 区间 cursorForward
    * @memberof Content
    */
-  onArrowRight(path, range) {
+  onCaretForward(path, range) {
     range.offset += 1
   }
   /**
@@ -135,7 +138,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  onArrowLeft(path, range) {
+  onCaretBackward(path, range) {
     range.offset -= 1
   }
   /**
@@ -156,35 +159,46 @@ export default class Content extends Component {
     if (!path) return null
     return path.nextSibling || this.getNextPath(path.parent)
   }
-  caretMove(name, path, range, ...args) {
-    const method =
-      this[`on${name.replace(/(\w)(\w+)/, ($0, $1, $2) => `${$1.toUpperCase()}${$2}`)}`]
+  onCaretMove(direction, path, range, ...args) {
+    const caretMoveMethod = this[`${direction === 'left' ? 'onCaretBackward' : 'onCaretForward'}`]
     const [shiftKey] = args
-    if (method) {
-      switch (name) {
-        case 'arrowLeft':
-        case 'arrowRight':
-          let res
-          if (range.d === 0) {
-            range.d = name === 'arrowLeft' ? -1 : name === 'arrowRight' ? 1 : 0
-          }
-          if (
-            (range.offset <= 1 && name === 'arrowLeft') ||
-            (range.offset === path.len && name === 'arrowRight')
-          ) {
-            res = this.onCaretLeave(path, range, range.offset <= 1 && name === 'arrowLeft')
-          } else {
-            this._invokeAction(method, path, range, ...args)
-            res = { path, range }
-          }
-          if (!shiftKey) {
-            range.collapse(name === 'arrowLeft')
-          }
-          return res
-      }
+    let res = { path, range }
+    // 重置 d
+    if (range.d === 0) range.d = direction === 'left' ? -1 : 1
+    if (this.caretWillBeLeaving(path, range, direction)) {
+      // 跨path移动 先执行跨ptah动作 再执行path内移动动作
+      res = this.onCaretLeave(path, range, direction === 'left')
+    } else {
+      // path内移动 执行path内移动动作
+      caretMoveMethod(path, range, ...args)
     }
+    if (!shiftKey) {
+      range.collapse(direction === 'left')
+    }
+    return res
   }
-  _invokeAction(method, path, range, ...args) {
-    method.call(this, path, range, ...args)
+  /**
+   * 检测光标是否要离开path
+   * @param {*} path
+   * @param {*} range
+   * @param {*} direction
+   * @return {*}
+   */
+  caretWillBeLeaving(path, range, direction) {
+    return (
+      (direction === 'left' && range.offset <= 1) ||
+      (direction === 'right' && range.offset === path.len)
+    )
+  }
+
+  /**
+   * range端点更新
+   * @param {*} container
+   * @param {*} position
+   * @param {*} distance
+   * @memberof Content
+   */
+  _updatePoints(container, position, distance) {
+    this.props.editor.selection.updatePoints(container, position, distance)
   }
 }

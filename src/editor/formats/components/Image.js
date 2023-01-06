@@ -45,7 +45,7 @@ export default class Image extends Content {
   onAfterUpdate() {
     this.props.editor.selection.updateCaret()
   }
-  onBackspace(path, range) {
+  onDelete(path, range) {
     const { endOffset, collapsed } = range
     if (collapsed) {
       if (endOffset > 0) {

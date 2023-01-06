@@ -125,3 +125,10 @@ export function mergeObj(a, b) {
     }
   }
 }
+// n次执行
+export function times(n, fn, context = undefined, ...args) {
+  let i = 0
+  while (i++ < n) {
+    fn.call(context, ...args)
+  }
+}

@@ -57,6 +57,25 @@ class Path {
   }
 
   /**
+   * 内容插入
+   * @param {*} pos
+   * @param {*} data
+   * @memberof Path
+   */
+  contentInsert(pos, data) {
+    this.node.data = this.node.data.slice(0, pos) + data + this.node.data.slice(pos)
+  }
+
+  /**
+   * 内容删除
+   * @param {*} pos
+   * @param {*} count
+   * @memberof Path
+   */
+  contentDelete(pos, count) {
+    this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
+  }
+  /**
    * @desc: 格式化内容和格式
    * @param {*} data
    * @param {*} formats

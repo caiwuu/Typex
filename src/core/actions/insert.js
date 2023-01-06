@@ -7,7 +7,7 @@
  */
 import { getVnOrElm, getVnOrPath } from '../mappings'
 import { del } from './delete'
-import { isPrimitive } from '../utils'
+import { isPrimitive, times } from '../utils'
 // 执行输入型插入
 function input(range, data) {
   const { startContainer: elm } = range
@@ -23,13 +23,7 @@ function input(range, data) {
     console.error('无效path')
   }
 }
-// n次执行
-function times(n, fn, context = undefined, ...args) {
-  let i = 0
-  while (i++ < n) {
-    fn.call(context, ...args)
-  }
-}
+
 function transformOps(ops) {
   if (isPrimitive(ops)) {
     return {
@@ -41,7 +35,7 @@ function transformOps(ops) {
 }
 // 插入类型处理
 function insert(range, ops) {
-  const { data, type, clear } = transformOps(ops)
+  const { data, type, clearCb } = transformOps(ops)
   if (!range.collapsed) {
     range.editor.emit('delete', { range, force: false })
   }
@@ -65,9 +59,8 @@ function insert(range, ops) {
     range.inputState.isComposing = true
   } else if (type === 'compositionend') {
     // console.log('结束聚合输入:', data)
-    // TODO 接收聚合输入
     range.inputState.isComposing = false
-    clear && clear()
+    clearCb && clearCb()
     // 改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
     setTimeout(() => {
       range.inputState.value = ''
