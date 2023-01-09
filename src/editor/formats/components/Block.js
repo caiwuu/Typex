@@ -10,46 +10,44 @@ export default class Block extends Content {
   _type = 'block'
   /**
    * @desc: 删除动作
-   * @param {*} path
+   * @param {*} commonPath
    * @param {*} range
    * @return {*}
    */
-  onDelete(path, range) {
-    const { endContainer, endOffset, collapsed } = range
+  deleteData(commonPath, range) {
+    const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
-        path.node.data = path.node.data.slice(0, endOffset - 1) + path.node.data.slice(endOffset)
-        // 操作完，块内容为空的时候，text的vn会指向父级path，在UI层会渲染有个br来防止塌陷
-        if (!this.contentLength) {
-          range.setStart(path, 0)
-        } else if (path.node.data === '') {
-          // 操作完，非空快，当前path为空，则删除当前path，光标移动到前一个path
-          const prevSibling = this.getPrevPath(path).lastLeaf
-          path.delete()
-          if (prevSibling) {
-            prevSibling.component.onCaretEnter(prevSibling, range, false)
-          }
+        // 执行删除
+        commonPath.deleteData(endOffset, 1)
+        if (this.contentLength === 0) {
+          debugger
+          // 块级内容特殊处理 清空了光标还会停留在块内
+          range.setStart(commonPath, 0)
+        } else if (commonPath.len === 0) {
+          this.caretLeave(commonPath, range, 'left')
+          commonPath.delete()
         } else {
-          // path内正常移动光标
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
-        const prevSibling = this.getPrevPath(path).lastLeaf
+        const prevSibling = this.getPrevPath(commonPath).lastLeaf
         if (!this.contentLength) {
-          // 操作前，块为空
-          // TODO 递归向上删除空快
-          const parent = this.props.path.parent.component
-          this.props.path.delete()
+          const parent = this.$path.parent.component
+          this.$path.delete()
           parent.update()
         }
         if (prevSibling) {
-          prevSibling.component.onCaretEnter(prevSibling, range, false)
+          prevSibling.component.caretEnter(prevSibling, range, 'right')
         }
       }
     } else {
-      console.log('TODO')
+      const startPath = this.$editor.queryPath(startContainer)
+      const endPath = this.$editor.queryPath(endContainer)
+
+      console.log('TODO', commonPath, startPath, endPath)
     }
-    this.update(path, range)
+    this.update(commonPath, range)
   }
 }

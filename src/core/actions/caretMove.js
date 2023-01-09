@@ -33,7 +33,7 @@ function horizontalMove(range, direction, shiftKey) {
     range.collapse(direction === 'left')
   } else {
     const path = queryPath(range.container, range.offset, this)
-    return path.component.onCaretMove(direction, path, range, shiftKey)
+    return path.component.caretMove(direction, path, range, shiftKey)
   }
 }
 

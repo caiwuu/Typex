@@ -4,7 +4,7 @@ import { computeLen } from '../utils'
  * @desc: path的链表树
  * @return {*}
  */
-class Path {
+export class Path {
   constructor({ node, parent, position, prevSibling, nextSibling, children }) {
     this.node = node
     this.parent = parent
@@ -62,7 +62,7 @@ class Path {
    * @param {*} data
    * @memberof Path
    */
-  contentInsert(pos, data) {
+  insertData(pos, data) {
     this.node.data = this.node.data.slice(0, pos) + data + this.node.data.slice(pos)
   }
 
@@ -72,7 +72,7 @@ class Path {
    * @param {*} count
    * @memberof Path
    */
-  contentDelete(pos, count) {
+  deleteData(pos, count) {
     this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
   }
   /**
@@ -96,10 +96,12 @@ class Path {
       return
     }
     // 为了保持链表的连续性 paths 子集长度不能为零
-    if (this.parent.node.data.marks.length === 1) {
-      this.format()
-      return
-    }
+    // console.trace()
+    // console.log(this.parent.node.data.marks)
+    // if (this.parent.node.data.marks.length === 1) {
+    //   this.format()
+    //   return
+    // }
     this.prevSibling && (this.prevSibling.nextSibling = this.nextSibling)
     this.nextSibling && (this.nextSibling.prevSibling = this.prevSibling)
     this.parent.children.splice(this.index, 1)

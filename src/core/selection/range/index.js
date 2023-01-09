@@ -6,6 +6,7 @@
  * @LastEditTime: 2022-09-14 16:55:56
  */
 import { Caret } from '@/platform'
+
 export default class Range {
   // 输入暂存区
   inputState = {

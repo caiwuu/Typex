@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-31 17:13:41
  */
-export { createPath, queryCommonPath, queryPath, Formater, Content } from './model'
+export { createPath, queryCommonPath, queryPath, Formater, Content, Path } from './model'
 export { default as registerActions } from './actions'
 export { default as Selection } from './selection'
 export { createRef, createVnode, patch, Component, insertedInsQueue } from './view'

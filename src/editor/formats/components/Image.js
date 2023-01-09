@@ -21,7 +21,7 @@ export default class Image extends Content {
           <img
             onMousedown={this.onMousedown}
             onClick={this.sizeChange}
-            {...this.props.path.node.data}
+            {...this.$path.node.data}
           ></img>
         </div>
       </swapper>
@@ -33,35 +33,35 @@ export default class Image extends Content {
     e.stopPropagation()
   }
   sizeChange = (e) => {
-    if (this.props.path.node.data.width === '50px') {
-      this.props.path.node.data.width = '200px'
-      this.props.path.node.data.height = '200px'
+    if (this.$path.node.data.width === '50px') {
+      this.$path.node.data.width = '200px'
+      this.$path.node.data.height = '200px'
     } else {
-      this.props.path.node.data.width = '50px'
-      this.props.path.node.data.height = '50px'
+      this.$path.node.data.width = '50px'
+      this.$path.node.data.height = '50px'
     }
     this.update()
   }
   onAfterUpdate() {
     this.props.editor.selection.updateCaret()
   }
-  onDelete(path, range) {
+  deleteData(path, range) {
     const { endOffset, collapsed } = range
     if (collapsed) {
       if (endOffset > 0) {
-        const parent = this.props.path.parent.component
+        const parent = this.$path.parent.component
         path.delete()
         parent.update()
-        parent.onCaretEnter(this.props.path.parent, range, false)
+        parent.caretEnter(this.$path.parent, range, false)
       } else {
         const prevSibling = this.getPrevPath(path).lastLeaf
         if (prevSibling) {
-          prevSibling.component.onCaretEnter(prevSibling, range, false)
+          prevSibling.component.caretEnter(prevSibling, range, false)
         }
       }
     }
   }
-  onCaretEnter(path, range, isStart) {
+  caretEnter(path, range, isStart) {
     range.set(path.elm, isStart ? 0 : 1)
     return { path, range }
   }

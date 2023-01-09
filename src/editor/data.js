@@ -94,7 +94,7 @@ export const mockData = {
               data: {
                 marks: [
                   { data: 'qqq', formats: { color: 'green' } },
-                  { data: 'www', formats: { color: 'green' } },
+                  { data: 'www', formats: { color: 'red' } },
                 ],
               },
               formats: { paragraph: true },

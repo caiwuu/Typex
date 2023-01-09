@@ -18,7 +18,7 @@ function input(range, data) {
       range.setEnd(path, 0)
     }
     const component = path.parent.component
-    component.onInput({ path, range, data })
+    component.contentInput({ path, range, data })
   } else {
     console.error('无效path')
   }

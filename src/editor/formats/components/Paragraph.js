@@ -21,7 +21,7 @@ export default class Paragraph extends Block {
         {/* </div> */}
         {/* </Static> */}
         {/* <editor-content> */}
-        {formater.render(this.props.path)}
+        {formater.render(this.$path)}
         {/* </editor-content> */}
       </div>
     )

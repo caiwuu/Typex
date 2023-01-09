@@ -12,14 +12,14 @@ export class Table extends Block {
   render() {
     return (
       <table border='1' style='border-collapse:collapse;width:600px'>
-        {formater.render(this.props.path)}
+        {formater.render(this.$path)}
       </table>
     )
   }
 }
 export class Row extends Block {
   render() {
-    return <tr>{formater.render(this.props.path)}</tr>
+    return <tr>{formater.render(this.$path)}</tr>
   }
 }
 export class Col extends Block {
@@ -30,7 +30,7 @@ export class Col extends Block {
   render() {
     return (
       <td ref={this.state._$root} style='text-align:center;width:50%'>
-        {formater.render(this.props.path)}
+        {formater.render(this.$path)}
       </td>
     )
   }
