@@ -1,5 +1,5 @@
 import { getVnOrElm, getVnOrPath, getVnOrIns } from '../mappings'
-import { computeLen } from '../utils'
+import { computeLen, positionCompare } from '../utils'
 /**
  * @desc: path的链表树
  * @return {*}
@@ -95,20 +95,39 @@ export class Path {
     if (!this.parent) {
       return
     }
-    // 为了保持链表的连续性 paths 子集长度不能为零
-    // console.trace()
-    // console.log(this.parent.node.data.marks)
-    // if (this.parent.node.data.marks.length === 1) {
-    //   this.format()
-    //   return
-    // }
     this.prevSibling && (this.prevSibling.nextSibling = this.nextSibling)
     this.nextSibling && (this.nextSibling.prevSibling = this.prevSibling)
     this.parent.children.splice(this.index, 1)
     this.parent.node.data.marks.splice(this.index, 1)
     this.parent.reArrange()
   }
+  greaterThan(path) {
+    return positionCompare(this, path) === -1
+  }
+  originOf(path) {
+    return this.position.includes(path.position + '-')
+  }
+  /**
+   * 删除两个节点之间的所有节点
+   * @param {*} startPath
+   * @param {*} endPath
+   * @memberof Path
+   */
+  deleteBetween(startPath, endPath) {
+    const pathsToRemove = []
+    function traverse(path) {
+      if (path === endPath || path === startPath) {
+        return
+      }
 
+      pathsToRemove.push(path)
+      // Recursively traverse the children
+      for (var i = 0; i < path.children.length; i++) {
+        traverse(path.children[i])
+      }
+    }
+    traverse(this)
+  }
   /**
    * @desc: 重新设置位置信息
    * @return {*}
@@ -136,8 +155,6 @@ export class Path {
       }
     }
   }
-  stop() {}
-  skip() {}
 }
 
 /**

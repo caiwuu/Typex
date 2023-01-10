@@ -46,12 +46,18 @@ class Formater {
           let vtext
           if (mergedTextPath.node.data === '') {
             vtext = flag === 0 ? h('br') : null
-            // 这里比较绕，设计比较巧妙抽象
-            // 改变path指向，从path层面看选区还在path-0位置
-            // 表现层因为text-0已经不存在了；需要添加br防止块塌陷，光标应该聚焦在父级-0
-            // 表现层看来这里产生了混乱，不符合编程直觉；从更加抽象的path层面看是统一的；
+            /* 
+             这里借助指针的思想，设计比较巧妙抽象
+             改变path指向，从path层面看选区还在path-0位置
+             表现层因为text-0已经不存在了；需要添加br防止块塌陷，光标应该聚焦在父级-0
+             表现层看来这里产生了混乱，不符合编程直觉；从更加抽象的path层面看是统一的；
+             */
+
+            // 内容为空时 将path指向他父级的vdom
             setVnPath(mergedTextPath, mergedTextPath.parent.vn)
+            mergedTextPath.format()
           } else {
+            // 输入内容时 重新指向创建vdom
             vtext = h('text', {}, [mergedTextPath.node.data])
             setVnPath(mergedTextPath, vtext)
           }
@@ -104,6 +110,7 @@ class Formater {
             if (flag === 0) {
               vtext = h('br')
               setVnPath(mergedTextPath, vn)
+              mergedTextPath.format()
             } else {
               vtext = h('text', {}, [mergedTextPath.node.data])
               setVnPath(mergedTextPath, vtext)

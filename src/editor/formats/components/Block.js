@@ -22,7 +22,7 @@ export default class Block extends Content {
         // 执行删除
         commonPath.deleteData(endOffset, 1)
         if (this.contentLength === 0) {
-          debugger
+          console.log(0)
           // 块级内容特殊处理 清空了光标还会停留在块内
           range.setStart(commonPath, 0)
         } else if (commonPath.len === 0) {
@@ -45,7 +45,7 @@ export default class Block extends Content {
     } else {
       const startPath = this.$editor.queryPath(startContainer)
       const endPath = this.$editor.queryPath(endContainer)
-
+      console.log(endPath.greaterThan(startPath))
       console.log('TODO', commonPath, startPath, endPath)
     }
     this.update(commonPath, range)

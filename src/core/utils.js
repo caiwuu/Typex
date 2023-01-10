@@ -132,3 +132,17 @@ export function times(n, fn, context = undefined, ...args) {
     fn.call(context, ...args)
   }
 }
+export function positionCompare(a, b) {
+  if (a === b) return 0
+  if (a.originOf(b)) return 1
+  if (b.originOf(a)) return -1
+  const arrA = a.position.split('-')
+  const arrB = b.position.split('-')
+  const minLen = Math.min(arrA.length, arrB.length)
+  for (let i = 0; i < minLen; i++) {
+    const elementA = +arrA[i]
+    const elementB = +arrB[i]
+    if (elementA > elementB) return -1
+    if (elementA < elementB) return 1
+  }
+}
