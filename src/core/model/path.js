@@ -5,6 +5,7 @@ import { computeLen, positionCompare } from '../utils'
  * @return {*}
  */
 export class Path {
+  _deleted = false
   constructor({ node, parent, position, prevSibling, nextSibling, children }) {
     this.node = node
     this.parent = parent
@@ -97,12 +98,13 @@ export class Path {
     }
     this.prevSibling && (this.prevSibling.nextSibling = this.nextSibling)
     this.nextSibling && (this.nextSibling.prevSibling = this.prevSibling)
-    this.parent.children.splice(this.index, 1)
-    this.parent.node.data.marks.splice(this.index, 1)
+    this._deleted = true
+    // this.parent.children.splice(this.index, 1)
+    // this.parent.node.data.marks.splice(this.index, 1)
     this.parent.reArrange()
   }
-  greaterThan(path) {
-    return positionCompare(this, path) === -1
+  positionCompare(path) {
+    return positionCompare(this, path)
   }
   originOf(path) {
     return this.position.includes(path.position + '-')
@@ -114,26 +116,38 @@ export class Path {
    * @memberof Path
    */
   deleteBetween(startPath, endPath) {
-    const pathsToRemove = []
-    function traverse(path) {
-      if (path === endPath || path === startPath) {
-        return
-      }
-
-      pathsToRemove.push(path)
-      // Recursively traverse the children
+    // const pathsToRemove = []
+    if (this === startPath || this === endPath) return
+    const traverse = (path) => {
       for (var i = 0; i < path.children.length; i++) {
-        traverse(path.children[i])
+        const ele = path.children[i]
+        if (startPath.originOf(ele) || endPath.originOf(ele)) {
+          traverse(ele)
+        } else if (ele.positionCompare(startPath) === 1 && ele.positionCompare(endPath) === -1) {
+          ele._deleted = true
+          // console.log(ele.elm, ele)
+          // pathsToRemove.push(ele)
+        }
       }
     }
     traverse(this)
+    startPath.nextSibling && (startPath.nextSibling = null)
+    endPath.prevSibling && (endPath.prevSibling = null)
+    this.reArrange()
+    console.log(this)
+    // return pathsToRemove
   }
   /**
    * @desc: 重新设置位置信息
    * @return {*}
    */
   reArrange() {
+    this.children = this.children.filter((ele) => !ele._deleted)
+    console.log(this.children)
+    // console.log(this.node.data.marks)
+    if (this.node.data.marks) this.node.data.marks.length = 0
     this.children.forEach((path, index) => {
+      this.node.data.marks.push(path.node)
       const newPosition = this.position + '-' + index
       if (path.position !== newPosition) {
         path.position = path.node.position = newPosition

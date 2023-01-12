@@ -32,7 +32,7 @@ export default class Block extends Content {
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
-        const prevSibling = this.getPrevPath(commonPath).lastLeaf
+        const prevSibling = this.getPrevLeafPath(commonPath)
         if (!this.contentLength) {
           const parent = this.$path.parent.component
           this.$path.delete()
@@ -45,7 +45,7 @@ export default class Block extends Content {
     } else {
       const startPath = this.$editor.queryPath(startContainer)
       const endPath = this.$editor.queryPath(endContainer)
-      console.log(endPath.greaterThan(startPath))
+      commonPath.deleteBetween(startPath, endPath)
       console.log('TODO', commonPath, startPath, endPath)
     }
     this.update(commonPath, range)

@@ -71,7 +71,7 @@ export default class Content extends Component {
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
-        const prevSibling = this.getPrevPath(commonPath).lastLeaf
+        const prevSibling = this.getPrevLeafPath(commonPath)
         if (!this.contentLength) {
           const parent = this.$path.parent.component
           this.$path.delete()
@@ -95,7 +95,7 @@ export default class Content extends Component {
    */
   caretEnter(path, range, direction) {
     if (direction === 'left') {
-      let fromPath = this.getPrevPath(path)?.lastLeaf
+      let fromPath = this.getPrevLeafPath(path)
       const isSameBlock = path.blockComponent === fromPath.blockComponent
       range.set(path, isSameBlock ? 1 : 0)
     } else {
@@ -112,7 +112,7 @@ export default class Content extends Component {
    */
   caretLeave(path, range, direction) {
     if (direction === 'left') {
-      let toPath = this.getPrevPath(path)?.lastLeaf
+      let toPath = this.getPrevLeafPath(path)
       // 如果没有前一个path 停留在当前path头部
       if (!toPath) {
         range.set(range.container, 0)
@@ -129,7 +129,7 @@ export default class Content extends Component {
       }
     } else {
       // 从尾部离开
-      let toPath = this.getNextPath(path)?.firstLeaf
+      let toPath = this.getNextLeafPath(path)?.firstLeaf
       if (!toPath) return null
       return toPath.component.caretEnter(toPath, range, 'left')
     }
@@ -165,13 +165,13 @@ export default class Content extends Component {
   onEnter(path, range) {
     console.error('组件未实现onEnter方法')
   }
-  getPrevPath(path) {
+  getPrevLeafPath(path) {
     if (!path) return null
-    return path.prevSibling || this.getPrevPath(path.parent)
+    return (path.prevSibling || this.getPrevLeafPath(path.parent)).lastLeaf
   }
-  getNextPath(path) {
+  getNextLeafPath(path) {
     if (!path) return null
-    return path.nextSibling || this.getNextPath(path.parent)
+    return (path.nextSibling || this.getNextLeafPath(path.parent)).firstLeaf
   }
   caretMove(direction, path, range, ...args) {
     const caretMoveMethod = this[`${direction === 'left' ? 'caretBackward' : 'caretForward'}`]

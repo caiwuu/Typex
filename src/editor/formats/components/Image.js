@@ -54,7 +54,7 @@ export default class Image extends Content {
         parent.update()
         parent.caretEnter(this.$path.parent, range, false)
       } else {
-        const prevSibling = this.getPrevPath(path).lastLeaf
+        const prevSibling = this.getPrevLeafPath(path)
         if (prevSibling) {
           prevSibling.component.caretEnter(prevSibling, range, false)
         }
