@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-23 10:55:36
  */
-export function del(range, force = false) {
+export function del (range, force = false) {
   if (range.inputState.isComposing && !force) return
   const { endContainer, endOffset, startContainer } = range
   // 非文本
@@ -23,7 +23,6 @@ export function del(range, force = false) {
   let commonPath = this.queryCommonPath(startContainer, endContainer)
   const component = commonPath.component
   component.deleteData(commonPath, range, this)
-  range.collapse(true)
 }
 
 export default function () {

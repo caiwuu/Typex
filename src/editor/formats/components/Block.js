@@ -14,7 +14,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  deleteData(commonPath, range) {
+  deleteData (commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -42,6 +42,7 @@ export default class Block extends Content {
           prevSibling.component.caretEnter(prevSibling, range, 'right')
         }
       }
+      range.collapse(true)
     } else {
       const startPath = this.$editor.queryPath(startContainer)
       const endPath = this.$editor.queryPath(endContainer)

@@ -14,8 +14,6 @@ export default class Range {
     isComposing: false,
   }
   d = 0
-  _endContainer = null
-  _startContainer = null
   constructor(nativeRange, editor) {
     const { startContainer, endContainer, startOffset, endOffset, d } = nativeRange
     this.endContainer = endContainer
@@ -26,28 +24,16 @@ export default class Range {
     this.d = d
     this.caret = new Caret(this)
   }
-  get endContainer() {
-    return this._endContainer.elm || this._endContainer
-  }
-  set endContainer(value) {
-    this._endContainer = value
-  }
-  get startContainer() {
-    return this._startContainer.elm || this._startContainer
-  }
-  set startContainer(value) {
-    this._startContainer = value
-  }
-  get collapsed() {
+  get collapsed () {
     return this.endContainer === this.startContainer && this.endOffset === this.startOffset
   }
-  get offset() {
+  get offset () {
     return this.d === 1 ? this.endOffset : this.startOffset
   }
-  get container() {
+  get container () {
     return this.d === 1 ? this.endContainer : this.startContainer
   }
-  set offset(offset) {
+  set offset (offset) {
     if (this.d === 1) {
       this.endOffset = offset
     } else {
@@ -55,44 +41,44 @@ export default class Range {
     }
     if (this.collapsed) this.d = 0
   }
-  set container(container) {
+  set container (container) {
     if (this.d === 1) {
-      this._endContainer = container
+      this.endContainer = container
     } else {
-      this._startContainer = container
+      this.startContainer = container
     }
   }
-  set(container, offset) {
+  set (container, offset) {
     this.container = container
     this.offset = offset
     if (this.collapsed) this.d = 0
   }
-  setEnd(endContainer, endOffset) {
-    this._endContainer = endContainer
+  setEnd (endContainer, endOffset) {
+    this.endContainer = endContainer
     this.endOffset = endOffset
     if (this.collapsed) this.d = 0
   }
-  setStart(startContainer, startOffset) {
-    this._startContainer = startContainer
+  setStart (startContainer, startOffset) {
+    this.startContainer = startContainer
     this.startOffset = startOffset
     if (this.collapsed) this.d = 0
   }
-  collapse(toStart) {
+  collapse (toStart) {
     if (toStart) {
-      this._endContainer = this._startContainer
+      this.endContainer = this.startContainer
       this.endOffset = this.startOffset
     } else {
       this.startOffset = this.endOffset
-      this._startContainer = this._endContainer
+      this.startContainer = this.endContainer
     }
     this.d = 0
     this.editor.selection.drawRangeBg()
   }
-  updateCaret(drawCaret = true) {
+  updateCaret (drawCaret = true) {
     this.caret.update(this, drawCaret)
     this.editor.focus()
   }
-  remove() {
+  remove () {
     const index = this.editor.selection.ranges.findIndex((i) => i === this)
     this.caret.remove()
     this.editor.selection.ranges.splice(index, 1)

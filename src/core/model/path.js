@@ -5,7 +5,8 @@ import { computeLen, positionCompare } from '../utils'
  * @return {*}
  */
 export class Path {
-  _deleted = false
+  _shouldDelete = false
+  _shouldRebuild = false
   constructor({ node, parent, position, prevSibling, nextSibling, children }) {
     this.node = node
     this.parent = parent
@@ -14,46 +15,46 @@ export class Path {
     this.nextSibling = nextSibling
     this.children = children
   }
-  get component() {
+  get component () {
     return this._$component || this.parent.component
   }
-  get len() {
+  get len () {
     return computeLen(this)
   }
-  get elm() {
+  get elm () {
     if (typeof this.vn.type === 'function') {
       return getVnOrElm(getVnOrIns(this.vn.ins))
     }
     return getVnOrElm(this.vn)
   }
-  get pathType() {
+  get pathType () {
     return typeof this.node.data === 'string' ? 3 : 1
   }
-  get blockComponent() {
+  get blockComponent () {
     if (this.component._type === 'block') return this.component
     return this.parent.blockComponent
   }
-  get vn() {
+  get vn () {
     return getVnOrPath(this)
   }
-  get isLeaf() {
+  get isLeaf () {
     return this.children.length === 0
   }
-  get firstLeaf() {
+  get firstLeaf () {
     let path = this
     while (path.children && path.children.length) {
       path = path.children[0]
     }
     return path
   }
-  get lastLeaf() {
+  get lastLeaf () {
     let path = this
     while (path.children && path.children.length) {
       path = path.children[path.children.length - 1]
     }
     return path
   }
-  get index() {
+  get index () {
     return this.position.split('-').slice(-1)[0] / 1
   }
 
@@ -63,7 +64,7 @@ export class Path {
    * @param {*} data
    * @memberof Path
    */
-  insertData(pos, data) {
+  insertData (pos, data) {
     this.node.data = this.node.data.slice(0, pos) + data + this.node.data.slice(pos)
   }
 
@@ -73,7 +74,7 @@ export class Path {
    * @param {*} count
    * @memberof Path
    */
-  deleteData(pos, count) {
+  deleteData (pos, count) {
     this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
   }
   /**
@@ -82,7 +83,7 @@ export class Path {
    * @param {*} formats
    * @return {*}
    */
-  format({ data = '', formats = {} } = {}) {
+  format ({ data = '', formats = {} } = {}) {
     this.node.data = data
     this.node.formats = formats
     this._$component = this.parent.component
@@ -92,21 +93,17 @@ export class Path {
    * @desc: path删除
    * @return {*}
    */
-  delete() {
+  delete () {
     if (!this.parent) {
       return
     }
-    this.prevSibling && (this.prevSibling.nextSibling = this.nextSibling)
-    this.nextSibling && (this.nextSibling.prevSibling = this.prevSibling)
-    this._deleted = true
-    // this.parent.children.splice(this.index, 1)
-    // this.parent.node.data.marks.splice(this.index, 1)
-    this.parent.reArrange()
+    this._shouldDelete = true
+    this.parent.rebuild()
   }
-  positionCompare(path) {
+  positionCompare (path) {
     return positionCompare(this, path)
   }
-  originOf(path) {
+  originOf (path) {
     return this.position.includes(path.position + '-')
   }
   /**
@@ -115,8 +112,8 @@ export class Path {
    * @param {*} endPath
    * @memberof Path
    */
-  deleteBetween(startPath, endPath) {
-    // const pathsToRemove = []
+  deleteBetween (startPath, endPath) {
+    const pathsToRebuild = []
     if (this === startPath || this === endPath) return
     const traverse = (path) => {
       for (var i = 0; i < path.children.length; i++) {
@@ -124,50 +121,45 @@ export class Path {
         if (startPath.originOf(ele) || endPath.originOf(ele)) {
           traverse(ele)
         } else if (ele.positionCompare(startPath) === 1 && ele.positionCompare(endPath) === -1) {
-          ele._deleted = true
-          // console.log(ele.elm, ele)
-          // pathsToRemove.push(ele)
+          ele._shouldDelete = true
+          if (!ele.parent?._shouldRebuild) {
+            pathsToRebuild.push(ele.parent)
+            ele.parent._shouldRebuild = true
+          }
         }
       }
     }
     traverse(this)
-    startPath.nextSibling && (startPath.nextSibling = null)
-    endPath.prevSibling && (endPath.prevSibling = null)
-    this.reArrange()
-    console.log(this)
-    // return pathsToRemove
+    pathsToRebuild.forEach(path => path.rebuild())
   }
   /**
-   * @desc: 重新设置位置信息
+   * @desc: 重构链表树
    * @return {*}
    */
-  reArrange() {
-    this.children = this.children.filter((ele) => !ele._deleted)
-    console.log(this.children)
-    // console.log(this.node.data.marks)
+  rebuild () {
+    this._shouldRebuild = false
+    let cachePath = null
+    this.children = this.children.filter((ele) => !ele._shouldDelete)
+    // 为了保持marks索引，使用length = 0来清空数组
     if (this.node.data.marks) this.node.data.marks.length = 0
     this.children.forEach((path, index) => {
+      // 同步mark子节点
       this.node.data.marks.push(path.node)
+      // 重新维护链表结构
+      path.prevSibling = cachePath
+      if (cachePath) {
+        cachePath.nextSibling = path
+      } else {
+        path.nextSibling = null
+      }
+      cachePath = path
+      // 更新位置坐标
       const newPosition = this.position + '-' + index
       if (path.position !== newPosition) {
         path.position = path.node.position = newPosition
-        path.reArrange()
+        path.rebuild()
       }
     })
-  }
-  /**
-   * @desc: 深度优先遍历
-   * @param {*} fn
-   * @return {*}
-   */
-  traverse(fn) {
-    fn(this)
-    if (this.children && this.children.length) {
-      for (let index = 0; index < this.children.length; index++) {
-        const path = this.children[index]
-        path.traverse(fn)
-      }
-    }
   }
 }
 
@@ -175,7 +167,7 @@ export class Path {
  * @desc: 创建path
  * @return {*}
  */
-export function createPath(
+export function createPath (
   current,
   parent = null,
   prevSibling = null,
@@ -208,7 +200,7 @@ export function createPath(
   return path
 }
 
-function queryRootPath(path) {
+function queryRootPath (path) {
   while (path.parent) {
     path = path.parent
   }
@@ -220,7 +212,7 @@ function queryRootPath(path) {
  * @param {path} path
  * @return {path}
  */
-export function queryCommonPath(path1, path2) {
+export function queryCommonPath (path1, path2) {
   if (path1.position === '0') return path1
   if (path2.position === '0') return path2
   const rootPath = queryRootPath(path1)
@@ -242,24 +234,24 @@ export function queryCommonPath(path1, path2) {
  * @param {path} path
  * @return {path}
  */
-export function queryPath(target, path) {
+export function queryPath (target, path) {
   if (target instanceof Path) return target
   if (target.nodeType) return queryPathByElm(target)
   if (target._isVnode) return queryPathByVn(target)
   if (typeof target === 'string') return queryPathByPosition(target, path)
   throw 'queryPath的参数必须是elm|vn|position'
 }
-function queryPathByElm(elm) {
+function queryPathByElm (elm) {
   const vn = getVnOrElm(elm)
   if (!vn) return null
   return queryPathByVn(vn)
 }
-function queryPathByVn(vn) {
+function queryPathByVn (vn) {
   const path = getVnOrPath(vn)
   if (!path) return null
   return path
 }
-function queryPathByPosition(position, rootPath) {
+function queryPathByPosition (position, rootPath) {
   const posArr = position.split('-')
   return posArr.slice(1).reduce((prev, index) => {
     return prev.children[index]

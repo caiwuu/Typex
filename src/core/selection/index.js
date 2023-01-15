@@ -6,13 +6,13 @@ export default class Selection {
   constructor(editor) {
     this.editor = editor
   }
-  get isCollapsed() {
+  get isCollapsed () {
     return this.ranges.every((range) => range.collapsed)
   }
-  get rangeCount() {
+  get rangeCount () {
     return this.ranges.length
   }
-  get rangePoints() {
+  get rangePoints () {
     const points = []
     this.ranges.forEach((range) => {
       points.push(
@@ -32,15 +32,15 @@ export default class Selection {
     })
     return points
   }
-  clearRanges() {
+  clearRanges () {
     while (this.ranges.length) {
       this.ranges.pop().caret.remove()
     }
   }
-  createRange(ops) {
+  createRange (ops) {
     return new Range(ops, this.editor)
   }
-  createRangeFromNativeRange(nativeRange) {
+  createRangeFromNativeRange (nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset, collapsed } = nativeRange
     const { focusNode, focusOffset } = nativeSelection
     let d = 0
@@ -52,27 +52,27 @@ export default class Selection {
       d = -1
     }
     return this.createRange({
-      startContainer,
-      endContainer,
+      startContainer: this._queryPath(startContainer),
+      endContainer: this._queryPath(endContainer),
       startOffset,
       endOffset,
       d,
     })
   }
-  addRange(range) {
+  addRange (range) {
     this.ranges.push(range)
   }
-  collapse(parentNode, offset) {
+  collapse (parentNode, offset) {
     nativeSelection.collapse(parentNode, offset)
     this._resetRangesFromNative()
   }
-  _queryPath(elm) {
+  _queryPath (elm) {
     const path = this.editor.queryPath(elm)
     if (path) return path
     return this._queryPath(elm.parentNode)
   }
   // 选区转化,矫正鼠标点击的落点
-  _transformRange(nativeRange) {
+  _transformRange (nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset } = nativeRange
     const startPath = this.editor.queryPath(startContainer)
     const endPath = this.editor.queryPath(endContainer)
@@ -87,7 +87,7 @@ export default class Selection {
     return nativeRange
   }
   // 从native重新设置选区
-  _resetRangesFromNative() {
+  _resetRangesFromNative () {
     this.clearRanges()
     const count = nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
@@ -97,7 +97,7 @@ export default class Selection {
     }
   }
   // 从native选区扩增，多选区支持
-  _extendRangesFromNative() {
+  _extendRangesFromNative () {
     const count = nativeSelection.rangeCount
     if (count > 0) {
       const nativeRange = this._transformRange(nativeSelection.getRangeAt(count - 1))
@@ -116,14 +116,14 @@ export default class Selection {
       this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
   }
-  getRangeAt(index = 0) {
+  getRangeAt (index = 0) {
     return this.ranges[index]
   }
-  removeAllRanges() {
+  removeAllRanges () {
     nativeSelection.removeAllRanges()
     this.clearRanges()
   }
-  createNativeRange({ startContainer, startOffset, endContainer, endOffset }) {
+  createNativeRange ({ startContainer, startOffset, endContainer, endOffset }) {
     const range = document.createRange()
     range.setStart(startContainer, startOffset)
     range.setEnd(endContainer, endOffset)
@@ -135,7 +135,7 @@ export default class Selection {
    * @param {*} position 位置
    * @param {*} distance 平移距离 负左正右
    */
-  updatePoints(container, position, distance) {
+  updatePoints (container, position, distance) {
     this.rangePoints.forEach((point) => {
       if (point.container === container && position <= point.offset) {
         point.range[point.pointName + 'Offset'] += distance
@@ -146,7 +146,7 @@ export default class Selection {
    * range更新 追加ranges或者重新设置ranges
    * @param {*} multiple
    */
-  updateRanges(multiple) {
+  updateRanges (multiple) {
     // 选区的创建结果需要在宏任务中获取.
     setTimeout(() => {
       if (multiple) {
@@ -163,18 +163,18 @@ export default class Selection {
    * 光标视图更新
    * @param {*} drawCaret
    */
-  updateCaret(drawCaret = true) {
+  updateCaret (drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
     this.rangeCount > 1 && this.distinct()
     drawCaret && this.drawRangeBg()
   }
-  _isCoverd(rectA, rectB) {
+  _isCoverd (rectA, rectB) {
     return rectA.y < rectB.y
       ? rectA.y + rectA.h >= rectB.y + rectB.h
       : rectB.y + rectB.h >= rectA.y + rectA.h
   }
   // 光标高性能去重;
-  distinct() {
+  distinct () {
     let tempObj = {}
     let len = this.ranges.length
     if (len < 2) return
@@ -182,7 +182,6 @@ export default class Selection {
       const range = this.ranges[index]
       const path = this.editor.queryPath(range.startContainer)
       const key = `${path.position}-${range.caret.rect.x}-${range.caret.rect.y}`
-      console.log(key)
       if (!tempObj[key]) {
         // 这里解决当两个光标在同一行又不在同一个节点上却又重合的情况，通常在跨行内节点会出现，这时应该当作重复光标去重
         const covereds = Object.entries(tempObj).filter(
@@ -208,10 +207,17 @@ export default class Selection {
     tempObj = null
   }
   // 默认以第一个range同步到native来绘制拖蓝
-  drawRangeBg(range) {
+  drawRangeBg (range) {
     const currRange = range || this.getRangeAt(0)
     if (!currRange) return
     nativeSelection.removeAllRanges()
-    nativeSelection.addRange(this.createNativeRange(currRange))
+    const { startContainer, startOffset, endContainer, endOffset } = currRange
+    const createNativeRangeOps = {
+      startContainer: startContainer.elm,
+      endContainer: endContainer.elm,
+      startOffset,
+      endOffset
+    }
+    nativeSelection.addRange(this.createNativeRange(createNativeRangeOps))
   }
 }
