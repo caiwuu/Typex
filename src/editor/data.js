@@ -47,8 +47,8 @@ export const mockData = {
                     data: {
                       src: 'https://img2.baidu.com/it/u=3979034437,2878656671&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=333',
                       alt: 'test image',
-                      width: '50px',
-                      height: '50px',
+                      width: '60px',
+                      height: '60px',
                     },
                     formats: { image: true },
                   },

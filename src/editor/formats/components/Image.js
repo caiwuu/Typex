@@ -11,20 +11,20 @@ import Static from './Static'
 export default class Image extends Content {
   render() {
     return (
-      <swapper>
-        <div style='display:inline-block'>
-          {/* <div
+      // <swapper>
+      <div style='display:inline-block'>
+        {/* <div
             onMousedown={this.onMousedown}
             onClick={this.sizeChange}
             style='display:inline-block;height:10px;width:10px;background:red;user-select:none'
           ></div> */}
-          <img
-            onMousedown={this.onMousedown}
-            onClick={this.sizeChange}
-            {...this.$path.node.data}
-          ></img>
-        </div>
-      </swapper>
+        <img
+          onMousedown={this.onMousedown}
+          onClick={this.sizeChange}
+          {...this.$path.node.data}
+        ></img>
+      </div>
+      // </swapper>
     )
   }
   // 阻止事件冒泡导致光标移动
@@ -61,8 +61,9 @@ export default class Image extends Content {
       }
     }
   }
-  caretEnter(path, range, isStart) {
-    range.set(path.elm, isStart ? 0 : 1)
+  caretEnter(path, range, direction) {
+    console.log(path, this.$path)
+    range.set(path, direction === 'left' ? 0 : 1)
     return { path, range }
   }
   get contentLength() {
