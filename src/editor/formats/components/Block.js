@@ -14,7 +14,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  deleteData (commonPath, range) {
+  deleteData(commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -44,10 +44,10 @@ export default class Block extends Content {
       }
       range.collapse(true)
     } else {
-      const startPath = this.$editor.queryPath(startContainer)
-      const endPath = this.$editor.queryPath(endContainer)
-      commonPath.deleteBetween(startPath, endPath)
-      console.log('TODO', commonPath, startPath, endPath)
+      startContainer.deleteData(startContainer.len, startContainer.len - startOffset)
+      endContainer.deleteData(endOffset, endOffset)
+      range.collapse(true)
+      commonPath.deleteBetween(startContainer, endContainer)
     }
     this.update(commonPath, range)
   }

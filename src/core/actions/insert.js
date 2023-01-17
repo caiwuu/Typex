@@ -5,20 +5,18 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-23 12:19:39
  */
-import { getVnOrElm, getVnOrPath } from '../mappings'
 import { del } from './delete'
 import { isPrimitive, times } from '../utils'
 // 执行输入型插入
 function input(range, data) {
-  const { startContainer: elm } = range
-  let path = getVnOrPath(getVnOrElm(elm))
+  let { startContainer: path } = range
   if (path) {
     if (path.vn.type !== 'text') {
       path = path.firstLeaf
       range.setEnd(path, 0)
     }
     const component = path.parent.component
-    component.contentInput({ path, range, data })
+    component.contentInput(path, range, data)
   } else {
     console.error('无效path')
   }

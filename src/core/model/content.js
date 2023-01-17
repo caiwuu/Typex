@@ -42,7 +42,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @param {*} range 输入数据
    */
-  contentInput({ path, range, data }) {
+  contentInput(path, range, data) {
     const { offset, endContainer } = range
     path.insertData(offset, data)
     this._updatePoints(endContainer, offset, data.length)
@@ -166,6 +166,7 @@ export default class Content extends Component {
     let res = { path, range }
     // 重置 d
     if (range.d === 0) range.d = direction === 'left' ? -1 : 1
+    console.log(this.caretWillBeLeaving(path, range, direction))
     if (this.caretWillBeLeaving(path, range, direction)) {
       // 跨path移动 先执行跨ptah动作 再执行path内移动动作
       res = this.caretLeave(path, range, direction)
@@ -196,7 +197,7 @@ export default class Content extends Component {
         return isSameBlock
       }
     }
-    return range.offset === path.len
+    return direction === 'right' && range.offset === path.len
   }
 
   /**
@@ -207,6 +208,6 @@ export default class Content extends Component {
    * @memberof Content
    */
   _updatePoints(container, position, distance) {
-    this.props.editor.selection.updatePoints(container, position, distance)
+    this.$editor.selection.updatePoints(container, position, distance)
   }
 }

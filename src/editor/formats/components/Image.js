@@ -43,7 +43,7 @@ export default class Image extends Content {
     this.update()
   }
   onAfterUpdate() {
-    this.props.editor.selection.updateCaret()
+    this.$editor.selection.updateCaret()
   }
   deleteData(path, range) {
     const { endOffset, collapsed } = range
