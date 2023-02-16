@@ -116,12 +116,12 @@ export class Path {
    * 插入到path后面
    * @param {*} path 
    */
-  moveAfterOf (path) {
+  insertAfter (path) {
     this.delete(true)
-    this._shouldDelete = false
-    console.log(this, path.parent);
     path.parent.children.splice(path.index + 1, 0, this)
     path.parent.rebuild()
+    console.log(this);
+    // debugger
   }
   /**
    * 删除两个节点之间的所有节点
@@ -167,6 +167,8 @@ export class Path {
     // 为了保持marks索引，使用length = 0来清空数组
     if (this.node.data.marks) this.node.data.marks.length = 0
     this.children.forEach((path, index) => {
+      // 更新父级 
+      path.parent = this
       // 同步mark子节点
       this.node.data.marks.push(path.node)
       // 重新维护链表结构

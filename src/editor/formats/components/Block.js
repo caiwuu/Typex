@@ -48,7 +48,7 @@ export default class Block extends Content {
       endContainer.deleteData(endOffset, endOffset)
       range.collapse(true)
       commonPath.deleteBetween(startContainer, endContainer)
-      endContainer.moveAfterOf(startContainer)
+      endContainer.insertAfter(startContainer)
     }
     this.update(commonPath, range)
   }

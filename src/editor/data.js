@@ -36,6 +36,10 @@ export const mockData = {
                     data: '12px',
                     formats: { color: 'red', fontSize: '12px' },
                   },
+                  {
+                    data: '12px',
+                    formats: { color: 'red', fontSize: '18px' },
+                  },
                 ],
               },
               formats: { paragraph: true },
