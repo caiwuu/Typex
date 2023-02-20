@@ -15,46 +15,46 @@ export class Path {
     this.nextSibling = nextSibling
     this.children = children
   }
-  get component () {
+  get component() {
     return this._$component || this.parent.component
   }
-  get len () {
+  get len() {
     return computeLen(this)
   }
-  get elm () {
+  get elm() {
     if (typeof this.vn.type === 'function') {
       return getVnOrElm(getVnOrIns(this.vn.ins))
     }
     return getVnOrElm(this.vn)
   }
-  get pathType () {
+  get pathType() {
     return typeof this.node.data === 'string' ? 3 : 1
   }
-  get blockComponent () {
+  get blockComponent() {
     if (this.component._type === 'block') return this.component
     return this.parent.blockComponent
   }
-  get vn () {
+  get vn() {
     return getVnOrPath(this)
   }
-  get isLeaf () {
+  get isLeaf() {
     return this.children.length === 0
   }
-  get firstLeaf () {
+  get firstLeaf() {
     let path = this
     while (path.children && path.children.length) {
       path = path.children[0]
     }
     return path
   }
-  get lastLeaf () {
+  get lastLeaf() {
     let path = this
     while (path.children && path.children.length) {
       path = path.children[path.children.length - 1]
     }
     return path
   }
-  get index () {
+  get index() {
     return this.position.split('-').slice(-1)[0] / 1
   }
 
@@ -64,7 +64,7 @@ export class Path {
    * @param {*} data
    * @memberof Path
    */
-  insertData (pos, data) {
+  insertData(pos, data) {
     this.node.data = this.node.data.slice(0, pos) + data + this.node.data.slice(pos)
   }
 
@@ -74,7 +74,7 @@ export class Path {
    * @param {*} count
    * @memberof Path
    */
-  deleteData (pos, count) {
+  deleteData(pos, count) {
     this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
   }
   /**
@@ -83,7 +83,7 @@ export class Path {
    * @param {*} formats
    * @return {*}
    */
-  format ({ data = '', formats = {} } = {}) {
+  format({ data = '', formats = {} } = {}) {
     this.node.data = data
     this.node.formats = formats
     this._$component = this.parent.component
@@ -93,7 +93,7 @@ export class Path {
    * @desc: path删除
    * @return {*}
    */
-  delete (notEmpty = false) {
+  delete(notEmpty = false) {
     if (!this.parent) {
       return
     }
@@ -103,25 +103,50 @@ export class Path {
       this.parent.delete(true)
     }
   }
-  positionCompare (path) {
+  positionCompare(path) {
     return positionCompare(this, path)
   }
   /**
    * 源于 xxx
    */
-  originOf (path) {
+  originOf(path) {
     return this.position.includes(path.position + '-')
   }
   /**
-   * 插入到path后面
-   * @param {*} path 
+   * 插入到path前面
+   * @param {*} path
    */
-  insertAfter (path) {
+  insertBefore(path) {
+    path.parent.children.splice(path.index, 0, this)
     this.delete(true)
-    path.parent.children.splice(path.index + 1, 0, this)
     path.parent.rebuild()
-    console.log(this);
-    // debugger
+  }
+  /**
+   * 插入到path后面
+   * @param {*} path
+   */
+  insertAfter(path) {
+    path.parent.children.splice(path.index + 1, 0, this)
+    this.delete(true)
+    path.parent.rebuild()
+  }
+  /**
+   * 插入到path前面
+   * @param {*} path
+   */
+  insertChildrenBefore(path) {
+    path.parent.children.splice(path.index, 0, ...this.children)
+    this.delete()
+    path.parent.rebuild()
+  }
+  /**
+   * 插入到path后面
+   * @param {*} path
+   */
+  insertChildrenAfter(path) {
+    path.parent.children.splice(path.index + 1, 0, ...this.children)
+    this.delete()
+    path.parent.rebuild()
   }
   /**
    * 删除两个节点之间的所有节点
@@ -129,7 +154,7 @@ export class Path {
    * @param {*} endPath
    * @memberof Path
    */
-  deleteBetween (startPath, endPath) {
+  deleteBetween(startPath, endPath) {
     const pathsToRebuild = []
     if (this === startPath || this === endPath || startPath === endPath) return
     const traverse = (path) => {
@@ -153,7 +178,7 @@ export class Path {
    * @desc: 重构链表树
    * @return {*}
    */
-  rebuild () {
+  rebuild() {
     this._shouldRebuild = false
     let cachePath = null
     this.children = this.children.filter((ele) => {
@@ -162,12 +187,11 @@ export class Path {
       } else {
         return true
       }
-
     })
     // 为了保持marks索引，使用length = 0来清空数组
     if (this.node.data.marks) this.node.data.marks.length = 0
     this.children.forEach((path, index) => {
-      // 更新父级 
+      // 更新父级
       path.parent = this
       // 同步mark子节点
       this.node.data.marks.push(path.node)
@@ -193,7 +217,7 @@ export class Path {
  * @desc: 创建path
  * @return {*}
  */
-export function createPath (
+export function createPath(
   current,
   parent = null,
   prevSibling = null,
@@ -226,7 +250,7 @@ export function createPath (
   return path
 }
 
-function queryRootPath (path) {
+function queryRootPath(path) {
   while (path.parent) {
     path = path.parent
   }
@@ -238,7 +262,7 @@ function queryRootPath (path) {
  * @param {path} path
  * @return {path}
  */
-export function queryCommonPath (path1, path2) {
+export function queryCommonPath(path1, path2) {
   if (path1.position === '0') return path1
   if (path2.position === '0') return path2
   const rootPath = queryRootPath(path1)
@@ -260,24 +284,24 @@ export function queryCommonPath (path1, path2) {
  * @param {path} path
  * @return {path}
  */
-export function queryPath (target, path) {
+export function queryPath(target, path) {
   if (target instanceof Path) return target
   if (target.nodeType) return queryPathByElm(target)
   if (target._isVnode) return queryPathByVn(target)
   if (typeof target === 'string') return queryPathByPosition(target, path)
   throw 'queryPath的参数必须是elm|vn|position'
 }
-function queryPathByElm (elm) {
+function queryPathByElm(elm) {
   const vn = getVnOrElm(elm)
   if (!vn) return null
   return queryPathByVn(vn)
 }
-function queryPathByVn (vn) {
+function queryPathByVn(vn) {
   const path = getVnOrPath(vn)
   if (!path) return null
   return path
 }
-function queryPathByPosition (position, rootPath) {
+function queryPathByPosition(position, rootPath) {
   const posArr = position.split('-')
   return posArr.slice(1).reduce((prev, index) => {
     return prev.children[index]

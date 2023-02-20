@@ -29,10 +29,6 @@ const genChildren = (children, inherit) =>
         children: ele,
       }
     } else {
-      // return Object.assign(ele, inherit)
-      // Object.assign(ele, inherit)
-      // console.log(ele)
-      // if (!ele.ns) ele.ns = inherit.ns // TODO mergeProps
       mergeObj(ele, inherit)
       return ele
     }

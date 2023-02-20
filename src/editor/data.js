@@ -23,8 +23,16 @@ export const mockData = {
               },
               formats: { paragraph: true },
             },
-            { data: '111', formats: { color: 'red' } },
-            { data: '222', formats: { del: true, color: 'green' } },
+            {
+              data: {
+                marks: [
+                  { data: '111', formats: { color: 'red' } },
+                  { data: '222', formats: { del: true, color: 'green' } },
+                ],
+              },
+              formats: { paragraph: true },
+            },
+
             {
               data: {
                 marks: [
@@ -80,19 +88,27 @@ export const mockData = {
               },
               formats: { paragraph: true },
             },
+
             {
-              data: 'world',
-              formats: { del: true, color: 'red' },
-            },
-            { data: 'eee', formats: { del: true, color: 'green' } },
-            {
-              data: 'hhhha',
-              formats: { sup: true, del: true, color: 'green', fontSize: '12px' },
-            },
-            { data: 'qqq', formats: { color: 'green' } },
-            {
-              data: '分词器',
-              formats: { color: 'green' },
+              data: {
+                marks: [
+                  {
+                    data: 'world',
+                    formats: { del: true, color: 'red' },
+                  },
+                  { data: 'eee', formats: { del: true, color: 'green' } },
+                  {
+                    data: 'hhhha',
+                    formats: { sup: true, del: true, color: 'green', fontSize: '12px' },
+                  },
+                  { data: 'qqq', formats: { color: 'green' } },
+                  {
+                    data: '分词器',
+                    formats: { color: 'green' },
+                  },
+                ],
+              },
+              formats: { paragraph: true },
             },
             {
               data: {

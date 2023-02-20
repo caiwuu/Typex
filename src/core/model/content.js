@@ -29,7 +29,7 @@ export default class Content extends Component {
    */
   update(path, range) {
     // 执行更新前钩子
-    this.onBeforeUpdate && this.onBeforeUpdate({ path, range })
+    this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
       // 执行更新后钩子
       this.onAfterUpdate && this.onAfterUpdate({ range, path })

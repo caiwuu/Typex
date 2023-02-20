@@ -11,7 +11,7 @@ import Static from './Static'
 export default class Paragraph extends Block {
   render() {
     return (
-      <div>
+      <p>
         {/* <Static> */}
         {/* <div>
             <span style='background:#ddd'>静态内容 不可编辑 不可选中 它是组件的一部分</span>
@@ -23,7 +23,7 @@ export default class Paragraph extends Block {
         {/* <editor-content> */}
         {formater.render(this.$path)}
         {/* </editor-content> */}
-      </div>
+      </p>
     )
   }
 }
