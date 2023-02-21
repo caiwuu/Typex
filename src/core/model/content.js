@@ -5,19 +5,19 @@ export default class Content extends Component {
     super(props)
     this.initState()
   }
-  get contentLength() {
+  get contentLength () {
     return this.$path.len
   }
-  get $path() {
+  get $path () {
     return this.props.path
   }
-  get $editor() {
+  get $editor () {
     return this.props.editor
   }
   /**
    * 初始化状态
    */
-  initState() {
+  initState () {
     this.$path._$component = this
   }
 
@@ -27,7 +27,10 @@ export default class Content extends Component {
    * @param {*} range
    * @memberof Content
    */
-  update(path, range) {
+  update (path, range) {
+    if (this.$path.len === 0) {
+      return
+    }
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
@@ -42,7 +45,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @param {*} range 输入数据
    */
-  contentInput(path, range, data) {
+  contentInput (path, range, data) {
     const { offset, endContainer } = range
     path.insertData(offset, data)
     this._updatePoints(endContainer, offset, data.length)
@@ -58,7 +61,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  deleteData(commonPath, range) {
+  deleteData (commonPath, range) {
     const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -93,7 +96,7 @@ export default class Content extends Component {
    * @param {*} direction
    * @returns
    */
-  caretEnter(path, range, direction) {
+  caretEnter (path, range, direction) {
     if (direction === 'left') {
       let fromPath = this.getPrevLeafPath(path)
       if (!fromPath) return {}
@@ -111,7 +114,7 @@ export default class Content extends Component {
    * @param {*} direction 从哪个方向离开
    * @returns
    */
-  caretLeave(path, range, direction) {
+  caretLeave (path, range, direction) {
     if (direction === 'left') {
       let toPath = this.getPrevLeafPath(path)
       if (!toPath) return {}
@@ -131,7 +134,7 @@ export default class Content extends Component {
    * @param {*} range 区间 cursorForward
    * @memberof Content
    */
-  caretForward(path, range) {
+  caretForward (path, range) {
     range.offset < path.len && (range.offset += 1)
   }
   /**
@@ -141,7 +144,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  caretBackward(path, range) {
+  caretBackward (path, range) {
     range.offset > 0 && (range.offset -= 1)
   }
   /**
@@ -151,18 +154,18 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  onEnter(path, range) {
+  onEnter (path, range) {
     console.error('组件未实现onEnter方法')
   }
-  getPrevLeafPath(path) {
+  getPrevLeafPath (path) {
     if (!path) return null
     return (path.prevSibling || this.getPrevLeafPath(path.parent))?.lastLeaf
   }
-  getNextLeafPath(path) {
+  getNextLeafPath (path) {
     if (!path) return null
     return (path.nextSibling || this.getNextLeafPath(path.parent))?.firstLeaf
   }
-  caretMove(direction, path, range, ...args) {
+  caretMove (direction, path, range, ...args) {
     const caretMoveMethod = this[`${direction === 'left' ? 'caretBackward' : 'caretForward'}`]
     const [shiftKey] = args
     let res = { path, range }
@@ -188,7 +191,7 @@ export default class Content extends Component {
    * @param {*} direction
    * @return {*}
    */
-  caretWillBeLeaving(path, range, direction) {
+  caretWillBeLeaving (path, range, direction) {
     if (direction === 'left' && range.offset <= 1) {
       let toPath = this.getPrevLeafPath(path)
       if (!toPath) return false
@@ -210,7 +213,7 @@ export default class Content extends Component {
    * @param {*} distance
    * @memberof Content
    */
-  _updatePoints(container, position, distance) {
+  _updatePoints (container, position, distance) {
     this.$editor.selection.updatePoints(container, position, distance)
   }
 }

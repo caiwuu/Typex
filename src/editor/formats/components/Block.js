@@ -21,7 +21,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  deleteData(commonPath, range) {
+  deleteData (commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {

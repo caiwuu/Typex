@@ -9,7 +9,7 @@ const VNElmMap = new WeakMap()
 const VNInsMap = new WeakMap()
 const pathVNMap = new WeakMap()
 
-function getVnOrPath(key) {
+function getVnOrPath (key) {
   // 通过vn找path
   if (key._isVnode) {
     const path = pathVNMap.get(key)
@@ -31,22 +31,22 @@ function getVnOrPath(key) {
     return vn
   }
 }
-function getVnOrIns(key) {
+function getVnOrIns (key) {
   return VNInsMap.get(key)
 }
-function getVnOrElm(key) {
+function getVnOrElm (key) {
   if (key.ins) {
     return VNElmMap.get(getVnOrIns(key.ins))
   }
   return VNElmMap.get(key)
 }
-function setVnElm(vn, elm) {
+function setVnElm (vn, elm) {
   VNElmMap.set(elm, vn).set(vn, elm)
 }
-function setVnIns(vn, ins) {
+function setVnIns (vn, ins) {
   VNInsMap.set(ins, vn).set(vn, ins)
 }
-function setVnPath(vn, path) {
+function setVnPath (vn, path) {
   pathVNMap.set(vn, path).set(path, vn)
 }
 
