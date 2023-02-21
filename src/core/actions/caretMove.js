@@ -81,6 +81,7 @@ function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
  * @returns
  */
 function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, shiftKey) {
+  // debugger
   if (range.collapsed) {
     range.d = 0
   }
@@ -101,6 +102,7 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
     }
   }
   const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
+  if (currCaretInfo.x === prevCaretInfo.x && currCaretInfo.y === prevCaretInfo.y) return
   const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
   if (!sameLine) {
     lineChanged = true

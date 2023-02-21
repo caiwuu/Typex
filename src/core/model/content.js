@@ -96,6 +96,7 @@ export default class Content extends Component {
   caretEnter(path, range, direction) {
     if (direction === 'left') {
       let fromPath = this.getPrevLeafPath(path)
+      if (!fromPath) return {}
       const isSameBlock = path.blockComponent === fromPath.blockComponent
       range.set(path, isSameBlock ? 1 : 0)
     } else {
@@ -113,11 +114,12 @@ export default class Content extends Component {
   caretLeave(path, range, direction) {
     if (direction === 'left') {
       let toPath = this.getPrevLeafPath(path)
+      if (!toPath) return {}
       return toPath.component.caretEnter(toPath, range, 'right')
     } else {
       // 从尾部离开
       let toPath = this.getNextLeafPath(path)?.firstLeaf
-      if (!toPath) return null
+      if (!toPath) return {}
       return toPath.component.caretEnter(toPath, range, 'left')
     }
   }
@@ -189,6 +191,7 @@ export default class Content extends Component {
   caretWillBeLeaving(path, range, direction) {
     if (direction === 'left' && range.offset <= 1) {
       let toPath = this.getPrevLeafPath(path)
+      if (!toPath) return false
       // 细节处理:同块不同文本光标左移，两个path的交界处 取前一个path的右端点
       const isSameBlock = path.blockComponent === toPath.blockComponent
       if (range.offset === 0) {
