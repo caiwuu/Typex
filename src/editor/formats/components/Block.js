@@ -6,11 +6,15 @@
  * @LastEditTime: 2022-11-22 16:20:35
  */
 import { Content } from '@/core'
-const mergeBlock = (o, n) => {
+const mergeBlock = (o, n, shouldUpdates = []) => {
+  debugger
   const oBlock = o.blockComponent
   if (o.blockComponent !== n.blockComponent) {
     o.blockComponent.$path.insertChildrenAfter(n)
     oBlock.$path.parent.component.update()
+    shouldUpdates.forEach((ins) => {
+      ins.component.update()
+    })
   }
 }
 export default class Block extends Content {
@@ -21,7 +25,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  deleteData (commonPath, range) {
+  deleteData(commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -29,7 +33,7 @@ export default class Block extends Content {
         // 执行删除
         startContainer.deleteData(endOffset, 1)
         if (this.contentLength === 0) {
-          // 块级内容特殊处理 清空了光标还会停留在块内
+          // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
           range.setStart(startContainer, 0)
         } else if (startContainer.len === 0) {
           const { path: prevSibling } = this.caretLeave(startContainer, range, 'left')
