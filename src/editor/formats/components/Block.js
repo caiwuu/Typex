@@ -7,9 +7,18 @@
  */
 import { Content } from '@/core'
 const mergeBlock = (o, n, shouldUpdates = []) => {
-  debugger
   const oBlock = o.blockComponent
   if (o.blockComponent !== n.blockComponent) {
+    if (n.len === 0) {
+      n.component.$editor.selection.rangePoints.filter(point => point.container === n).forEach(point => {
+        if (point.pointName === 'start') {
+          console.log(n.nextLeaf);
+          point.range.setStart(n.nextLeaf, 0)
+        } else {
+          point.range.setEnd(n.nextLeaf, 0)
+        }
+      })
+    }
     o.blockComponent.$path.insertChildrenAfter(n)
     oBlock.$path.parent.component.update()
     shouldUpdates.forEach((ins) => {
@@ -25,7 +34,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  deleteData(commonPath, range) {
+  deleteData (commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -37,8 +46,12 @@ export default class Block extends Content {
           range.setStart(startContainer, 0)
         } else if (startContainer.len === 0) {
           const { path: prevSibling } = this.caretLeave(startContainer, range, 'left')
-          startContainer.delete()
-          mergeBlock(startContainer, prevSibling)
+          if (!prevSibling) return
+          if (prevSibling.blockComponent !== startContainer.blockComponent) {
+            range.setStart(startContainer, 0)
+          } else {
+            startContainer.delete()
+          }
         } else {
           this._updatePoints(endContainer, endOffset, -1)
         }

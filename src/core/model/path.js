@@ -57,6 +57,12 @@ export class Path {
   get index () {
     return this.position.split('-').slice(-1)[0] / 1
   }
+  get prevLeaf () {
+    return (this.prevSibling || this.parent?.prevSibling)?.lastLeaf
+  }
+  get nextLeaf () {
+    return (this.nextSibling || this.parent?.nextSibling)?.firstLeaf
+  }
 
   /**
    * 内容插入
@@ -146,6 +152,7 @@ export class Path {
   insertChildrenAfter (path) {
     path.parent.children.splice(path.index + 1, 0, ...this.children)
     this.delete(true)
+    if (path.len === 0) path.delete(true)
     path.parent.rebuild()
   }
   /**

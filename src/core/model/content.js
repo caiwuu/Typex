@@ -28,9 +28,6 @@ export default class Content extends Component {
    * @memberof Content
    */
   update (path, range) {
-    if (this.$path.len === 0) {
-      return
-    }
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
