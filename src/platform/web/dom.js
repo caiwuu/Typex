@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-26 13:58:43
  */
-import { createVnode } from '@/core'
+import context from '../context'
 export const nativeDocument = document
 export const nativeWindow = window
 export const nativeSelection = document.getSelection()
@@ -25,7 +25,7 @@ export function removeChild(parentNode, referenceNode) {
 export function domToVNode(node) {
   const type = node.tagName.toLowerCase() || 'text'
   if (type === 'text') {
-    return createVnode(type)
+    return context.core.createVnode(type)
   }
   const config = {}
   const children = []
@@ -42,5 +42,5 @@ export function domToVNode(node) {
   for (let i = 0, n = elmChildren.length; i < n; i++) {
     children.push(domToVNode(elmChildren[i]))
   }
-  return createVnode(type, config, children)
+  return context.core.createVnode(type, config, children)
 }

@@ -6,7 +6,6 @@
  * @LastEditTime: 2022-11-22 16:21:18
  */
 import { createVnode as h, patch, createRef } from '@/core'
-import { initIntercept } from '@/platform'
 import formater from './formats'
 import ToolBar from './toolBar'
 /**
@@ -36,7 +35,7 @@ export default function mount(id) {
   const contentRef = createRef()
 
   this.ui.body.appendChild(mountDom)
-  initIntercept(this)
+  this.initIntercept(this)
   formater.editor = this
 
   patch(renderRoot(this, contentRef, h), mountDom)

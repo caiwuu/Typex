@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-14 16:55:56
  */
-import { Caret } from '@/platform'
+import plugins from '@/core/plugins'
 
 export default class Range {
   // 输入暂存区
@@ -22,18 +22,18 @@ export default class Range {
     this.startOffset = startOffset
     this.editor = editor
     this.d = d
-    this.caret = new Caret(this)
+    this.caret = new plugins.platform.Caret(this)
   }
-  get collapsed () {
+  get collapsed() {
     return this.endContainer === this.startContainer && this.endOffset === this.startOffset
   }
-  get offset () {
+  get offset() {
     return this.d === 1 ? this.endOffset : this.startOffset
   }
-  get container () {
+  get container() {
     return this.d === 1 ? this.endContainer : this.startContainer
   }
-  set offset (offset) {
+  set offset(offset) {
     if (this.d === 1) {
       this.endOffset = offset
     } else {
@@ -41,29 +41,29 @@ export default class Range {
     }
     if (this.collapsed) this.d = 0
   }
-  set container (container) {
+  set container(container) {
     if (this.d === 1) {
       this.endContainer = container
     } else {
       this.startContainer = container
     }
   }
-  set (container, offset) {
+  set(container, offset) {
     this.container = container
     this.offset = offset
     if (this.collapsed) this.d = 0
   }
-  setEnd (endContainer, endOffset) {
+  setEnd(endContainer, endOffset) {
     this.endContainer = endContainer
     this.endOffset = endOffset
     if (this.collapsed) this.d = 0
   }
-  setStart (startContainer, startOffset) {
+  setStart(startContainer, startOffset) {
     this.startContainer = startContainer
     this.startOffset = startOffset
     if (this.collapsed) this.d = 0
   }
-  collapse (toStart) {
+  collapse(toStart) {
     if (toStart) {
       this.endContainer = this.startContainer
       this.endOffset = this.startOffset
@@ -74,11 +74,11 @@ export default class Range {
     this.d = 0
     this.editor.selection.drawRangeBg()
   }
-  updateCaret (drawCaret = true) {
+  updateCaret(drawCaret = true) {
     this.caret.update(this, drawCaret)
     this.editor.focus()
   }
-  remove () {
+  remove() {
     const index = this.editor.selection.ranges.findIndex((i) => i === this)
     this.caret.remove()
     this.editor.selection.ranges.splice(index, 1)

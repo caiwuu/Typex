@@ -18,7 +18,7 @@ import Selection from './selection'
 import { createRef, createVnode, patch, Component, insertedInsQueue } from './view'
 import * as utils from './utils.js'
 import { setVnElm, setVnIns, setVnPath, getVnOrElm, getVnOrPath, getVnOrIns } from './mappings'
-import { plugin } from './use'
+import plugins from './plugins'
 const core = {
   createPath,
   queryCommonPath,
@@ -41,14 +41,8 @@ const core = {
   getVnOrPath,
   getVnOrIns,
 }
-const bind = function (editorIns) {
-  const scopePlugin = {}
-  plugin.set(editorIns, scopePlugin)
-  return {
-    use: (p) => {
-      p.install(scopePlugin, core)
-    },
-  }
+const usePlugin = (plugin) => {
+  return plugin.install(plugins, core)
 }
 export {
   createPath,
@@ -71,6 +65,5 @@ export {
   getVnOrElm,
   getVnOrPath,
   getVnOrIns,
-  bind,
-  plugin,
+  usePlugin,
 }

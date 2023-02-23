@@ -13,30 +13,24 @@ import {
   queryPath,
   queryCommonPath,
   createPath,
-  bind,
-  plugin,
+  usePlugin,
 } from '@/core'
+import platform from '@/platform'
 import formater from './formats'
 import { mockData } from './data'
-console.log(plugin)
 class Editor {
   ui = {
     body: null,
   }
   toolBarOption = []
   constructor(options) {
-    bind(this).use({
-      install(pluginStore, output) {
-        pluginStore.name = 'caiwu'
-        console.log(output)
-      },
-    })
     this.init(options)
   }
   init(options) {
     formater.inject('editor', this)
     this.$path = options.path
     this.$emitter = emit()
+    this.initIntercept = usePlugin(platform)
     this.selection = new Selection(this)
     registerActions(this)
   }

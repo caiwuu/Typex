@@ -1,8 +1,8 @@
-import { nativeSelection } from '@/platform'
+import plugins from '@/core/plugins'
 import Range from './range'
 export default class Selection {
   ranges = []
-  nativeSelection = nativeSelection
+  nativeSelection = plugins.platform.nativeSelection
   constructor(editor) {
     this.editor = editor
   }
@@ -42,7 +42,7 @@ export default class Selection {
   }
   createRangeFromNativeRange(nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset, collapsed } = nativeRange
-    const { focusNode, focusOffset } = nativeSelection
+    const { focusNode, focusOffset } = this.nativeSelection
     let d = 0
     if (collapsed) {
       d = 0
@@ -63,7 +63,7 @@ export default class Selection {
     this.ranges.push(range)
   }
   collapse(parentNode, offset) {
-    nativeSelection.collapse(parentNode, offset)
+    this.nativeSelection.collapse(parentNode, offset)
     this._resetRangesFromNative()
   }
   _queryPath(elm) {
@@ -89,18 +89,18 @@ export default class Selection {
   // 从native重新设置选区
   _resetRangesFromNative() {
     this.clearRanges()
-    const count = nativeSelection.rangeCount
+    const count = this.nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
-      const nativeRange = this._transformRange(nativeSelection.getRangeAt(i))
+      const nativeRange = this._transformRange(this.nativeSelection.getRangeAt(i))
       if (!nativeRange) return
       this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
   }
   // 从native选区扩增，多选区支持
   _extendRangesFromNative() {
-    const count = nativeSelection.rangeCount
+    const count = this.nativeSelection.rangeCount
     if (count > 0) {
-      const nativeRange = this._transformRange(nativeSelection.getRangeAt(count - 1))
+      const nativeRange = this._transformRange(this.nativeSelection.getRangeAt(count - 1))
       if (!nativeRange) return
       let flag = false
       this.ranges.forEach((i) => {
@@ -120,7 +120,7 @@ export default class Selection {
     return this.ranges[index]
   }
   removeAllRanges() {
-    nativeSelection.removeAllRanges()
+    this.nativeSelection.removeAllRanges()
     this.clearRanges()
   }
   createNativeRange({ startContainer, startOffset, endContainer, endOffset }) {
@@ -210,7 +210,7 @@ export default class Selection {
   drawRangeBg(range) {
     const currRange = range || this.getRangeAt(0)
     if (!currRange) return
-    nativeSelection.removeAllRanges()
+    this.nativeSelection.removeAllRanges()
     const { startContainer, startOffset, endContainer, endOffset } = currRange
     const createNativeRangeOps = {
       startContainer: startContainer.elm,
@@ -218,6 +218,6 @@ export default class Selection {
       startOffset,
       endOffset,
     }
-    nativeSelection.addRange(this.createNativeRange(createNativeRangeOps))
+    this.nativeSelection.addRange(this.createNativeRange(createNativeRangeOps))
   }
 }

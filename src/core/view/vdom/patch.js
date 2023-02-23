@@ -6,26 +6,19 @@
  * @LastEditTime: 2022-11-22 16:20:40
  */
 import { default as h, insertedInsQueue } from './createVnode'
-import {
-  insertBefore,
-  replaceChild,
-  removeChild,
-  domToVNode,
-  updateProps,
-  createElm,
-} from '@/platform'
+import plugins from '@/core/plugins'
 import { getVnOrElm, getVnOrIns, setVnElm, setVnIns } from '../../mappings'
 import { isUndef, isDef } from '../../utils'
-function sameVnode (vnode, oldVnode) {
+function sameVnode(vnode, oldVnode) {
   return vnode?.key === oldVnode?.key && vnode?.type === oldVnode?.type
 }
-function findIdxInOld (node, oldCh, start, end) {
+function findIdxInOld(node, oldCh, start, end) {
   for (let i = start; i < end; i++) {
     const c = oldCh[i]
     if (isDef(c) && sameVnode(node, c)) return i
   }
 }
-function createKeyToOldIdx (children, beginIdx, endIdx) {
+function createKeyToOldIdx(children, beginIdx, endIdx) {
   const map = {}
   for (let i = beginIdx; i <= endIdx; ++i) {
     const key = children[i]?.key
@@ -36,18 +29,18 @@ function createKeyToOldIdx (children, beginIdx, endIdx) {
   return map
 }
 
-function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
+function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
-      const elm = createElm(ch)
+      const elm = plugins.platform.createElm(ch)
       // TODO
       setVnElm(elm, ch)
-      insertBefore(parentElm, elm, before)
+      plugins.platform.insertBefore(parentElm, elm, before)
     }
   }
 }
-function invokeDestroyHook (vnode, destoryQueue) {
+function invokeDestroyHook(vnode, destoryQueue) {
   const vn = vnode.ins ? getVnOrIns(vnode.ins) : vnode
   if (vn !== undefined) {
     const ins = getVnOrIns(vn)
@@ -66,7 +59,7 @@ function invokeDestroyHook (vnode, destoryQueue) {
     }
   }
 }
-function removeVnodes (parentElm, oldCh, startIdx, endIdx) {
+function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const vnode = oldCh[startIdx]
     if (vnode != null) {
@@ -74,7 +67,7 @@ function removeVnodes (parentElm, oldCh, startIdx, endIdx) {
       // const dom = getVnOrElm(vnode)
       let dom = getVnOrElm(vnode)
       if (!dom) dom = getVnOrElm(getVnOrIns(vnode.ins || {}))
-      dom && removeChild(parentElm, dom)
+      dom && plugins.platform.removeChild(parentElm, dom)
       invokeDestroyHook(vnode, destoryQueue)
       destoryQueue.forEach((ins) => {
         ins.onUnmounted?.()
@@ -83,7 +76,7 @@ function removeVnodes (parentElm, oldCh, startIdx, endIdx) {
     }
   }
 }
-function updateChildren (parentElm, newCh, oldCh) {
+function updateChildren(parentElm, newCh, oldCh) {
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1
@@ -119,14 +112,18 @@ function updateChildren (parentElm, newCh, oldCh) {
     } else if (sameVnode(newEndVnode, oldStartVnode)) {
       // Vnode moved right
       patchVnode(newEndVnode, oldStartVnode)
-      insertBefore(parentElm, getVnOrElm(oldStartVnode), getVnOrElm(oldEndVnode).nextSibling)
+      plugins.platform.insertBefore(
+        parentElm,
+        getVnOrElm(oldStartVnode),
+        getVnOrElm(oldEndVnode).nextSibling
+      )
       oldStartVnode = oldCh[++oldStartIdx]
       newEndVnode = newCh[--newEndIdx]
       // 新头=旧尾
     } else if (sameVnode(newStartVnode, oldEndVnode)) {
       // Vnode moved left
       patchVnode(newStartVnode, oldEndVnode)
-      insertBefore(parentElm, getVnOrElm(oldEndVnode), getVnOrElm(oldStartVnode))
+      plugins.platform.insertBefore(parentElm, getVnOrElm(oldEndVnode), getVnOrElm(oldStartVnode))
       oldEndVnode = oldCh[--oldEndIdx]
       newStartVnode = newCh[++newStartIdx]
     } else {
@@ -138,15 +135,23 @@ function updateChildren (parentElm, newCh, oldCh) {
         : findIdxInOld(newStartVnode, oldCh, oldStartIdx, oldEndIdx)
       if (isUndef(idxInOld)) {
         // New element
-        insertBefore(parentElm, createElm(newStartVnode), getVnOrElm(oldStartVnode))
+        plugins.platform.insertBefore(
+          parentElm,
+          plugins.platform.createElm(newStartVnode),
+          getVnOrElm(oldStartVnode)
+        )
       } else {
         elmToMove = oldCh[idxInOld]
         if (elmToMove.tagName !== newStartVnode.tagName) {
-          insertBefore(parentElm, createElm(newStartVnode), getVnOrElm(oldStartVnode))
+          plugins.platform.insertBefore(
+            parentElm,
+            plugins.platform.createElm(newStartVnode),
+            getVnOrElm(oldStartVnode)
+          )
         } else {
           patchVnode(newStartVnode, elmToMove)
           oldCh[idxInOld] = undefined
-          insertBefore(parentElm, getVnOrElm(elmToMove), getVnOrElm(oldStartVnode))
+          plugins.platform.insertBefore(parentElm, getVnOrElm(elmToMove), getVnOrElm(oldStartVnode))
         }
       }
       newStartVnode = newCh[++newStartIdx]
@@ -161,7 +166,7 @@ function updateChildren (parentElm, newCh, oldCh) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
   }
 }
-function patchVnode (vnode, oldVnode) {
+function patchVnode(vnode, oldVnode) {
   if (oldVnode === vnode) return
   if (typeof vnode.type === 'function') {
     if (vnode.type.isComponent) {
@@ -182,7 +187,7 @@ function patchVnode (vnode, oldVnode) {
   } else if (vnode.type === 'text') {
     const elm = getVnOrElm(oldVnode)
     setVnElm(elm, vnode)
-    updateProps(vnode, oldVnode)
+    plugins.platform.updateProps(vnode, oldVnode)
   } else {
     // 重新映射elm和vn
     const elm = getVnOrElm(oldVnode)
@@ -192,15 +197,15 @@ function patchVnode (vnode, oldVnode) {
     ins && setVnIns(vnode, ins)
     const oldCh = oldVnode.children
     const ch = vnode.children
-    updateProps(vnode, oldVnode)
+    plugins.platform.updateProps(vnode, oldVnode)
     if (oldCh !== ch) updateChildren(elm, ch, oldCh)
   }
 }
-export default function patch (vnode, oldVnode) {
+export default function patch(vnode, oldVnode) {
   insertedInsQueue.length = 0
   // 没有oldvnode 直接创建新dom
   if (isUndef(oldVnode)) {
-    const elm = createElm(vnode)
+    const elm = plugins.platform.createElm(vnode)
     setVnElm(elm, vnode)
     return elm
   }
@@ -208,7 +213,7 @@ export default function patch (vnode, oldVnode) {
   // oldvnode 是dom，先转化为虚拟节点
   if (isRealElment) {
     const elm = oldVnode
-    oldVnode = domToVNode(oldVnode)
+    oldVnode = plugins.platform.domToVNode(oldVnode)
     setVnElm(elm, oldVnode)
   }
   // 相同节点则执行更新逻辑
@@ -216,8 +221,8 @@ export default function patch (vnode, oldVnode) {
     patchVnode(vnode, oldVnode)
   } else {
     let oldElm = getVnOrElm(oldVnode)
-    const newElm = createElm(vnode)
-    replaceChild(oldElm.parentNode, newElm, oldElm)
+    const newElm = plugins.platform.createElm(vnode)
+    plugins.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
     oldElm = null
   }
   insertedInsQueue.forEach((ele) => {

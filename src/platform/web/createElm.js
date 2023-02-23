@@ -1,30 +1,30 @@
-import { setVnElm, setVnIns, createVnode, insertedInsQueue } from '@/core'
+import context from '../context'
 import updateProps from './updateProps'
 export default function createElm(vnode) {
   let elm
   if (vnode.type === 'text') {
     elm = document.createTextNode(vnode.children)
-    setVnElm(elm, vnode)
+    context.core.setVnElm(elm, vnode)
     return elm
   }
   if (typeof vnode.type === 'function') {
     if (vnode.type.isComponent) {
       const ins = new vnode.type(vnode.props)
-      const vn = ins.render(createVnode)
+      const vn = ins.render(context.core.createVnode)
       vnode.ins = ins
       ins._$pv = vnode
-      setVnIns(ins, vn)
+      context.core.setVnIns(ins, vn)
       if (vnode.ref) vnode.ref.current = ins
       elm = createElm(vn)
-      insertedInsQueue.push(ins)
-      setVnElm(elm, vn)
+      context.core.insertedInsQueue.push(ins)
+      context.core.setVnElm(elm, vn)
       updateProps(vn)
     } else {
-      const vn = vnode.type(createVnode, vnode.props)
-      setVnIns(vnode, vn)
+      const vn = vnode.type(context.core.createVnode, vnode.props)
+      context.core.setVnIns(vnode, vn)
       elm = createElm(vn)
       if (vnode.ref) vnode.ref.current = elm
-      setVnElm(elm, vn)
+      context.core.setVnElm(elm, vn)
       updateProps(vnode)
     }
   } else {
@@ -32,7 +32,7 @@ export default function createElm(vnode) {
       ? document.createElementNS(vnode.ns, vnode.type)
       : document.createElement(vnode.type)
     if (vnode.ref) vnode.ref.current = elm
-    setVnElm(elm, vnode)
+    context.core.setVnElm(elm, vnode)
     updateProps(vnode)
   }
   if (vnode.children?.length === 1) {
