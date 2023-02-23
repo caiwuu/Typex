@@ -3,13 +3,13 @@ import { setVnPath } from '../mappings'
 
 class Formater {
   formatMap = new Map()
-  register (format) {
+  register(format) {
     this.formatMap.set(format.name, format)
   }
-  inject (propName, prop) {
+  inject(propName, prop) {
     this[propName] = prop
   }
-  render (path) {
+  render(path) {
     const gs = this.group(
       {
         paths: path.children,
@@ -20,20 +20,21 @@ class Formater {
     const vn = this.generateGroups(gs, path.len)
     return vn
   }
-  invokeRender (vn, current) {
+  invokeRender(vn, current) {
     return current.fmt.render(vn, current.value, h)
   }
-  mergePoints (path, basePath) {
-    console.log(this.editor);
-    this.editor.selection.rangePoints.filter(point => point.container === path).forEach(point => {
-      if (point.pointName === 'start') {
-        point.range.setStart(basePath, basePath.len + point.offset)
-      } else {
-        point.range.setEnd(basePath, basePath.len + point.offset)
-      }
-    })
+  mergePoints(path, basePath) {
+    this.editor.selection.rangePoints
+      .filter((point) => point.container === path)
+      .forEach((point) => {
+        if (point.pointName === 'start') {
+          point.range.setStart(basePath, basePath.len + point.offset)
+        } else {
+          point.range.setEnd(basePath, basePath.len + point.offset)
+        }
+      })
   }
-  mergeTextPath (paths) {
+  mergeTextPath(paths) {
     const basePath = paths[0]
     const pathsLen = paths.length
     if (pathsLen === 1) return basePath
@@ -45,7 +46,7 @@ class Formater {
     }
     return basePath
   }
-  generateGroups (gs, flag) {
+  generateGroups(gs, flag) {
     return gs
       .map((g) => {
         let componentQuene
@@ -134,10 +135,10 @@ class Formater {
       })
       .filter((i) => i)
   }
-  get types () {
+  get types() {
     return [...this.formatMap.keys()]
   }
-  getFormats (objs) {
+  getFormats(objs) {
     return objs.map((obj) => {
       const key = Object.keys(obj)[0]
       return {
@@ -146,10 +147,10 @@ class Formater {
       }
     })
   }
-  get (key) {
+  get(key) {
     return this.formatMap.get(key) || {}
   }
-  canAdd (path, prevPath, key) {
+  canAdd(path, prevPath, key) {
     /**
      * 当前无格式
      */
@@ -164,7 +165,7 @@ class Formater {
     if (prevPath.node.formats[key] === path.node.formats[key]) return true
   }
   // 公共格式提取分组法
-  group (group, index, r = []) {
+  group(group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
     let prevPath = null
