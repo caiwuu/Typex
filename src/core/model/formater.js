@@ -1,6 +1,5 @@
 import { default as h } from '../view/vdom/createVnode'
 import { setVnPath } from '../mappings'
-
 class Formater {
   formatMap = new Map()
   register(format) {

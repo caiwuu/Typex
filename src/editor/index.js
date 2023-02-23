@@ -7,15 +7,30 @@
  */
 import emit from 'mitt'
 import mount from './mount'
-import { Selection, registerActions, queryPath, queryCommonPath, createPath } from '@/core'
+import {
+  Selection,
+  registerActions,
+  queryPath,
+  queryCommonPath,
+  createPath,
+  bind,
+  plugin,
+} from '@/core'
 import formater from './formats'
 import { mockData } from './data'
+console.log(plugin)
 class Editor {
   ui = {
     body: null,
   }
   toolBarOption = []
   constructor(options) {
+    bind(this).use({
+      install(pluginStore, output) {
+        pluginStore.name = 'caiwu'
+        console.log(output)
+      },
+    })
     this.init(options)
   }
   init(options) {

@@ -5,11 +5,11 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-23 13:57:07
  */
-const VNElmMap = new WeakMap()
-const VNInsMap = new WeakMap()
+const vnElmMap = new WeakMap()
+const vnInsMap = new WeakMap()
 const pathVNMap = new WeakMap()
 
-function getVnOrPath (key) {
+function getVnOrPath(key) {
   // 通过vn找path
   if (key._isVnode) {
     const path = pathVNMap.get(key)
@@ -31,25 +31,25 @@ function getVnOrPath (key) {
     return vn
   }
 }
-function getVnOrIns (key) {
-  return VNInsMap.get(key)
+function getVnOrIns(key) {
+  return vnInsMap.get(key)
 }
-function getVnOrElm (key) {
+function getVnOrElm(key) {
   if (key.ins) {
-    return VNElmMap.get(getVnOrIns(key.ins))
+    return vnElmMap.get(getVnOrIns(key.ins))
   }
-  return VNElmMap.get(key)
+  return vnElmMap.get(key)
 }
-function setVnElm (vn, elm) {
-  VNElmMap.set(elm, vn).set(vn, elm)
+function setVnElm(vn, elm) {
+  vnElmMap.set(elm, vn).set(vn, elm)
 }
-function setVnIns (vn, ins) {
-  VNInsMap.set(ins, vn).set(vn, ins)
+function setVnIns(vn, ins) {
+  vnInsMap.set(ins, vn).set(vn, ins)
 }
-function setVnPath (vn, path) {
+function setVnPath(vn, path) {
   pathVNMap.set(vn, path).set(path, vn)
 }
 
-window.VNElmMap = VNElmMap
-window.VNInsMap = VNInsMap
+window.vnElmMap = vnElmMap
+window.vnInsMap = vnInsMap
 export { setVnElm, setVnIns, setVnPath, getVnOrElm, getVnOrPath, getVnOrIns }
