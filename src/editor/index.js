@@ -29,8 +29,8 @@ class Editor {
   init(options) {
     formater.inject('editor', this)
     this.$path = options.path
-    this.$emitter = emit()
-    this.initIntercept = usePlugin(platform)
+    this.$eventBus = emit()
+    this._initIntercept = usePlugin(platform)
     this.selection = new Selection(this)
     registerActions(this)
   }
@@ -43,13 +43,13 @@ class Editor {
     return this
   }
   on(eventName, fn) {
-    this.$emitter.on(eventName, fn)
+    this.$eventBus.on(eventName, fn)
   }
   emit(eventName, args) {
-    this.$emitter.emit(eventName, args)
+    this.$eventBus.emit(eventName, args)
   }
   focus(range) {
-    this.$emitter.emit('focus', range)
+    this.$eventBus.emit('focus', range)
   }
   queryPath(v) {
     return queryPath(v, this.$path)

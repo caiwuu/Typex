@@ -49,7 +49,4 @@ function setVnIns(vn, ins) {
 function setVnPath(vn, path) {
   pathVNMap.set(vn, path).set(path, vn)
 }
-
-window.vnElmMap = vnElmMap
-window.vnInsMap = vnInsMap
 export { setVnElm, setVnIns, setVnPath, getVnOrElm, getVnOrPath, getVnOrIns }

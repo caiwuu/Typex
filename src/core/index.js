@@ -44,6 +44,7 @@ const core = {
 const usePlugin = (plugin) => {
   return plugin.install(plugins, core)
 }
+
 export {
   createPath,
   queryCommonPath,

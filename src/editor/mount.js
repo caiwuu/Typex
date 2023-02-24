@@ -35,7 +35,7 @@ export default function mount(id) {
   const contentRef = createRef()
 
   this.ui.body.appendChild(mountDom)
-  this.initIntercept(this)
+  this._initIntercept(this)
   formater.editor = this
 
   patch(renderRoot(this, contentRef, h), mountDom)
