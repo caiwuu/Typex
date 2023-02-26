@@ -34,13 +34,13 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  deleteData (commonPath, range) {
+  contentDelete (commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
         // 执行删除
-        startContainer.deleteData(endOffset, 1)
+        startContainer.contentDelete(endOffset, 1)
         if (this.contentLength === 0) {
           // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
           range.setStart(startContainer, 0)
@@ -66,10 +66,10 @@ export default class Block extends Content {
         mergeBlock(startContainer, prevSibling)
       }
     } else if (startContainer === endContainer) {
-      startContainer.deleteData(endOffset, endOffset - startOffset)
+      startContainer.contentDelete(endOffset, endOffset - startOffset)
     } else {
-      startContainer.deleteData(startContainer.len, startContainer.len - startOffset)
-      endContainer.deleteData(endOffset, endOffset)
+      startContainer.contentDelete(startContainer.len, startContainer.len - startOffset)
+      endContainer.contentDelete(endOffset, endOffset)
       commonPath.deleteBetween(startContainer, endContainer)
       mergeBlock(endContainer, startContainer)
     }

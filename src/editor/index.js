@@ -9,11 +9,11 @@ import emit from 'mitt'
 import mount from './mount'
 import {
   Selection,
-  registerActions,
   queryPath,
   queryCommonPath,
   createPath,
   usePlugin,
+  initCore,
 } from '@/core'
 import platform from '@/platform'
 import formater from './formats'
@@ -26,41 +26,41 @@ class Editor {
   constructor(options) {
     this.init(options)
   }
-  init(options) {
-    formater.inject('editor', this)
-    this.$path = options.path
+  init (options) {
     this.$eventBus = emit()
+    this.$path = options.path
+    initCore(this)
+    formater.inject('editor', this)
     this._initIntercept = usePlugin(platform)
     this.selection = new Selection(this)
-    registerActions(this)
   }
-  mount(id) {
+  mount (id) {
     mount.call(this, id)
     return this
   }
-  setToolBar(toolBarOption) {
+  setToolBar (toolBarOption) {
     this.toolBarOption = toolBarOption
     return this
   }
-  on(eventName, fn) {
+  on (eventName, fn) {
     this.$eventBus.on(eventName, fn)
   }
-  emit(eventName, args) {
+  emit (eventName, args) {
     this.$eventBus.emit(eventName, args)
   }
-  focus(range) {
+  focus (range) {
     this.$eventBus.emit('focus', range)
   }
-  queryPath(v) {
+  queryPath (v) {
     return queryPath(v, this.$path)
   }
-  queryCommonPath(v1, v2) {
+  queryCommonPath (v1, v2) {
     const path1 = this.queryPath(v1)
     const path2 = this.queryPath(v2)
     return queryCommonPath(path1, path2)
   }
 }
-function initMarks(data) {
+function initMarks (data) {
   // return {
   //   data: {
   //     marks: [
@@ -108,7 +108,7 @@ function initMarks(data) {
     formats: { root: true },
   }
 }
-export default function createEditor(options = {}) {
+export default function createEditor (options = {}) {
   // const marks = initMarks(options.data)
   const marks = mockData
   const path = createPath(marks)

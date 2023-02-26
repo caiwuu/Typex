@@ -80,7 +80,7 @@ export class Path {
    * @param {*} count
    * @memberof Path
    */
-  deleteData (pos, count) {
+  contentDelete (pos, count) {
     this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
   }
   /**

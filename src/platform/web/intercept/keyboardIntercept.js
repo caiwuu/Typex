@@ -68,6 +68,8 @@ export default class KeyboardIntercept {
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
   }
   _inputEvent (event) {
+    event.key = 'Input'
+    this.editor.emit('keyboardEvents', event)
     this.editor.emit('insert', {
       type: event.type,
       data: event.data,
@@ -77,6 +79,7 @@ export default class KeyboardIntercept {
     })
   }
   _handGolobalKeydown (event) {
+    this.editor.emit('keyboardEvents', event)
     const key = event.key
     switch (key) {
       case 'ArrowRight':

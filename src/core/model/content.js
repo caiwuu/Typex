@@ -1,4 +1,7 @@
 import Component from '../view/component'
+import { horizontalMove, verticalMove } from '../defaultActions/caretMove'
+import { del } from '../defaultActions/delete'
+import { input } from '../defaultActions/input'
 export default class Content extends Component {
   _type = 'inline'
   constructor(props) {
@@ -58,12 +61,12 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  deleteData (commonPath, range) {
+  contentDelete (commonPath, range) {
     const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
-        commonPath.deleteData(endOffset, 1)
+        commonPath.contentDelete(endOffset, 1)
         if (commonPath.len === 0) {
           this.caretLeave(commonPath, range, 'left')
           commonPath.delete()
@@ -162,9 +165,10 @@ export default class Content extends Component {
     if (!path) return null
     return (path.nextSibling || this.getNextLeafPath(path.parent))?.firstLeaf
   }
-  caretMove (direction, path, range, ...args) {
+  caretMove (direction, range, event) {
+    const path = range.container
     const caretMoveMethod = this[`${direction === 'left' ? 'caretBackward' : 'caretForward'}`]
-    const [shiftKey] = args
+    const { shiftKey } = event
     let res = { path, range }
     // 重置 d
     if (range.d === 0) range.d = direction === 'left' ? -1 : 1
@@ -174,12 +178,30 @@ export default class Content extends Component {
       res = this.caretLeave(path, range, direction)
     } else {
       // path内移动 执行path内移动动作
-      caretMoveMethod(path, range, ...args)
+      caretMoveMethod(path, range, event)
     }
     if (!shiftKey) {
       range.collapse(direction === 'left')
     }
     return res
+  }
+  onArrowLeft (range, event) {
+    horizontalMove('left', range, event)
+  }
+  onArrowRight (range, event) {
+    horizontalMove('right', range, event)
+  }
+  onArrowUp (range, event) {
+    verticalMove('up', range, event)
+  }
+  onArrowDown (range, event) {
+    verticalMove('down', range, event)
+  }
+  onBackspace (range) {
+    del(range, false)
+  }
+  onInput (range, event) {
+    input(range, event)
   }
   /**
    * 检测光标是否要离开path

@@ -20,6 +20,7 @@ export default class MouseIntercept {
     this.editor.ui.body.addEventListener('mousedown', this._handMousedown.bind(this))
   }
   _handMousedown(event) {
+    this.editor.emit('mouseEvents', event)
     // 没按shift的时候按下左键折叠选区
     if (!event.shiftKey && event.button === 0) {
       const count = nativeSelection.rangeCount

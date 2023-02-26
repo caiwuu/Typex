@@ -8,7 +8,7 @@
 import { del } from './delete'
 import { isPrimitive, times } from '../utils'
 // 执行输入型插入
-function input(range, data) {
+function inputText (range, data) {
   let { startContainer: path } = range
   if (path) {
     if (path.vn.type !== 'text') {
@@ -22,18 +22,18 @@ function input(range, data) {
   }
 }
 
-function transformOps(ops) {
-  if (isPrimitive(ops)) {
+function transformOps (e) {
+  if (isPrimitive(e)) {
     return {
       type: 'input',
-      data: ops,
+      data: e,
     }
   }
-  return ops
+  return e
 }
 // 插入类型处理
-function insert(range, ops) {
-  const { data, type, clearCb } = transformOps(ops)
+export function input (range, e) {
+  const { data, type } = transformOps(e)
   if (!range.collapsed) {
     range.editor.emit('delete', { range, force: false })
   }
@@ -50,24 +50,17 @@ function insert(range, ops) {
       range.inputState.value = inputData
     }
     times(prevInputValue.length, del, range.editor, range, true)
-    // inputData !== '' && input(range, inputData)
-    input(range, inputData)
+    inputText(range, inputData)
   } else if (type === 'compositionstart') {
     // console.log('开始聚合输入:', data)
     range.inputState.isComposing = true
   } else if (type === 'compositionend') {
     // console.log('结束聚合输入:', data)
     range.inputState.isComposing = false
-    clearCb && clearCb()
+    // e.target.value = ""
     // 改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
     setTimeout(() => {
       range.inputState.value = ''
     })
   }
-}
-
-export default function (ops) {
-  this.selection.ranges.forEach((range) => {
-    insert(range, ops)
-  })
 }

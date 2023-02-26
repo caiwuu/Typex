@@ -7,36 +7,44 @@
  */
 
 /**
- * 路径查找
- * @param {*} ele
- * @param {*} offset
- * @param {*} editor
- * @returns
- */
-function queryPath(ele, offset = 0, editor) {
-  const path = editor.queryPath(ele)
-  if (path) return path
-  if (ele.nodeType !== 3) return editor.queryPath(ele.childNodes[(offset || 1) - 1])
-}
-
-/**
  * 水平移动
  * @param {*} range
  * @param {*} direction
  * @param {*} shiftKey
  * @returns
  */
-function horizontalMove(range, direction, shiftKey) {
+export function horizontalMove (direction, range, event) {
   // 拼音输入法聚合输入的时候禁止光标的移动
   if (range.inputState.isComposing) return
+  if (!range.collapsed && !event.shiftKey) {
+    range.collapse(direction === 'left')
+    return
+  }
+  const { shiftKey } = event
   if (!range.collapsed && !shiftKey) {
     range.collapse(direction === 'left')
   } else {
-    const path = queryPath(range.container, range.offset, this)
-    return path.component.caretMove(direction, path, range, shiftKey)
+    return range.container.component.caretMove(direction, range, event)
   }
 }
-
+/**
+ * 垂直移动 垂直移动等效于水平移动N步的结果，关键点在于确定N
+ * 这里通过光标位置回溯法，计算出最合适的N
+ * @param {*} range
+ * @param {*} direction
+ * @param {*} shiftKey
+ */
+export function verticalMove (direction, range, event) {
+  if (range.inputState.isComposing) return
+  if (!range.collapsed && !event.shiftKey) {
+    range.collapse(direction === 'up')
+    return
+  }
+  const d = direction === 'up' ? 'left' : 'right'
+  const initialCaretInfo = { ...range.caret.rect, blockComponent: range.container.blockComponent }
+  const prevCaretInfo = { ...range.caret.rect, blockComponent: range.container.blockComponent }
+  loop(range, d, initialCaretInfo, prevCaretInfo, false, event)
+}
 /**
  * 光标跨行判断
  * @param {*} initialCaretInfo
@@ -45,7 +53,7 @@ function horizontalMove(range, direction, shiftKey) {
  * @param {*} editor
  * @returns
  */
-function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
+function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo) {
   // 标识光标是否在同一行移动
   let sameLine = true
   // 判断自动折行(非结构层面的换行,如一行文字太长被浏览器自动换行的情况)
@@ -53,7 +61,6 @@ function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
   // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
   if (
     Math.abs(currCaretInfo.x - prevCaretInfo.x) >
-    // editor.ui.content.offsetWidth - 2 * currCaretInfo.h
     currCaretInfo.blockComponent.props.path.elm.offsetWidth - 2 * currCaretInfo.h
   ) {
     sameLine = false
@@ -80,12 +87,11 @@ function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, editor) {
  * @param {*} shiftKey
  * @returns
  */
-function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, shiftKey) {
-  // debugger
+function loop (range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, event) {
   if (range.collapsed) {
     range.d = 0
   }
-  const { path } = horizontalMove.call(this, range, direction, shiftKey) || {}
+  const { path } = horizontalMove(direction, range, event) || {}
   if (!path) return
   range.updateCaret(true)
   if (lineChanged) {
@@ -93,61 +99,19 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
     const preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x)
     const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
     // 标识前后光标是否在同一行
-    const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
+    const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo)
     if (!(currDistance <= preDistance && sameLine)) {
       const d = direction === 'left' ? 'right' : 'left'
-      horizontalMove.call(this, range, d, shiftKey)
+      horizontalMove(d, range, event)
       range.updateCaret(true)
       return
     }
   }
   const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
   if (currCaretInfo.x === prevCaretInfo.x && currCaretInfo.y === prevCaretInfo.y) return
-  const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, this)
+  const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo)
   if (!sameLine) {
     lineChanged = true
   }
-  return loop.call(this, range, direction, initialCaretInfo, currCaretInfo, lineChanged, shiftKey)
-}
-
-/**
- * 垂直移动 垂直移动等效于水平移动N步的结果，关键点在于确定N
- * 这里通过光标位置回溯法，计算出最合适的N
- * @param {*} range
- * @param {*} direction
- * @param {*} shiftKey
- */
-function verticalMove(range, direction, shiftKey) {
-  const path = queryPath(range.container, range.offset, this)
-  const initialCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
-  const prevCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
-  const d = direction === 'up' ? 'left' : 'right'
-  loop.call(this, range, d, initialCaretInfo, prevCaretInfo, false, shiftKey)
-}
-
-/**
- * 光标移动
- * @param {*} param
- */
-export default function caretMove({ direction, drawCaret, shiftKey }) {
-  switch (direction) {
-    case 'left':
-    case 'right':
-      this.selection.ranges.forEach((range) => {
-        horizontalMove.call(this, range, direction, shiftKey)
-      })
-      break
-
-    case 'up':
-    case 'down':
-      this.selection.ranges.forEach((range) => {
-        verticalMove.call(this, range, direction, shiftKey)
-      })
-
-      break
-  }
-  // 在事件循环末尾绘制更新光标UI
-  Promise.resolve().then(() => {
-    this.selection.updateCaret(drawCaret)
-  })
+  return loop(range, direction, initialCaretInfo, currCaretInfo, lineChanged, event)
 }
