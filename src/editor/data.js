@@ -16,8 +16,8 @@ export const mockData = {
               data: {
                 marks: [
                   {
-                    data: '多光标支持：按住Alt键 点击',
-                    formats: { color: 'red', bold: true },
+                    data: '这是一个基于editor-core2.0编写的简单富文本编辑器demo（工具栏功能没写目前无效）',
+                    formats: { color: "#666", bold: true, fontSize: '20px' },
                   },
                 ],
               },
@@ -26,13 +26,21 @@ export const mockData = {
             {
               data: {
                 marks: [
-                  { data: '111', formats: { color: 'red' } },
-                  { data: '222', formats: { del: true, color: 'green' } },
+                  { data: 'editor-core2.0', formats: { color: '#ff9999' } },
+                  { data: '是一款全新架构的编辑器内核，该内核不依赖contenteditable;自主实现了光标、模拟输入、模拟选区;数据驱动，组件化，插件化，支持多光标，跨平台的设计。优秀的格式排版系统避免了脏标签的产生（打开控制台你会发现它的标签非常简洁）。', formats: { color: "#999" } },
                 ],
               },
               formats: { paragraph: true },
             },
-
+            {
+              data: {
+                marks: [
+                  { data: '👇下面是一些测试demo', formats: { color: '#ff9999' } },
+                  { data: '多光标：按住alt+左键；加粗/取消加粗：ctrl+b；删除线/取消删除线：ctrl+d；上标/取消上标：ctrl+s ....', formats: { color: "#999" } },
+                ],
+              },
+              formats: { paragraph: true },
+            },
             {
               data: {
                 marks: [

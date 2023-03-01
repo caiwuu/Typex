@@ -1,8 +1,8 @@
 import plugins from './plugins'
-export default function initCore(editor) {
+export default function initCore (editor) {
   initDispatcher(editor)
 }
-function initDispatcher(editor) {
+function initDispatcher (editor) {
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
       const count = plugins.platform.nativeSelection.rangeCount
@@ -16,9 +16,13 @@ function initDispatcher(editor) {
   editor.on('keyboardEvents', (event) => {
     editor.selection.ranges.forEach((range) => {
       const path = range.container
-      const eventHandle = path.component[`on${event.key}`]
-      if (typeof eventHandle === 'function') {
-        return eventHandle(range, event)
+      const eventKeyHandle = path.component[`on${event.key}`]
+      const keyDownHandle = path.component.onKeydown
+      if (typeof eventKeyHandle === 'function') {
+        eventKeyHandle(range, event)
+      }
+      if (typeof keyDownHandle === 'function') {
+        keyDownHandle(range, event)
       }
     })
     Promise.resolve().then(() => {

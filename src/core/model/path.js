@@ -94,7 +94,9 @@ export class Path {
     this.node.formats = formats
     this._$component = this.parent.component
   }
-
+  setFormater (obj) {
+    Object.assign(this.node.formats, obj)
+  }
   /**
    * @desc: path删除
    * @return {*}

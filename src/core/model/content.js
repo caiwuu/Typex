@@ -203,6 +203,24 @@ export default class Content extends Component {
   onInput (range, event) {
     input(range, event)
   }
+  onb (range, event) {
+    if (event.ctrlKey) {
+      range.container.node.formats.bold = !range.container.node.formats.bold
+      range.container.component.update()
+    }
+  }
+  ond (range, event) {
+    if (event.ctrlKey) {
+      range.container.node.formats.del = !range.container.node.formats.del
+      range.container.component.update()
+    }
+  }
+  ons (range, event) {
+    if (event.ctrlKey) {
+      range.container.node.formats.sup = !range.container.node.formats.sup
+      range.container.component.update()
+    }
+  }
   /**
    * 检测光标是否要离开path
    * @param {*} path
