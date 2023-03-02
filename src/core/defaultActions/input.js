@@ -8,7 +8,7 @@
 import { del } from './delete'
 import { isPrimitive, times } from '../utils'
 // 执行输入型插入
-function inputText (range, data) {
+function inputText(range, data) {
   let { startContainer: path } = range
   if (path) {
     if (path.vn.type !== 'text') {
@@ -22,7 +22,7 @@ function inputText (range, data) {
   }
 }
 
-function transformOps (e) {
+function transformOps(e) {
   if (isPrimitive(e)) {
     return {
       type: 'input',
@@ -32,8 +32,10 @@ function transformOps (e) {
   return e
 }
 // 插入类型处理
-export function input (range, e) {
+export function input(range, e) {
+  console.log(e)
   const { data, type } = transformOps(e)
+  console.log(type)
   if (!range.collapsed) {
     range.editor.emit('delete', { range, force: false })
   }
@@ -49,6 +51,7 @@ export function input (range, e) {
       prevInputValue = range.inputState.value
       range.inputState.value = inputData
     }
+    console.log(prevInputValue.length)
     times(prevInputValue.length, del, range.editor, range, true)
     inputText(range, inputData)
   } else if (type === 'compositionstart') {
@@ -57,7 +60,7 @@ export function input (range, e) {
   } else if (type === 'compositionend') {
     // console.log('结束聚合输入:', data)
     range.inputState.isComposing = false
-    // e.target.value = ""
+    e.target.value = ''
     // 改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
     setTimeout(() => {
       range.inputState.value = ''

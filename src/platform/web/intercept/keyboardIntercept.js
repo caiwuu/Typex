@@ -7,7 +7,7 @@ export default class KeyboardIntercept {
     this._initInput()
     this._initEvent()
   }
-  _initIframe () {
+  _initIframe() {
     this.iframe = document.createElement('iframe')
     this.iframe.classList.add('custom-input-iframe')
     this.editor.ui.body.appendChild(this.iframe)
@@ -32,13 +32,13 @@ export default class KeyboardIntercept {
     `
     iframedocument.head.appendChild(style)
   }
-  _initInput () {
+  _initInput() {
     const iframedocument = this.iframe.contentDocument
     this.input = iframedocument.createElement('input')
     this.input.classList.add('custom-input')
     iframedocument.body.appendChild(this.input)
   }
-  focus (range) {
+  focus(range) {
     range = range || this.editor.selection.getRangeAt(0)
     if (!range) return
     let elm = range.startContainer.elm
@@ -55,70 +55,24 @@ export default class KeyboardIntercept {
     setStyle(this.iframe, style)
     this.input.focus()
   }
-  destroy () {
+  destroy() {
     this.input.removeEventListener('compositionstart', this._inputEvent.bind(this))
     this.input.removeEventListener('compositionend', this._inputEvent.bind(this))
     this.input.removeEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.removeEventListener('keydown', this._handGolobalKeydown.bind(this))
+    this.iframe.contentDocument.removeEventListener('keyup', this._handGolobalKeydown.bind(this))
   }
-  _initEvent () {
+  _initEvent() {
     this.input.addEventListener('compositionstart', this._inputEvent.bind(this))
     this.input.addEventListener('compositionend', this._inputEvent.bind(this))
     this.input.addEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
+    this.iframe.contentDocument.addEventListener('keyup', this._handGolobalKeydown.bind(this))
   }
-  _inputEvent (event) {
-    event.key = 'Input'
+  _inputEvent(event) {
     this.editor.emit('keyboardEvents', event)
-    this.editor.emit('insert', {
-      type: event.type,
-      data: event.data,
-      clear: () => {
-        event.target.value = ''
-      },
-    })
   }
-  _handGolobalKeydown (event) {
+  _handGolobalKeydown(event) {
     this.editor.emit('keyboardEvents', event)
-    const key = event.key
-    switch (key) {
-      case 'ArrowRight':
-        this.editor.emit('caretMove', {
-          direction: 'right',
-          drawCaret: true,
-          shiftKey: event.shiftKey,
-        })
-        break
-      case 'ArrowLeft':
-        this.editor.emit('caretMove', {
-          direction: 'left',
-          drawCaret: true,
-          shiftKey: event.shiftKey,
-        })
-        break
-      case 'ArrowUp':
-        event.preventDefault()
-        this.editor.emit('caretMove', {
-          direction: 'up',
-          drawCaret: true,
-          shiftKey: event.shiftKey,
-        })
-        break
-      case 'ArrowDown':
-        event.preventDefault()
-        this.editor.emit('caretMove', {
-          direction: 'down',
-          drawCaret: true,
-          shiftKey: event.shiftKey,
-        })
-        break
-      case 'Backspace':
-        event.preventDefault()
-        this.editor.emit('delete')
-        break
-      case 'Enter':
-        event.preventDefault()
-      // this.editor.selection.enter()
-    }
   }
 }
