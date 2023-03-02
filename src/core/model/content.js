@@ -205,12 +205,14 @@ export default class Content extends Component {
   }
   onKeydownB(range, event) {
     if (event.ctrlKey) {
+      event.preventDefault()
       range.container.node.formats.bold = !range.container.node.formats.bold
       range.container.component.update()
     }
   }
   onKeydownD(range, event) {
     if (event.ctrlKey) {
+      event.preventDefault()
       range.container.node.formats.del = !range.container.node.formats.del
       range.container.component.update()
     }
@@ -219,6 +221,13 @@ export default class Content extends Component {
     if (event.ctrlKey) {
       event.preventDefault()
       range.container.node.formats.sup = !range.container.node.formats.sup
+      range.container.component.update()
+    }
+  }
+  onKeydownU(range, event) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+      range.container.node.formats.underline = !range.container.node.formats.underline
       range.container.component.update()
     }
   }
