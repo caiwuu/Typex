@@ -206,8 +206,12 @@ export default class Content extends Component {
   onKeydownB(range, event) {
     if (event.ctrlKey) {
       event.preventDefault()
-      range.container.node.formats.bold = !range.container.node.formats.bold
-      range.container.component.update()
+      const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
+      if (range.collapsed) {
+        commonPath.node.formats.bold = !commonPath.node.formats.bold
+      } else {
+      }
+      commonPath.component.update()
     }
   }
   onKeydownD(range, event) {

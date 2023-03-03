@@ -5,6 +5,7 @@ export default function initCore(editor) {
 function titleCase(str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
+// 事件拦截到对应的组件
 function initDispatcher(editor) {
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
@@ -21,14 +22,14 @@ function initDispatcher(editor) {
       const path = range.container
       // 支持简写handle
       const quickEventHandle = event.key
-        ? path.component[`on${titleCase(event.type)}${titleCase(event.key)}`]
+        ? path.component[`on${titleCase(event.type)}${titleCase(event.key)}`]?.bind(path.component)
         : null
       let eventHandle
       // 处理聚合输入
       if (event.type.startsWith('composition')) {
-        eventHandle = path.component.onInput
+        eventHandle = path.component.onInput?.bind(path.component)
       } else {
-        eventHandle = path.component[`on${titleCase(event.type)}`]
+        eventHandle = path.component[`on${titleCase(event.type)}`]?.bind(path.component)
       }
       if (event.key && typeof quickEventHandle === 'function') {
         quickEventHandle(range, event)
