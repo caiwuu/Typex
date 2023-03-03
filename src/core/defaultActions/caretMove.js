@@ -53,21 +53,16 @@ export function verticalMove (direction, range, event) {
  * @param {*} editor
  * @returns
  */
-function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo) {
+function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo, direction) {
+  // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
+  if (currCaretInfo.blockComponent !== prevCaretInfo.blockComponent) {
+    return false
+  }
   // 标识光标是否在同一行移动
   let sameLine = true
   // 判断自动折行(非结构层面的换行,如一行文字太长被浏览器自动换行的情况)
-  // 这种情况第一行必定会占满整个屏幕宽度，只需要判断前后光标位置是否为一个屏幕宽度减去一个字符宽度即可
-  // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
-  if (
-    Math.abs(currCaretInfo.x - prevCaretInfo.x) >
-    currCaretInfo.blockComponent.props.path.elm.offsetWidth - 2 * currCaretInfo.h
-  ) {
-    sameLine = false
-  }
-  // console.log(currCaretInfo.blockComponent.props.path.elm.offsetWidth)
-  // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
-  if (currCaretInfo.blockComponent !== prevCaretInfo.blockComponent) {
+  if (direction === 'left' && currCaretInfo.x > prevCaretInfo.x ||
+    direction === 'right' && currCaretInfo.x < prevCaretInfo.x) {
     sameLine = false
   }
   //光标Y坐标和参考点相同说明光标还在本行，最理想的情况放在最后判断
@@ -99,7 +94,7 @@ function loop (range, direction, initialCaretInfo, prevCaretInfo, lineChanged = 
     const preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x)
     const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
     // 标识前后光标是否在同一行
-    const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo)
+    const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, direction)
     if (!(currDistance <= preDistance && sameLine)) {
       const d = direction === 'left' ? 'right' : 'left'
       horizontalMove(d, range, event)
@@ -109,7 +104,7 @@ function loop (range, direction, initialCaretInfo, prevCaretInfo, lineChanged = 
   }
   const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
   if (currCaretInfo.x === prevCaretInfo.x && currCaretInfo.y === prevCaretInfo.y) return
-  const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo)
+  const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, direction)
   if (!sameLine) {
     lineChanged = true
   }

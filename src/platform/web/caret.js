@@ -23,7 +23,26 @@ export default class Caret {
     this.dom.remove()
   }
   getRect (range) {
-    return this.measure.measure(range.container.elm, range.offset)
+    const nativeRange = document.createRange()
+    let rect
+    if (range.container.elm.nodeType !== 3) {
+      if (range.offset === 0) {
+        nativeRange.setStart(range.container.elm, range.offset)
+        nativeRange.setEnd(range.container.elm, range.offset + 1)
+        rect = nativeRange.getClientRects()[0]
+      } else {
+        nativeRange.setStart(range.container.elm, range.offset - 1)
+        nativeRange.setEnd(range.container.elm, range.offset)
+        rect = nativeRange.getClientRects()[0]
+        rect.x += rect.width
+      }
+    } else {
+      nativeRange.setStart(range.container.elm, range.offset)
+      rect = nativeRange.getClientRects()[0]
+    }
+    nativeRange.setStart(range.container.elm, range.offset)
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    return { x: rect.x, y: rect.y + scrollTop, height: rect.height }
   }
   update (range, drawCaret = true) {
     this.rect = this.getRect(range)
@@ -36,10 +55,10 @@ export default class Caret {
     }
     const copyStyle = getComputedStyle(elm)
     const caretStyle = {
-      top: this.rect.y + 1 + 'px',
+      top: this.rect.y + 'px',
       // 光标宽度为2
       left: this.rect.x - 1 + 'px',
-      height: this.rect.h + 'px',
+      height: this.rect.height + 'px',
       fontSize: copyStyle.fontSize,
       background: copyStyle.color,
       display: range.collapsed ? 'inline-block' : 'none',
@@ -80,15 +99,6 @@ class Measure {
     }
     return this._getRect(container, offset, temp)
   }
-  computeOffset (dom, res = { x: 0, y: 0, h: null }) {
-    res.h = res.h ?? dom.offsetHeight
-    res.x += dom.offsetLeft
-    res.y += dom.offsetTop
-    if (dom.offsetParent && dom.offsetParent.tagName !== 'BODY') {
-      return this.computeOffset(dom.offsetParent, res)
-    }
-    return res
-  }
   _getRect (container, offset, temp) {
     let con = container
     if (!(container instanceof Element)) {
@@ -96,7 +106,7 @@ class Measure {
     }
     const copyStyle = getComputedStyle(con)
     const h = multiplication(copyStyle.fontSize, 1.3) / 1
-    const rect = { ...this.computeOffset(this.dom), h }
+    const rect = { ...computeOffset(this.dom), height: h }
     this.dom.remove()
     if (container.nodeType === 3 && offset) {
       if (!container.data && container.nextSibling) {
@@ -108,4 +118,13 @@ class Measure {
     }
     return rect
   }
+}
+function computeOffset (dom, res = { x: 0, y: 0, height: null }) {
+  res.height = res.height ?? dom.offsetHeight
+  res.x += dom.offsetLeft
+  res.y += dom.offsetTop
+  if (dom.offsetParent && dom.offsetParent.tagName !== 'BODY') {
+    return computeOffset(dom.offsetParent, res)
+  }
+  return res
 }

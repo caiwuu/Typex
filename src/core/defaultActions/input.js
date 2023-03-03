@@ -8,7 +8,7 @@
 import { del } from './delete'
 import { isPrimitive, times } from '../utils'
 // 执行输入型插入
-function inputText(range, data) {
+function inputText (range, data) {
   let { startContainer: path } = range
   if (path) {
     if (path.vn.type !== 'text') {
@@ -22,7 +22,7 @@ function inputText(range, data) {
   }
 }
 
-function transformOps(e) {
+function transformOps (e) {
   if (isPrimitive(e)) {
     return {
       type: 'input',
@@ -32,10 +32,8 @@ function transformOps(e) {
   return e
 }
 // 插入类型处理
-export function input(range, e) {
-  console.log(e)
+export function input (range, e) {
   const { data, type } = transformOps(e)
-  console.log(type)
   if (!range.collapsed) {
     range.editor.emit('delete', { range, force: false })
   }

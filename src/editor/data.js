@@ -35,7 +35,7 @@ export const mockData = {
             {
               data: {
                 marks: [
-                  { data: '👇下面是一些测试demo', formats: { color: '#ff9999' } },
+                  { data: '下面是一些测试demo', formats: { color: '#ff9999' } },
                   { data: '多光标：按住alt+左键；加粗/取消加粗：ctrl+b；删除线/取消删除线：ctrl+d；上标/取消上标：ctrl+s ....', formats: { color: "#999" } },
                 ],
               },

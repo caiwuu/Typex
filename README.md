@@ -312,7 +312,7 @@ range.updateCaret(drawCaret)
 ```js
 range.caret.rect.x // 水平坐标
 range.caret.rect.y // 垂直坐标
-range.caret.rect.h // 光标高度
+range.caret.rect.height // 光标高度
 ```
 
 3. 控制光标移动
@@ -357,7 +357,7 @@ this.editor.emit('caretMove', {
        // 这里通过判断前后两个光标位置距离是否大于一定的值来判断
        if (
          Math.abs(currCaretInfo.x - prevCaretInfo.x) >
-         editor.ui.body.offsetWidth - 2 * currCaretInfo.h
+         editor.ui.body.offsetWidth - 2 * currCaretInfo.height
        ) {
          sameLine = false
        }
