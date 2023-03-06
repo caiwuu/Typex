@@ -6,7 +6,8 @@
  * @LastEditTime: 2022-09-19 17:20:27
 -->
 
-## [Demo](https://editor-core-demo-static.onrender.com/)
+## [Demo1](https://editor-core-demo-static.onrender.com/)
+## [Demo2](https://caiwuu.github.io/editor-core/)
 
 ![image-20230302015001367](https://tva1.sinaimg.cn/large/008vOhrAly1hbkw3fy3f4j31ma0u0781.jpg)
 
