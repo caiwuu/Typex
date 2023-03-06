@@ -1,0 +1,22 @@
+name: Build app and deploy to editor-core
+on:
+  #监听push操作
+  push:
+    branches:
+      # mian分支，你也可以改成其他分支
+      - master
+jobs:
+  # 任务ID
+  build:
+    # 运行环境
+    runs-on: ubuntu-latest
+    # 步骤
+    steps:
+    # 使用别人的action
+    - uses: actions/checkout@v2
+    # 步骤名称
+    - name: npm install
+      # 步骤执行指令
+      run: npm install
+    - name: npm run build
+      run: npm run build
