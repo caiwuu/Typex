@@ -5,14 +5,11 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-31 17:12:53
  */
-import emit from 'mitt'
 import mount from './mount'
 import {
-  Selection,
   queryPath,
   queryCommonPath,
   createPath,
-  usePlugin,
   initCore,
 } from '@/core'
 import platform from '@/platform'
@@ -24,15 +21,12 @@ class Editor {
   }
   toolBarOption = []
   constructor(options) {
-    this.init(options)
-  }
-  init (options) {
-    this.$eventBus = emit()
     this.$path = options.path
-    initCore(this)
-    formater.inject('editor', this)
-    this._initIntercept = usePlugin(platform)
-    this.selection = new Selection(this)
+    initCore({
+      editor: this,
+      formater,
+      platform
+    })
   }
   mount (id) {
     mount.call(this, id)

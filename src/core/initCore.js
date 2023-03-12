@@ -1,12 +1,23 @@
 import plugins from './plugins'
-export default function initCore(editor) {
+import emit from 'mitt'
+import Selection from './selection'
+import { usePlugin } from '.'
+export default function initCore (ops) {
+  const { editor, formater, platform } = ops
+  editor.$eventBus = emit()
+  formater.inject('editor', editor)
+  const initIntercept = usePlugin(platform)
+  editor.selection = new Selection(editor)
+  Promise.resolve().then(() => {
+    initIntercept(editor)
+  })
   initDispatcher(editor)
 }
-function titleCase(str) {
+function titleCase (str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
 // 事件拦截到对应的组件
-function initDispatcher(editor) {
+function initDispatcher (editor) {
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
       const count = plugins.platform.nativeSelection.rangeCount
