@@ -76,4 +76,59 @@ export default class Block extends Content {
     range.collapse(true)
     this.update(commonPath, range)
   }
+  onKeydownB (range, event) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+      const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
+      if (range.collapsed) {
+        commonPath.node.formats.bold = !commonPath.node.formats.bold
+      } else {
+        const startSplits = range.startContainer.split(range.startOffset)
+        this.$editor.selection.updatePoints(range.startContainer, range.startOffset, -range.startOffset, startSplits[1])
+        const endSplits = range.endContainer.split(range.endOffset)
+        this.$editor.selection.updatePoints(range.endContainer, range.endOffset, -range.endOffset, endSplits[1])
+        let path = range.startContainer
+        while (path !== range.endContainer) {
+          path.node.formats.bold = !path.node.formats.bold
+          path = path.nextLeaf
+        }
+      }
+      commonPath.component.update()
+    }
+  }
+  onKeydownD (range, event) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+      const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
+      if (range.collapsed) {
+        commonPath.node.formats.del = !commonPath.node.formats.del
+      } else {
+        const startSplits = range.startContainer.split(range.startOffset)
+        this.$editor.selection.updatePoints(range.startContainer, range.startOffset, -range.startOffset, startSplits[1])
+        const endSplits = range.endContainer.split(range.endOffset)
+        this.$editor.selection.updatePoints(range.endContainer, range.endOffset, -range.endOffset, endSplits[1])
+        let path = range.startContainer
+        // debugger
+        while (path !== range.endContainer) {
+          path.node.formats.del = !path.node.formats.del
+          path = path.nextLeaf
+        }
+      }
+      commonPath.component.update()
+    }
+  }
+  onKeydownS (range, event) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+      range.container.node.formats.sup = !range.container.node.formats.sup
+      range.container.component.update()
+    }
+  }
+  onKeydownU (range, event) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+      range.container.node.formats.underline = !range.container.node.formats.underline
+      range.container.component.update()
+    }
+  }
 }

@@ -202,38 +202,6 @@ export default class Content extends Component {
   onInput (range, event) {
     input(range, event)
   }
-  onKeydownB (range, event) {
-    if (event.ctrlKey) {
-      event.preventDefault()
-      const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
-      if (range.collapsed) {
-        commonPath.node.formats.bold = !commonPath.node.formats.bold
-      } else {
-      }
-      commonPath.component.update()
-    }
-  }
-  onKeydownD (range, event) {
-    if (event.ctrlKey) {
-      event.preventDefault()
-      range.container.node.formats.del = !range.container.node.formats.del
-      range.container.component.update()
-    }
-  }
-  onKeydownS (range, event) {
-    if (event.ctrlKey) {
-      event.preventDefault()
-      range.container.node.formats.sup = !range.container.node.formats.sup
-      range.container.component.update()
-    }
-  }
-  onKeydownU (range, event) {
-    if (event.ctrlKey) {
-      event.preventDefault()
-      range.container.node.formats.underline = !range.container.node.formats.underline
-      range.container.component.update()
-    }
-  }
   /**
    * 检测光标是否要离开path
    * @param {*} path

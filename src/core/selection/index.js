@@ -135,10 +135,11 @@ export default class Selection {
    * @param {*} position 位置
    * @param {*} distance 平移距离 负左正右
    */
-  updatePoints (container, position, distance) {
+  updatePoints (container, position, distance, newContainer) {
     this.rangePoints.forEach((point) => {
       if (point.container === container && position <= point.offset) {
         point.range[point.pointName + 'Offset'] += distance
+        if (newContainer) point.range[point.pointName + 'Container'] = newContainer
       }
     })
   }
