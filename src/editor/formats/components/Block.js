@@ -10,14 +10,16 @@ const mergeBlock = (o, n, shouldUpdates = []) => {
   const oBlock = o.blockComponent
   if (o.blockComponent !== n.blockComponent) {
     if (n.len === 0) {
-      n.component.$editor.selection.rangePoints.filter(point => point.container === n).forEach(point => {
-        if (point.pointName === 'start') {
-          console.log(n.nextLeaf);
-          point.range.setStart(n.nextLeaf, 0)
-        } else {
-          point.range.setEnd(n.nextLeaf, 0)
-        }
-      })
+      n.component.$editor.selection.rangePoints
+        .filter((point) => point.container === n)
+        .forEach((point) => {
+          if (point.pointName === 'start') {
+            console.log(n.nextLeaf)
+            point.range.setStart(n.nextLeaf, 0)
+          } else {
+            point.range.setEnd(n.nextLeaf, 0)
+          }
+        })
     }
     o.blockComponent.$path.insertChildrenAfter(n)
     oBlock.$path.parent.component.update()
@@ -34,7 +36,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  contentDelete (commonPath, range) {
+  contentDelete(commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -76,27 +78,99 @@ export default class Block extends Content {
     range.collapse(true)
     this.update(commonPath, range)
   }
-  onKeydownB (range, event) {
+  getSeletedPath(range) {
+    let start,
+      end,
+      value,
+      done = false
+    if (range.collapsed) {
+      done = true
+    } else {
+      if (range.startOffset === 0) {
+        start = range.startContainer
+      } else if (range.startOffset === range.startContainer.len) {
+        start = range.startContainer.nextLeaf
+      } else {
+        const startSplits = range.startContainer.split(range.startOffset)
+        this.$editor.selection.updatePoints(
+          range.startContainer,
+          range.startOffset + 1,
+          -range.startOffset,
+          startSplits[1]
+        )
+        start = startSplits[1]
+      }
+
+      if (range.endOffset === 0) {
+        end = range.endContainer.prevLeaf
+      } else if (range.endOffset === range.startContainer.len) {
+        end = range.startContainer
+      } else {
+        const endSplits = range.endContainer.split(range.endOffset)
+        this.$editor.selection.updatePoints(
+          range.endContainer,
+          range.endOffset + 1,
+          -range.endOffset,
+          endSplits[1]
+        )
+        end = endSplits[0]
+      }
+    }
+
+    value = start
+    return {
+      length: 0,
+      next: function () {
+        if (!done) {
+          const res = { value, done }
+          done = value === end
+          value = value.nextLeaf
+          this.length++
+          console.log(this)
+          return res
+        } else {
+          return { value: undefined, done }
+        }
+      },
+      [Symbol.iterator]: function () {
+        return this
+      },
+    }
+  }
+  onKeydownB(range, event) {
     if (event.ctrlKey) {
       event.preventDefault()
       const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
-      if (range.collapsed) {
-        commonPath.node.formats.bold = !commonPath.node.formats.bold
-      } else {
-        const startSplits = range.startContainer.split(range.startOffset)
-        this.$editor.selection.updatePoints(range.startContainer, range.startOffset, -range.startOffset, startSplits[1])
-        const endSplits = range.endContainer.split(range.endOffset)
-        this.$editor.selection.updatePoints(range.endContainer, range.endOffset, -range.endOffset, endSplits[1])
-        let path = range.startContainer
-        while (path !== range.endContainer) {
-          path.node.formats.bold = !path.node.formats.bold
-          path = path.nextLeaf
-        }
-      }
+      const selectedPath = [...this.getSeletedPath(range)]
+      console.log()
+      selectedPath.forEach((p) => (p.node.formats.bold = !p.node.formats.bold))
+      // if (range.collapsed) {
+      //   commonPath.node.formats.bold = !commonPath.node.formats.bold
+      // } else {
+      //   const startSplits = range.startContainer.split(range.startOffset)
+      //   this.$editor.selection.updatePoints(
+      //     range.startContainer,
+      //     range.startOffset,
+      //     -range.startOffset,
+      //     startSplits[1]
+      //   )
+      //   const endSplits = range.endContainer.split(range.endOffset)
+      //   this.$editor.selection.updatePoints(
+      //     range.endContainer,
+      //     range.endOffset,
+      //     -range.endOffset,
+      //     endSplits[1]
+      //   )
+      //   let path = range.startContainer
+      //   while (path !== range.endContainer) {
+      //     path.node.formats.bold = !path.node.formats.bold
+      //     path = path.nextLeaf
+      //   }
+      // }
       commonPath.component.update()
     }
   }
-  onKeydownD (range, event) {
+  onKeydownD(range, event) {
     if (event.ctrlKey) {
       event.preventDefault()
       const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
@@ -104,9 +178,19 @@ export default class Block extends Content {
         commonPath.node.formats.del = !commonPath.node.formats.del
       } else {
         const startSplits = range.startContainer.split(range.startOffset)
-        this.$editor.selection.updatePoints(range.startContainer, range.startOffset, -range.startOffset, startSplits[1])
+        this.$editor.selection.updatePoints(
+          range.startContainer,
+          range.startOffset,
+          -range.startOffset,
+          startSplits[1]
+        )
         const endSplits = range.endContainer.split(range.endOffset)
-        this.$editor.selection.updatePoints(range.endContainer, range.endOffset, -range.endOffset, endSplits[1])
+        this.$editor.selection.updatePoints(
+          range.endContainer,
+          range.endOffset,
+          -range.endOffset,
+          endSplits[1]
+        )
         let path = range.startContainer
         // debugger
         while (path !== range.endContainer) {
@@ -117,14 +201,18 @@ export default class Block extends Content {
       commonPath.component.update()
     }
   }
-  onKeydownS (range, event) {
+  onKeydownS(range, event) {
     if (event.ctrlKey) {
       event.preventDefault()
       range.container.node.formats.sup = !range.container.node.formats.sup
       range.container.component.update()
     }
   }
-  onKeydownU (range, event) {
+  onKeydownU(range, event) {
+    event.preventDefault()
+    const a = this.getSeletedPath(range)
+    window.aaa = a
+    console.log(a)
     if (event.ctrlKey) {
       event.preventDefault()
       range.container.node.formats.underline = !range.container.node.formats.underline

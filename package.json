@@ -7,7 +7,6 @@
     "test": "jest --coverage",
     "build": "webpack --config config/webpack.config.prod.js",
     "dev": "webpack-dev-server  --config config/webpack.config.dev.js",
-    "deploy": "webpack-dev-server  --config config/webpack.config.dev.js --port 80",
     "tree": "npx treer -d ./src -e tree.txt"
   },
   "keywords": [],
