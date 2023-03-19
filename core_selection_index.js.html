@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: core/selection/index.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: core/selection/index.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import plugins from '@/core/plugins'
+import Range from './range'
+
+/**
+ * @description 选区类
+ * @export
+ * @class Selection
+ */
+export default class Selection {
+  ranges = []
+  nativeSelection = plugins.platform.nativeSelection
+  constructor(editor) {
+    this.editor = editor
+  }
+
+  /**
+   * @description 选区是否折叠
+   * @readonly
+   * @memberof Selection
+   */
+  get collapsed () {
+    return this.ranges.every((range) => range.collapsed)
+  }
+
+  /**
+   * @description 选区范围数量
+   * @readonly
+   * @memberof Selection
+   */
+  get rangeCount () {
+    return this.ranges.length
+  }
+
+  /**
+   * @description 选区端点list
+   * @readonly
+   * @memberof Selection
+   */
+  get rangePoints () {
+    const points = []
+    this.ranges.forEach((range) => {
+      points.push(
+        {
+          container: range.startContainer,
+          offset: range.startOffset,
+          range,
+          pointName: 'start',
+        },
+        {
+          container: range.endContainer,
+          offset: range.endOffset,
+          range,
+          pointName: 'end',
+        }
+      )
+    })
+    return points
+  }
+
+  /**
+   * @description 清除范围选区
+   * @memberof Selection
+   */
+  clearRanges () {
+    while (this.ranges.length) {
+      this.ranges.pop().caret.remove()
+    }
+  }
+
+  /**
+   * @description 创建range
+   * @param {*} ops
+   * @returns {*}  
+   * @memberof Selection
+   */
+  createRange (ops) {
+    return new Range(ops, this.editor)
+  }
+
+  /**
+   * @description 从原生range创建range
+   * @param {*} nativeRange
+   * @returns {*}  
+   * @memberof Selection
+   */
+  createRangeFromNativeRange (nativeRange) {
+    const { startContainer, endContainer, startOffset, endOffset, collapsed } = nativeRange
+    const { focusNode, focusOffset } = this.nativeSelection
+    let d = 0
+    if (collapsed) {
+      d = 0
+    } else if (focusNode === endContainer &amp;&amp; focusOffset === endOffset) {
+      d = 1
+    } else {
+      d = -1
+    }
+    return this.createRange({
+      startContainer: this._queryPath(startContainer),
+      endContainer: this._queryPath(endContainer),
+      startOffset,
+      endOffset,
+      d,
+    })
+  }
+
+  /**
+   * @description 增加range
+   * @param {*} range
+   * @memberof Selection
+   */
+  addRange (range) {
+    this.ranges.push(range)
+  }
+
+  /**
+   * @description 折叠选区
+   * @param {*} parentNode
+   * @param {*} offset
+   * @memberof Selection
+   */
+  collapse (parentNode, offset) {
+    this.nativeSelection.collapse(parentNode, offset)
+    this._resetRangesFromNative()
+  }
+
+  /**
+   * @description 路径查询
+   * @param {*} elm
+   * @returns {*}  
+   * @memberof Selection
+   */
+  _queryPath (elm) {
+    const path = this.editor.queryPath(elm)
+    if (path) return path
+    return this._queryPath(elm.parentNode)
+  }
+
+  /**
+   * @description 选区转化,矫正鼠标点击的落点
+   * @param {*} nativeRange
+   * @returns {*}  
+   * @memberof Selection
+   */
+  _transformRange (nativeRange) {
+    const { startContainer, endContainer, startOffset, endOffset } = nativeRange
+    const startPath = this.editor.queryPath(startContainer)
+    const endPath = this.editor.queryPath(endContainer)
+    if (!startPath) {
+      const path = this._queryPath(startContainer)
+      nativeRange.setStart(path.elm, startOffset)
+    }
+    if (!endPath) {
+      const path = this._queryPath(endContainer)
+      nativeRange.setStart(path.elm, endOffset)
+    }
+    return nativeRange
+  }
+
+  /**
+   * @description 从native重新设置选区
+   * @memberof Selection
+   */
+  _resetRangesFromNative () {
+    this.clearRanges()
+    const count = this.nativeSelection.rangeCount
+    for (let i = 0; i &lt; count; i++) {
+      const nativeRange = this._transformRange(this.nativeSelection.getRangeAt(i))
+      if (!nativeRange) return
+      this.addRange(this.createRangeFromNativeRange(nativeRange))
+    }
+  }
+
+  /**
+   * @description 从native选区扩增，多选区支持
+   * @memberof Selection
+   */
+  _extendRangesFromNative () {
+    const count = this.nativeSelection.rangeCount
+    if (count > 0) {
+      const nativeRange = this._transformRange(this.nativeSelection.getRangeAt(count - 1))
+      if (!nativeRange) return
+      let flag = false
+      this.ranges.forEach((i) => {
+        if (
+          i.endContainer === nativeRange.endContainer &amp;&amp;
+          i.startOffset === nativeRange.startOffset
+        ) {
+          flag = true
+          i.remove()
+        }
+      })
+      if (flag) return
+      this.addRange(this.createRangeFromNativeRange(nativeRange))
+    }
+  }
+
+  /**
+   * @description 获取第index个range
+   * @param {number} [index=0]
+   * @returns {*}  
+   * @memberof Selection
+   */
+  getRangeAt (index = 0) {
+    return this.ranges[index]
+  }
+
+  /**
+   * @description 移除range并且清除原生range
+   * @memberof Selection
+   */
+  removeAllRanges () {
+    this.nativeSelection.removeAllRanges()
+    this.clearRanges()
+  }
+
+  /**
+   * @description 创建原生range
+   * @param {*} { startContainer, startOffset, endContainer, endOffset }
+   * @returns {*}  
+   * @memberof Selection
+   */
+  createNativeRange ({ startContainer, startOffset, endContainer, endOffset }) {
+    const range = document.createRange()
+    range.setStart(startContainer, startOffset)
+    range.setEnd(endContainer, endOffset)
+    return range
+  }
+
+  /**
+   * @description 在指定容器指定位置发生内容平移，该位置右侧的range锚点需要跟随平移
+   * @param {*} container 目标容器
+   * @param {*} position 位置
+   * @param {*} distance 平移距离,负左正右
+   * @param {*} newContainer 设置新容器
+   * @memberof Selection
+   */
+  updatePoints (container, position, distance, newContainer) {
+    this.rangePoints.forEach((point) => {
+      if (point.container === container &amp;&amp; position &lt;= point.offset) {
+        point.range[point.pointName + 'Offset'] += distance
+        if (newContainer) point.range[point.pointName + 'Container'] = newContainer
+      }
+    })
+  }
+
+  /**
+   * @description range更新 追加ranges或者重新设置ranges
+   * @param {*} multiple
+   * @memberof Selection
+   */
+  updateRanges (multiple) {
+    // 选区的创建结果需要在宏任务中获取.
+    setTimeout(() => {
+      if (multiple) {
+        // 不清除ranges，从nativeSelection增加ranges
+        this._extendRangesFromNative()
+      } else {
+        // 清除ranges,再从nativeSelection同步ranges
+        this._resetRangesFromNative()
+      }
+      this.updateCaret()
+    })
+  }
+
+  /**
+   * @description 光标视图更新
+   * @param {boolean} [drawCaret=true]
+   * @memberof Selection
+   */
+  updateCaret (drawCaret = true) {
+    this.ranges.forEach((range) => range.updateCaret(drawCaret))
+    this.rangeCount > 1 &amp;&amp; this._distinct()
+    drawCaret &amp;&amp; this.drawRangeBg()
+  }
+
+  /**
+   * @description 检查光标是否重叠
+   * @param {*} rectA
+   * @param {*} rectB
+   * @returns {*}  {boolean}
+   * @memberof Selection
+   */
+  _isCoverd (rectA, rectB) {
+    return rectA.y &lt; rectB.y
+      ? rectA.y + rectA.height >= rectB.y + rectB.height
+      : rectB.y + rectB.height >= rectA.y + rectA.height
+  }
+
+  /**
+   * @description 光标高性能去重
+   * @memberof Selection
+   */
+  _distinct () {
+    let tempObj = {}
+    let len = this.ranges.length
+    if (len &lt; 2) return
+    for (let index = 0; index &lt; len; index++) {
+      const range = this.ranges[index]
+      const path = this.editor.queryPath(range.startContainer)
+      const key = `${path.position}-${range.caret.rect.x}-${range.caret.rect.y}`
+      if (!tempObj[key]) {
+        // 这里解决当两个光标在同一行又不在同一个节点上却又重合的情况，通常在跨行内节点会出现，这时应该当作重复光标去重
+        const covereds = Object.entries(tempObj).filter(
+          (item) => range.caret.rect.x === item[1].caret.rect.x
+        )
+        if (covereds.length === 0) {
+          tempObj[key] = range
+        } else if (this._isCoverd(range.caret.rect, covereds[0][1].caret.rect)) {
+          range.caret.remove()
+          this.ranges.splice(index, 1)
+          len--
+          index--
+        } else {
+          tempObj[key] = range
+        }
+      } else {
+        range.caret.remove()
+        this.ranges.splice(index, 1)
+        len--
+        index--
+      }
+    }
+    tempObj = null
+  }
+
+  /**
+   * @description 默认以第一个range同步到native来绘制拖蓝
+   * @param {*} range
+   * @memberof Selection
+   */
+  drawRangeBg (range) {
+    const currRange = range || this.getRangeAt(0)
+    if (!currRange) return
+    this.nativeSelection.removeAllRanges()
+    const { startContainer, startOffset, endContainer, endOffset } = currRange
+    const createNativeRangeOps = {
+      startContainer: startContainer.elm,
+      endContainer: endContainer.elm,
+      startOffset,
+      endOffset,
+    }
+    this.nativeSelection.addRange(this.createNativeRange(createNativeRangeOps))
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Component.html">Component</a></li><li><a href="Content.html">Content</a></li><li><a href="Formater.html">Formater</a></li><li><a href="Path.html">Path</a></li><li><a href="Range.html">Range</a></li><li><a href="Selection.html">Selection</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Element">Element</a></li><li><a href="global.html#_genChildren">_genChildren</a></li><li><a href="global.html#addVnodes">addVnodes</a></li><li><a href="global.html#contentDelete">contentDelete</a></li><li><a href="global.html#createKeyToOldIdx">createKeyToOldIdx</a></li><li><a href="global.html#createPath">createPath</a></li><li><a href="global.html#defer">defer</a></li><li><a href="global.html#del">del</a></li><li><a href="global.html#enter">enter</a></li><li><a href="global.html#findIdxInOld">findIdxInOld</a></li><li><a href="global.html#flush">flush</a></li><li><a href="global.html#horizontalMove">horizontalMove</a></li><li><a href="global.html#initDispatcher">initDispatcher</a></li><li><a href="global.html#input">input</a></li><li><a href="global.html#inputText">inputText</a></li><li><a href="global.html#invokeDestroyHook">invokeDestroyHook</a></li><li><a href="global.html#isSameLine">isSameLine</a></li><li><a href="global.html#loop">loop</a></li><li><a href="global.html#patchVnode">patchVnode</a></li><li><a href="global.html#positionCompare">positionCompare</a></li><li><a href="global.html#queryCommonPath">queryCommonPath</a></li><li><a href="global.html#queryPath">queryPath</a></li><li><a href="global.html#queryPathByElm">queryPathByElm</a></li><li><a href="global.html#queryPathByPosition">queryPathByPosition</a></li><li><a href="global.html#queryPathByVn">queryPathByVn</a></li><li><a href="global.html#queryRootPath">queryRootPath</a></li><li><a href="global.html#removeVnodes">removeVnodes</a></li><li><a href="global.html#renderRoot">renderRoot</a></li><li><a href="global.html#sameVnode">sameVnode</a></li><li><a href="global.html#transformOps">transformOps</a></li><li><a href="global.html#updateChildren">updateChildren</a></li><li><a href="global.html#verticalMove">verticalMove</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Sun Mar 19 2023 16:22:34 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
