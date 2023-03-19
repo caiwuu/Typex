@@ -9,16 +9,40 @@ import { default as h, insertedInsQueue } from './createVnode'
 import plugins from '@/core/plugins'
 import { getVnOrElm, getVnOrIns, setVnElm, setVnIns } from '../../mappings'
 import { isUndef, isDef } from '../../utils'
-function sameVnode(vnode, oldVnode) {
+
+/**
+ * @description 判断是否相同节点
+ * @param {*} vnode
+ * @param {*} oldVnode
+ * @returns {*}  
+ */
+function sameVnode (vnode, oldVnode) {
   return vnode?.key === oldVnode?.key && vnode?.type === oldVnode?.type
 }
-function findIdxInOld(node, oldCh, start, end) {
+
+/**
+ * @description 在老节点中查找id
+ * @param {*} node
+ * @param {*} oldCh
+ * @param {*} start
+ * @param {*} end
+ * @returns {*}  
+ */
+function findIdxInOld (node, oldCh, start, end) {
   for (let i = start; i < end; i++) {
     const c = oldCh[i]
     if (isDef(c) && sameVnode(node, c)) return i
   }
 }
-function createKeyToOldIdx(children, beginIdx, endIdx) {
+
+/**
+ * @description 生成id映射
+ * @param {*} children
+ * @param {*} beginIdx
+ * @param {*} endIdx
+ * @returns {*}  
+ */
+function createKeyToOldIdx (children, beginIdx, endIdx) {
   const map = {}
   for (let i = beginIdx; i <= endIdx; ++i) {
     const key = children[i]?.key
@@ -29,7 +53,15 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map
 }
 
-function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
+/**
+ * @description 增加节点
+ * @param {*} parentElm
+ * @param {*} [before=null]
+ * @param {*} vnodes
+ * @param {*} startIdx
+ * @param {*} endIdx
+ */
+function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
@@ -40,7 +72,13 @@ function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
     }
   }
 }
-function invokeDestroyHook(vnode, destoryQueue) {
+
+/**
+ * @description 销毁钩子调用
+ * @param {*} vnode
+ * @param {*} destoryQueue
+ */
+function invokeDestroyHook (vnode, destoryQueue) {
   const vn = vnode.ins ? getVnOrIns(vnode.ins) : vnode
   if (vn !== undefined) {
     const ins = getVnOrIns(vn)
@@ -59,7 +97,15 @@ function invokeDestroyHook(vnode, destoryQueue) {
     }
   }
 }
-function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
+
+/**
+ * @description 节点删除
+ * @param {*} parentElm
+ * @param {*} oldCh
+ * @param {*} startIdx
+ * @param {*} endIdx
+ */
+function removeVnodes (parentElm, oldCh, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const vnode = oldCh[startIdx]
     if (vnode != null) {
@@ -76,7 +122,14 @@ function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
     }
   }
 }
-function updateChildren(parentElm, newCh, oldCh) {
+
+/**
+ * @description children更新函数
+ * @param {*} parentElm
+ * @param {*} newCh
+ * @param {*} oldCh
+ */
+function updateChildren (parentElm, newCh, oldCh) {
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1
@@ -166,7 +219,13 @@ function updateChildren(parentElm, newCh, oldCh) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
   }
 }
-function patchVnode(vnode, oldVnode) {
+
+/**
+ * @description 节点比对
+ * @param {*} vnode
+ * @param {*} oldVnode
+ */
+function patchVnode (vnode, oldVnode) {
   if (oldVnode === vnode) return
   if (typeof vnode.type === 'function') {
     if (vnode.type.isComponent) {
@@ -201,7 +260,15 @@ function patchVnode(vnode, oldVnode) {
     if (oldCh !== ch) updateChildren(elm, ch, oldCh)
   }
 }
-export default function patch(vnode, oldVnode) {
+
+/**
+ * @description diff函数
+ * @export
+ * @param {*} vnode
+ * @param {*} oldVnode
+ * @returns {*}  
+ */
+export default function patch (vnode, oldVnode) {
   insertedInsQueue.length = 0
   // 没有oldvnode 直接创建新dom
   if (isUndef(oldVnode)) {

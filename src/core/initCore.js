@@ -2,6 +2,13 @@ import plugins from './plugins'
 import emit from 'mitt'
 import Selection from './selection'
 import { usePlugin } from '.'
+
+
+/**
+ * @description 内核初始化
+ * @export
+ * @param {*} ops
+ */
 export default function initCore (ops) {
   const { editor, formater, platform } = ops
   editor.$eventBus = emit()
@@ -16,7 +23,11 @@ export default function initCore (ops) {
 function titleCase (str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
-// 事件拦截到对应的组件
+
+/**
+ * @description 事件拦截到对应的组件
+ * @param {*} editor
+ */
 function initDispatcher (editor) {
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {

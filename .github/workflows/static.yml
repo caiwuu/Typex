@@ -4,14 +4,14 @@ name: Build And Deploy To Github Pages
 # workflow的触发事件，这里代表main分支的push事件触发
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 # 任务
 jobs:
   # build-and-deploy 为任务的ID
   build-and-deploy:
     # 运行所需要的环境
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
 
     steps:
       # 步骤名
@@ -26,8 +26,8 @@ jobs:
       - name: Install and Build
         run: |
           npm install
-          npm run build
-      
+          npm run deploy
+
       # 执行JamesIves/github-pages-deploy-action将项目发布到Github Pages
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
@@ -37,4 +37,4 @@ jobs:
           # 发布到的分支
           BRANCH: gh-pages
           # 要发布的文件夹
-          FOLDER: dist
+          FOLDER: deploy

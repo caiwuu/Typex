@@ -1,0 +1,75 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "sourceType": "module",
+  "source": {
+    "include": ["./src"],
+    "includePattern": ".+\\.js(doc|x)?$",
+    "excludePattern": "(^|\\/|\\\\)_",
+    "exclude": []
+  },
+  "plugins": [],
+  "opts": {
+    "homepageTitle": "Typex",
+    "template": "node_modules/clean-jsdoc-theme",
+    "theme_opts": {
+      "default_theme": "light",
+      "title": "<a style='font:bold 30px/30px 黑体;color:#999;text-align:center;text-decoration: none;' href='./index.html'>Typex-Document</a>",
+      "menu": [
+        {
+          "title": "Home",
+          "link": "./index.html",
+          "class": "home-class",
+          "id": "home-id"
+        },
+        {
+          "title": "Github",
+          "link": "https://github.com/caiwuu/Typex",
+          "target": "_blank",
+          "class": "github-class",
+          "id": "github-id"
+        }
+      ],
+
+      "meta": [
+        {
+          "name": "author",
+          "content": "Cai Wu"
+        },
+        {
+          "name": "description",
+          "content": "A Editor Core"
+        }
+      ],
+      "search": {
+        "shouldSort": true,
+        "threshold": 0.4,
+        "location": 0,
+        "distance": 100,
+        "maxPatternLength": 32,
+        "minMatchCharLength": 1
+      },
+      "add_scripts": "function foo(){console.log('foo')}",
+
+      "footer": "This is footer",
+
+      "exclude_inherited": true,
+
+      "overlay_scrollbar": {
+        "options": {}
+      },
+      "resizeable": {
+        "navbar": {
+          "min": "300",
+          "max": "600"
+        }
+      }
+    }
+  },
+  "templates": {
+    "cleverLinks": false,
+    "monospaceLinks": false
+  }
+}

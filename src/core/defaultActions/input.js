@@ -7,7 +7,13 @@
  */
 import { del } from './delete'
 import { isPrimitive, times } from '../utils'
-// 执行输入型插入
+
+
+/**
+ * @description 文本输入
+ * @param {*} range
+ * @param {*} data
+ */
 function inputText (range, data) {
   let { startContainer: path } = range
   if (path) {
@@ -22,6 +28,11 @@ function inputText (range, data) {
   }
 }
 
+/**
+ * @description 操作转换
+ * @param {*} e
+ * @returns {*}  
+ */
 function transformOps (e) {
   if (isPrimitive(e)) {
     return {
@@ -31,12 +42,16 @@ function transformOps (e) {
   }
   return e
 }
-// 插入类型处理
+
+/**
+ * @description 输入操作
+ * @export
+ * @param {*} range
+ * @param {*} e
+ */
 export function input (range, e) {
   const { data, type } = transformOps(e)
-  if (!range.collapsed) {
-    range.editor.emit('delete', { range, force: false })
-  }
+  if (!range.collapsed) del(range, true)
   if (type === 'input') {
     let prevInputValue,
       inputData = data === ' ' ? '\u00A0' : data || ''

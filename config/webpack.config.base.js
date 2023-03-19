@@ -6,7 +6,7 @@ module.exports = {
   },
   output: {
     filename: '[name].js', //输入的文件名是什么，生成的文件名也是什么
-    path: path.resolve(__dirname, '../dist'), //指定生成的文件目录
+    path: path.resolve(__dirname, '../deploy/dist'), //指定生成的文件目录
   },
   resolve: {
     // 设置别名

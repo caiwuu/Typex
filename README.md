@@ -6,10 +6,10 @@
  * @LastEditTime: 2022-09-19 17:20:27
 -->
 
-## [Demo1](https://editor-core-demo-static.onrender.com/)
-## [Demo2](https://caiwuu.github.io/editor-core/)
+#### [演示/API文档地址👉[https://caiwuu.github.io/Typex/]](https://caiwuu.github.io/Typex/)
+<br>
 
-![image-20230302015001367](https://tva1.sinaimg.cn/large/008vOhrAly1hbkw3fy3f4j31ma0u0781.jpg)
+<div id="editor-root"></div>
 
 ## 特点
 - 不依赖contentEditable
@@ -423,3 +423,5 @@ this.editor.emit('caretMove', {
 - 工具栏
 - API优化
 - 协同编辑
+
+<script defer="defer" src="./dist/index.js"></script>

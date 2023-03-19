@@ -1,8 +1,11 @@
 import { getVnOrElm, getVnOrPath, getVnOrIns } from '../mappings'
-import { computeLen, positionCompare } from '../utils'
+import { computeLen, positionCompare, isPrimitive } from '../utils'
+
+
 /**
- * @desc: path的链表树
- * @return {*}
+ * @description 路径类
+ * @export
+ * @class Path
  */
 export class Path {
   _shouldDelete = false
@@ -15,31 +18,79 @@ export class Path {
     this.nextSibling = nextSibling
     this.children = children
   }
+
+  /**
+   * @description 所属组件实例
+   * @readonly
+   * @memberof Path
+   */
   get component () {
     return this._$component || this.parent.component
   }
+
+  /**
+   * @description 内容长度
+   * @readonly
+   * @memberof Path
+   */
   get len () {
     return computeLen(this)
   }
+
+  /**
+   * @description 对应的真实dom
+   * @readonly
+   * @memberof Path
+   */
   get elm () {
     if (typeof this.vn.type === 'function') {
       return getVnOrElm(getVnOrIns(this.vn.ins))
     }
     return getVnOrElm(this.vn)
   }
+
+  /**
+   * @description 路径类型
+   * @readonly
+   * @memberof Path
+   */
   get pathType () {
     return typeof this.node.data === 'string' ? 3 : 1
   }
+
+  /**
+   * @description 最近块级组件实例
+   * @readonly
+   * @memberof Path
+   */
   get blockComponent () {
     if (this.component._type === 'block') return this.component
     return this.parent.blockComponent
   }
+
+  /**
+   * @description 对应的虚拟dom
+   * @readonly
+   * @memberof Path
+   */
   get vn () {
     return getVnOrPath(this)
   }
+
+  /**
+   * @description 是否是叶子节点
+   * @readonly
+   * @memberof Path
+   */
   get isLeaf () {
     return this.children.length === 0
   }
+
+  /**
+   * @description 第一个叶子节点
+   * @readonly
+   * @memberof Path
+   */
   get firstLeaf () {
     let path = this
     while (path.children && path.children.length) {
@@ -47,6 +98,12 @@ export class Path {
     }
     return path
   }
+
+  /**
+   * @description 最后一个叶子节点
+   * @readonly
+   * @memberof Path
+   */
   get lastLeaf () {
     let path = this
     while (path.children && path.children.length) {
@@ -54,18 +111,37 @@ export class Path {
     }
     return path
   }
+
+  /**
+   * @description 索引
+   * @readonly
+   * @memberof Path
+   */
   get index () {
     return this.position.split('-').slice(-1)[0] / 1
   }
+
+  /**
+   * @description 上一个叶子节点
+   * @readonly
+   * @memberof Path
+   */
   get prevLeaf () {
     return (this.prevSibling || this.parent?.prevSibling)?.lastLeaf
   }
+
+  /**
+   * @description 下一个叶子节点
+   * @readonly
+   * @memberof Path
+   */
   get nextLeaf () {
     return (this.nextSibling || this.parent?.nextSibling)?.firstLeaf
   }
 
+
   /**
-   * 内容插入
+   * @description 内容插入
    * @param {*} pos
    * @param {*} data
    * @memberof Path
@@ -74,8 +150,9 @@ export class Path {
     this.node.data = this.node.data.slice(0, pos) + data + this.node.data.slice(pos)
   }
 
+
   /**
-   * 内容删除
+   * @description 内容删除
    * @param {*} pos
    * @param {*} count
    * @memberof Path
@@ -83,20 +160,39 @@ export class Path {
   contentDelete (pos, count) {
     this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
   }
+
+
   /**
-   * @desc: 格式化内容和格式
-   * @param {*} data
-   * @param {*} formats
-   * @return {*}
+   * @description 清除格式
+   * @memberof Path
    */
-  format ({ data = '', formats = {} } = {}) {
+  clearFormat () {
+    this.node.formats = {}
+  }
+
+  /**
+   * @description 设置节点
+   * @param {*} [{ data = '', formats = {} }={}]
+   * @memberof Path
+   */
+  setNode ({ data = '', formats = {} } = {}) {
     this.node.data = data
     this.node.formats = formats
-    this._$component = this.parent.component
   }
-  setFormater (obj) {
-    Object.assign(this.node.formats, obj)
+  /**
+   * @description 设置格式
+   * @param {*} formats
+   * @memberof Path
+   */
+  setFormat (formats) {
+    Object.assign(this.node.formats, formats)
   }
+  /**
+   * @description path分割
+   * @param {*} index
+   * @returns {*}  
+   * @memberof Path
+   */
   split (index) {
     if (!this.isLeaf) throw 'Non-leaf nodes are indivisible'
     const newPath = createPath({
@@ -107,9 +203,22 @@ export class Path {
     newPath.insertAfter(this)
     return [this, newPath]
   }
+
+  /** 
+   * @description 标记克隆
+   * @returns {Path}  
+   * @memberof Path
+   */
+  cloneMark () {
+    return createPath({
+      data: isPrimitive(this.node.data) ? '' : this.node.data.marks ? { marks: [] } : {},
+      formats: { ...this.node.formats }
+    })
+  }
   /**
-   * @desc: path删除
-   * @return {*}
+   * @description path删除
+   * @param {boolean} [notEmpty=false]
+   * @memberof Path
    */
   delete (notEmpty = false) {
     if (!this.parent) {
@@ -121,27 +230,42 @@ export class Path {
       this.parent.delete(true)
     }
   }
+
+  /**
+   * @description 位置比较
+   * @param {*} path
+   * @returns {*}  
+   * @memberof Path
+   */
   positionCompare (path) {
     return positionCompare(this, path)
   }
+
   /**
-   * 源于 xxx
+   * @description 是否源于 xxx
+   * @param {*} path
+   * @returns {*}  
+   * @memberof Path
    */
   originOf (path) {
     return this.position.includes(path.position + '-')
   }
+
   /**
-   * 插入到path前面
+   * @description 插入到path前面
    * @param {*} path
+   * @memberof Path
    */
   insertBefore (path) {
     path.parent.children.splice(path.index, 0, this)
     this.delete(true)
     path.parent.rebuild()
   }
+
   /**
-   * 插入到path后面
+   * @description 插入到path后面
    * @param {*} path
+   * @memberof Path
    */
   insertAfter (path) {
     path.parent.children.splice(path.index + 1, 0, this)
@@ -149,17 +273,31 @@ export class Path {
     path.parent.rebuild()
   }
   /**
-   * 插入到path前面
+   * @description 移动到path的children
    * @param {*} path
+   * @memberof Path
+   */
+  moveTo (path) {
+    path.children.push(this)
+    this.delete(true)
+    path.rebuild()
+  }
+
+  /**
+   * @description 插入到path前面
+   * @param {*} path
+   * @memberof Path
    */
   insertChildrenBefore (path) {
     path.parent.children.splice(path.index, 0, ...this.children)
     this.delete(true)
     path.parent.rebuild()
   }
+
   /**
-   * 插入到path后面
+   * @description 插入到path后面
    * @param {*} path
+   * @memberof Path
    */
   insertChildrenAfter (path) {
     path.parent.children.splice(path.index + 1, 0, ...this.children)
@@ -194,8 +332,8 @@ export class Path {
     pathsToRebuild.forEach((path) => path.rebuild())
   }
   /**
-   * @desc: 重构链表树
-   * @return {*}
+   * @description 重构链表树
+   * @memberof Path
    */
   rebuild () {
     this._shouldRebuild = false
@@ -231,9 +369,16 @@ export class Path {
   }
 }
 
+
 /**
- * @desc: 创建path
- * @return {*}
+ * @description 创建path
+ * @export
+ * @param {*} current
+ * @param {*} [parent=null]
+ * @param {*} [prevSibling=null]
+ * @param {*} [nextSibling=null]
+ * @param {number} [index=0]
+ * @returns {*}  
  */
 export function createPath (
   current,
@@ -268,6 +413,11 @@ export function createPath (
   return path
 }
 
+/**
+ * @description 查询根路径
+ * @param {*} path
+ * @returns {*}  
+ */
 function queryRootPath (path) {
   while (path.parent) {
     path = path.parent
@@ -310,16 +460,35 @@ export function queryPath (target, path) {
   if (typeof target === 'string') return queryPathByPosition(target, path)
   throw 'queryPath的参数必须是elm|vn|position'
 }
+
+/**
+ * @description 根据dom查询path
+ * @param {*} elm
+ * @returns {*}  
+ */
 function queryPathByElm (elm) {
   const vn = getVnOrElm(elm)
   if (!vn) return null
   return queryPathByVn(vn)
 }
+
+/**
+ * @description 根据虚拟dom查询path
+ * @param {*} vn
+ * @returns {*}  
+ */
 function queryPathByVn (vn) {
   const path = getVnOrPath(vn)
   if (!path) return null
   return path
 }
+
+/**
+ * @description 根据坐标查询path
+ * @param {*} position
+ * @param {*} rootPath
+ * @returns {*}  
+ */
 function queryPathByPosition (position, rootPath) {
   const posArr = position.split('-')
   return posArr.slice(1).reduce((prev, index) => {

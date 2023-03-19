@@ -6,12 +6,14 @@
  * @LastEditTime: 2022-09-23 13:57:58
  */
 
+
 /**
- * 水平移动
- * @param {*} range
+ * @description 水平移动
+ * @export
  * @param {*} direction
- * @param {*} shiftKey
- * @returns
+ * @param {*} range
+ * @param {*} event
+ * @returns {*}  
  */
 export function horizontalMove (direction, range, event) {
   // 拼音输入法聚合输入的时候禁止光标的移动
@@ -51,7 +53,7 @@ export function verticalMove (direction, range, event) {
  * @param {*} prevCaretInfo
  * @param {*} currCaretInfo
  * @param {*} editor
- * @returns
+ * @returns {Boolean}
  */
 function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo, direction) {
   // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
@@ -80,8 +82,9 @@ function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo, direction) 
  * @param {*} prevCaretInfo
  * @param {*} lineChanged
  * @param {*} shiftKey
- * @returns
+ * @returns {*}
  */
+
 function loop (range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, event) {
   if (range.collapsed) {
     range.d = 0

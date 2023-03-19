@@ -1,17 +1,41 @@
 import plugins from '@/core/plugins'
 import Range from './range'
+
+/**
+ * @description 选区类
+ * @export
+ * @class Selection
+ */
 export default class Selection {
   ranges = []
   nativeSelection = plugins.platform.nativeSelection
   constructor(editor) {
     this.editor = editor
   }
-  get isCollapsed () {
+
+  /**
+   * @description 选区是否折叠
+   * @readonly
+   * @memberof Selection
+   */
+  get collapsed () {
     return this.ranges.every((range) => range.collapsed)
   }
+
+  /**
+   * @description 选区范围数量
+   * @readonly
+   * @memberof Selection
+   */
   get rangeCount () {
     return this.ranges.length
   }
+
+  /**
+   * @description 选区端点list
+   * @readonly
+   * @memberof Selection
+   */
   get rangePoints () {
     const points = []
     this.ranges.forEach((range) => {
@@ -32,14 +56,33 @@ export default class Selection {
     })
     return points
   }
+
+  /**
+   * @description 清除范围选区
+   * @memberof Selection
+   */
   clearRanges () {
     while (this.ranges.length) {
       this.ranges.pop().caret.remove()
     }
   }
+
+  /**
+   * @description 创建range
+   * @param {*} ops
+   * @returns {*}  
+   * @memberof Selection
+   */
   createRange (ops) {
     return new Range(ops, this.editor)
   }
+
+  /**
+   * @description 从原生range创建range
+   * @param {*} nativeRange
+   * @returns {*}  
+   * @memberof Selection
+   */
   createRangeFromNativeRange (nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset, collapsed } = nativeRange
     const { focusNode, focusOffset } = this.nativeSelection
@@ -59,19 +102,45 @@ export default class Selection {
       d,
     })
   }
+
+  /**
+   * @description 增加range
+   * @param {*} range
+   * @memberof Selection
+   */
   addRange (range) {
     this.ranges.push(range)
   }
+
+  /**
+   * @description 折叠选区
+   * @param {*} parentNode
+   * @param {*} offset
+   * @memberof Selection
+   */
   collapse (parentNode, offset) {
     this.nativeSelection.collapse(parentNode, offset)
     this._resetRangesFromNative()
   }
+
+  /**
+   * @description 路径查询
+   * @param {*} elm
+   * @returns {*}  
+   * @memberof Selection
+   */
   _queryPath (elm) {
     const path = this.editor.queryPath(elm)
     if (path) return path
     return this._queryPath(elm.parentNode)
   }
-  // 选区转化,矫正鼠标点击的落点
+
+  /**
+   * @description 选区转化,矫正鼠标点击的落点
+   * @param {*} nativeRange
+   * @returns {*}  
+   * @memberof Selection
+   */
   _transformRange (nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset } = nativeRange
     const startPath = this.editor.queryPath(startContainer)
@@ -86,7 +155,11 @@ export default class Selection {
     }
     return nativeRange
   }
-  // 从native重新设置选区
+
+  /**
+   * @description 从native重新设置选区
+   * @memberof Selection
+   */
   _resetRangesFromNative () {
     this.clearRanges()
     const count = this.nativeSelection.rangeCount
@@ -96,7 +169,11 @@ export default class Selection {
       this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
   }
-  // 从native选区扩增，多选区支持
+
+  /**
+   * @description 从native选区扩增，多选区支持
+   * @memberof Selection
+   */
   _extendRangesFromNative () {
     const count = this.nativeSelection.rangeCount
     if (count > 0) {
@@ -116,24 +193,46 @@ export default class Selection {
       this.addRange(this.createRangeFromNativeRange(nativeRange))
     }
   }
+
+  /**
+   * @description 获取第index个range
+   * @param {number} [index=0]
+   * @returns {*}  
+   * @memberof Selection
+   */
   getRangeAt (index = 0) {
     return this.ranges[index]
   }
+
+  /**
+   * @description 移除range并且清除原生range
+   * @memberof Selection
+   */
   removeAllRanges () {
     this.nativeSelection.removeAllRanges()
     this.clearRanges()
   }
+
+  /**
+   * @description 创建原生range
+   * @param {*} { startContainer, startOffset, endContainer, endOffset }
+   * @returns {*}  
+   * @memberof Selection
+   */
   createNativeRange ({ startContainer, startOffset, endContainer, endOffset }) {
     const range = document.createRange()
     range.setStart(startContainer, startOffset)
     range.setEnd(endContainer, endOffset)
     return range
   }
+
   /**
-   * 在指定容器指定位置发生内容平移，该位置右侧的range锚点需要跟随平移
-   * @param {*} container 容器
+   * @description 在指定容器指定位置发生内容平移，该位置右侧的range锚点需要跟随平移
+   * @param {*} container 目标容器
    * @param {*} position 位置
-   * @param {*} distance 平移距离 负左正右
+   * @param {*} distance 平移距离,负左正右
+   * @param {*} newContainer 设置新容器
+   * @memberof Selection
    */
   updatePoints (container, position, distance, newContainer) {
     this.rangePoints.forEach((point) => {
@@ -143,9 +242,11 @@ export default class Selection {
       }
     })
   }
+
   /**
-   * range更新 追加ranges或者重新设置ranges
+   * @description range更新 追加ranges或者重新设置ranges
    * @param {*} multiple
+   * @memberof Selection
    */
   updateRanges (multiple) {
     // 选区的创建结果需要在宏任务中获取.
@@ -160,22 +261,36 @@ export default class Selection {
       this.updateCaret()
     })
   }
+
   /**
-   * 光标视图更新
-   * @param {*} drawCaret
+   * @description 光标视图更新
+   * @param {boolean} [drawCaret=true]
+   * @memberof Selection
    */
   updateCaret (drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
-    this.rangeCount > 1 && this.distinct()
+    this.rangeCount > 1 && this._distinct()
     drawCaret && this.drawRangeBg()
   }
+
+  /**
+   * @description 检查光标是否重叠
+   * @param {*} rectA
+   * @param {*} rectB
+   * @returns {*}  {boolean}
+   * @memberof Selection
+   */
   _isCoverd (rectA, rectB) {
     return rectA.y < rectB.y
       ? rectA.y + rectA.height >= rectB.y + rectB.height
       : rectB.y + rectB.height >= rectA.y + rectA.height
   }
-  // 光标高性能去重;
-  distinct () {
+
+  /**
+   * @description 光标高性能去重
+   * @memberof Selection
+   */
+  _distinct () {
     let tempObj = {}
     let len = this.ranges.length
     if (len < 2) return
@@ -207,7 +322,12 @@ export default class Selection {
     }
     tempObj = null
   }
-  // 默认以第一个range同步到native来绘制拖蓝
+
+  /**
+   * @description 默认以第一个range同步到native来绘制拖蓝
+   * @param {*} range
+   * @memberof Selection
+   */
   drawRangeBg (range) {
     const currRange = range || this.getRangeAt(0)
     if (!currRange) return

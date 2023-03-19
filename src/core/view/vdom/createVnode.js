@@ -3,7 +3,16 @@ const BUILTINPROPSKEY = ['ref', 'key', 'ns']
 const insertedInsQueue = []
 const INHERITPROPSKEY = ['ns']
 
-export default function createVnode(type, config = {}, children = []) {
+
+/**
+ * @description 创建虚拟dom
+ * @export
+ * @param {*} type
+ * @param {*} [config={}]
+ * @param {*} [children=[]]
+ * @returns {*}  
+ */
+export default function createVnode (type, config = {}, children = []) {
   const props = {}
   const builtinProps = {}
   for (let propName of BUILTINPROPSKEY) {
@@ -20,7 +29,13 @@ export default function createVnode(type, config = {}, children = []) {
   }
   return Element(type, builtinProps, props, children.flat())
 }
-const genChildren = (children, inherit) =>
+
+/**
+ * @description 生成childre
+ * @param {*} children
+ * @param {*} inherit
+ */
+const _genChildren = (children, inherit) =>
   children.map((ele) => {
     if (isPrimitive(ele) || isUndef(ele)) {
       return {
@@ -33,7 +48,16 @@ const genChildren = (children, inherit) =>
       return ele
     }
   })
-function Element(type, builtinProps, props, children) {
+
+/**
+ * @description 虚拟节点工厂函数
+ * @param {*} type
+ * @param {*} builtinProps
+ * @param {*} props
+ * @param {*} children
+ * @returns {*}  
+ */
+function Element (type, builtinProps, props, children) {
   let element
   if (type === 'text') {
     element = {
@@ -55,9 +79,9 @@ function Element(type, builtinProps, props, children) {
       inherit[propName] = element[propName]
     }
     if (typeof type === 'function') {
-      element.props.children = genChildren(children, inherit)
+      element.props.children = _genChildren(children, inherit)
     } else {
-      element.children = genChildren(children, inherit)
+      element.children = _genChildren(children, inherit)
     }
   }
   return element

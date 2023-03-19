@@ -11,15 +11,15 @@ export default class MouseIntercept {
     this.editor = editor
     this._addListeners()
   }
-  destroy() {
+  destroy () {
     this.editor.ui.body.removeEventListener('mouseup', this._handMouseup.bind(this))
     this.editor.ui.body.removeEventListener('mousedown', this._handMousedown.bind(this))
   }
-  _addListeners() {
+  _addListeners () {
     this.editor.ui.body.addEventListener('mouseup', this._handMouseup.bind(this))
     this.editor.ui.body.addEventListener('mousedown', this._handMousedown.bind(this))
   }
-  _handMousedown(event) {
+  _handMousedown (event) {
     this.editor.emit('mouseEvents', event)
     // 没按shift的时候按下左键折叠选区
     if (!event.shiftKey && event.button === 0) {
@@ -31,9 +31,9 @@ export default class MouseIntercept {
       this.editor.selection.updateRanges(event.altKey)
     }
   }
-  _handMouseup(event) {
+  _handMouseup (event) {
     // 有选区或者按了shift,更新选区（isCollapsed这里必须使用原生的，因为内核的选区此时还未更新）
-    if (!nativeSelection.isCollapsed || event.shiftKey) {
+    if (!nativeSelection.collapsed || event.shiftKey) {
       this.editor.selection.updateRanges(event.altKey)
     }
     this.editor.focus()

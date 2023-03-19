@@ -7,7 +7,9 @@
     "test": "jest --coverage",
     "build": "webpack --config config/webpack.config.prod.js",
     "dev": "webpack-dev-server  --config config/webpack.config.dev.js",
-    "tree": "npx treer -d ./src -e tree.txt"
+    "tree": "npx treer -d ./src -e tree.txt",
+    "jsdoc": "node_modules/.bin/jsdoc -r -c jsdoc.config.json -R README.md -d deploy",
+    "deploy": "npm run build && npm run jsdoc"
   },
   "keywords": [],
   "author": "",
@@ -20,9 +22,11 @@
     "@babel/types": "^7.17.0",
     "babel-jest": "^27.5.1",
     "babel-loader": "^8.2.3",
+    "clean-jsdoc-theme": "^4.2.6",
     "css-loader": "^6.7.1",
     "html-webpack-plugin": "^5.4.0",
     "jest": "^27.5.1",
+    "jsdoc": "^4.0.2",
     "style-loader": "^3.3.1",
     "stylus": "^0.57.0",
     "stylus-loader": "^6.2.0",
@@ -34,7 +38,6 @@
     "webpackbar": "^5.0.0-3"
   },
   "dependencies": {
-    "js-data": "^3.0.11",
     "mitt": "^3.0.0"
   }
 }

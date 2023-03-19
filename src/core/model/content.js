@@ -2,32 +2,62 @@ import Component from '../view/component'
 import { horizontalMove, verticalMove } from '../defaultActions/caretMove'
 import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
+import { enter } from '../defaultActions/enter'
+
+
+/**
+ * @description 内容管理类
+ * @export
+ * @class Content
+ * @extends {Component}
+ */
 export default class Content extends Component {
   _type = 'inline'
   constructor(props) {
     super(props)
     this.initState()
   }
+
+  /**
+   * @description 内容长度
+   * @readonly
+   * @memberof Content
+   */
   get contentLength () {
     return this.$path.len
   }
+
+  /**
+   * @description 对应路径
+   * @readonly
+   * @memberof Content
+   */
   get $path () {
     return this.props.path
   }
+
+  /**
+   * @description 编辑器实例
+   * @readonly
+   * @memberof Content
+   */
   get $editor () {
     return this.props.editor
   }
   /**
-   * 初始化状态
+   * @description 初始化状态
+   * @memberof Content
    */
   initState () {
     this.$path._$component = this
   }
 
+
   /**
-   * 更新状态
+   * @description 更新状态
    * @param {*} path
    * @param {*} range
+   * @returns {*}  
    * @memberof Content
    */
   update (path, range) {
@@ -39,11 +69,13 @@ export default class Content extends Component {
     })
   }
 
+
   /**
-   * 输入处理
-   * @param {*} path 路径
-   * @param {*} range 区间
-   * @param {*} range 输入数据
+   * @description 输入处理
+   * @param {*} path
+   * @param {*} range
+   * @param {*} data
+   * @memberof Content
    */
   contentInput (path, range, data) {
     const { offset, endContainer } = range
@@ -56,8 +88,8 @@ export default class Content extends Component {
   }
 
   /**
-   * 删除动作
-   * @param {*} commonPath 路径
+   * @description  删除动作
+   * @param {*} commonPath 最近公共路径
    * @param {*} range 区间
    * @memberof Content
    */
@@ -89,12 +121,14 @@ export default class Content extends Component {
     }
     this.update(commonPath, range)
   }
+
   /**
-   * 光标进入
+   * @description 光标进入
    * @param {*} path
    * @param {*} range
    * @param {*} direction
-   * @returns
+   * @returns {*}  
+   * @memberof Content
    */
   caretEnter (path, range, direction) {
     if (direction === 'left') {
@@ -107,12 +141,14 @@ export default class Content extends Component {
     }
     return { path, range }
   }
+
   /**
-   * 光标离开
+   * @description 光标离开
    * @param {*} path
    * @param {*} range
    * @param {*} direction 从哪个方向离开
-   * @returns
+   * @returns {*}  
+   * @memberof Content
    */
   caretLeave (path, range, direction) {
     if (direction === 'left') {
@@ -128,10 +164,9 @@ export default class Content extends Component {
   }
 
   /**
-   *
-   * 箭头右动作
+   * @description 箭头右动作
    * @param {*} path 路径
-   * @param {*} range 区间 cursorForward
+   * @param {*} range cursorForward
    * @memberof Content
    */
   caretForward (path, range) {
@@ -147,24 +182,37 @@ export default class Content extends Component {
   caretBackward (path, range) {
     range.offset > 0 && (range.offset -= 1)
   }
+
   /**
-   *
-   * 回车动作
-   * @param {*} path 路径
-   * @param {*} range 区间
+   * @description 获取上一个叶子
+   * @param {*} path
+   * @returns {*}  
    * @memberof Content
    */
-  onEnter (path, range) {
-    console.error('组件未实现onEnter方法')
-  }
   getPrevLeafPath (path) {
     if (!path) return null
     return (path.prevSibling || this.getPrevLeafPath(path.parent))?.lastLeaf
   }
+
+  /**
+   * @description  获取下一个叶子
+   * @param {*} path
+   * @returns {*}  
+   * @memberof Content
+   */
   getNextLeafPath (path) {
     if (!path) return null
     return (path.nextSibling || this.getNextLeafPath(path.parent))?.firstLeaf
   }
+
+  /**
+   * @description 光标移动处理
+   * @param {*} direction
+   * @param {*} range
+   * @param {*} event
+   * @returns {*}  
+   * @memberof Content
+   */
   caretMove (direction, range, event) {
     const path = range.container
     const caretMoveMethod = this[`${direction === 'left' ? 'caretBackward' : 'caretForward'}`]
@@ -184,30 +232,83 @@ export default class Content extends Component {
     }
     return res
   }
+
+  /**
+   * @description 键盘左箭头处理
+   * @param {*} range
+   * @param {*} event
+   * @memberof Content
+   */
   onKeydownArrowLeft (range, event) {
     horizontalMove('left', range, event)
   }
+
+  /**
+   * @description 键盘右箭头处理
+   * @param {*} range
+   * @param {*} event
+   * @memberof Content
+   */
   onKeydownArrowRight (range, event) {
     horizontalMove('right', range, event)
   }
+
+  /**
+   * @description 键盘上箭头处理
+   * @param {*} range
+   * @param {*} event
+   * @memberof Content
+   */
   onKeydownArrowUp (range, event) {
     verticalMove('up', range, event)
   }
+
+  /**
+   * @description 键盘下箭头处理
+   * @param {*} range
+   * @param {*} event
+   * @memberof Content
+   */
   onKeydownArrowDown (range, event) {
     verticalMove('down', range, event)
   }
+
+  /**
+   * @description 键盘空格处理
+   * @param {*} range
+   * @memberof Content
+   */
   onKeydownBackspace (range) {
     del(range, false)
   }
+
+  /**
+   * @description 键盘回车处理
+   * @param {*} range
+   * @param {*} event
+   * @memberof Content
+   */
+  onKeydownEnter (range, event) {
+    enter(range, event)
+  }
+
+  /**
+   * @description 键盘输入处理
+   * @param {*} range
+   * @param {*} event
+   * @memberof Content
+   */
   onInput (range, event) {
     input(range, event)
   }
+
   /**
-   * 检测光标是否要离开path
+   * @description 检测光标是否要离开path
    * @param {*} path
    * @param {*} range
    * @param {*} direction
-   * @return {*}
+   * @returns {*}  
+   * @memberof Content
    */
   caretWillBeLeaving (path, range, direction) {
     if (direction === 'left' && range.offset <= 1) {
@@ -224,14 +325,101 @@ export default class Content extends Component {
     return direction === 'right' && range.offset === path.len
   }
 
+
   /**
-   * range端点更新
+   * @description range端点更新
    * @param {*} container
    * @param {*} position
    * @param {*} distance
+   * @param {*} newContainer
    * @memberof Content
    */
-  _updatePoints (container, position, distance) {
-    this.$editor.selection.updatePoints(container, position, distance)
+  _updatePoints (container, position, distance, newContainer) {
+    this.$editor.selection.updatePoints(container, position, distance, newContainer)
+  }
+
+
+  /**
+   * @description 获取选中的叶子节点迭代器
+   * @param {*} range
+   * @returns {*}  
+   * @memberof Content
+   */
+  getSeletedPath (range) {
+    let start,
+      end,
+      value,
+      done = false
+    if (range.collapsed) {
+      done = true
+    } else {
+      if (range.startOffset === 0) {
+        start = range.startContainer
+      } else if (range.startOffset === range.startContainer.len) {
+        start = range.startContainer.nextLeaf
+      } else {
+        const startSplits = range.startContainer.split(range.startOffset)
+        this._updatePoints(
+          range.startContainer,
+          range.startOffset + 1,
+          -range.startOffset,
+          startSplits[1]
+        )
+        start = startSplits[1]
+      }
+
+      if (range.endOffset === 0) {
+        end = range.endContainer.prevLeaf
+      } else if (range.endOffset === range.startContainer.len) {
+        end = range.startContainer
+      } else {
+        const endSplits = range.endContainer.split(range.endOffset)
+        this.$editor.selection.updatePoints(
+          range.endContainer,
+          range.endOffset + 1,
+          -range.endOffset,
+          endSplits[1]
+        )
+        end = endSplits[0]
+      }
+    }
+
+    value = start
+    return {
+      length: 0,
+      next: function () {
+        if (!done) {
+          const res = { value, done }
+          done = value === end
+          value = value.nextLeaf
+          this.length++
+          return res
+        } else {
+          return { value: undefined, done }
+        }
+      },
+      [Symbol.iterator]: function () {
+        return this
+      },
+    }
+  }
+
+  /**
+   * @description 格式设置
+   * @param {*} range
+   * @param {*} event
+   * @param {function} callback 格式处理回调
+   * @memberof Content
+   */
+  setFormat (range, event, callback) {
+    if (event.ctrlKey) {
+      event.preventDefault()
+      const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
+      const selectedPath = this.getSeletedPath(range)
+      for (const p of selectedPath) {
+        callback(p.node.formats)
+      }
+      commonPath.component.update()
+    }
   }
 }
