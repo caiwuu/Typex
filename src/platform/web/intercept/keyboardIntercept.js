@@ -10,7 +10,7 @@ export default class KeyboardIntercept {
   _initIframe() {
     this.iframe = document.createElement('iframe')
     this.iframe.classList.add('custom-input-iframe')
-    this.editor.ui.body.appendChild(this.iframe)
+    this.editor.ui.content.appendChild(this.iframe)
     const iframedocument = this.iframe.contentDocument
     const style = iframedocument.createElement('style')
     style.innerHTML = `

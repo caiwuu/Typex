@@ -1,28 +1,7 @@
 import { multiplication } from './utils'
-const setStyle = (dom, style) => {
-  for (const key in style) {
-    dom.style[key] = style[key]
-  }
-}
-const defaultStyle = {}
-export default class Caret {
-  dom = null
-  rect = null
-  constructor(range) {
-    this.range = range
-    this.measure = new Measure()
-    this.dom = document.createElement('span')
-    this.dom.classList.add('custom-caret')
-    this.setStyle(this.dom)
-  }
-  setStyle (style = {}) {
-    const mergeStyle = Object.assign({}, defaultStyle, style)
-    setStyle(this.dom, mergeStyle)
-  }
-  remove () {
-    this.dom.remove()
-  }
-  getRect (range) {
+let getRect
+if (Range.prototype.getClientRects) {
+  getRect = (range) => {
     const nativeRange = document.createRange()
     let rect
     if (range.container.elm.nodeType !== 3) {
@@ -41,13 +20,47 @@ export default class Caret {
       rect = nativeRange.getClientRects()[0]
     }
     nativeRange.setStart(range.container.elm, range.offset)
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    return { x: rect.x, y: rect.y + scrollTop, height: rect.height }
+    const scroll = computeScroll(range.editor.ui.content)
+    const offset = computeOffset(range.editor.ui.content)
+    return {
+      x: rect.x + scroll.x - offset.x,
+      y: rect.y + scroll.y - offset.y,
+      height: rect.height,
+    }
+  }
+} else {
+  getRect = (range) => {
+    const res = new Measure().measure(range.container.elm, range.offset)
+    return res
+  }
+}
+
+const setStyle = (dom, style) => {
+  for (const key in style) {
+    dom.style[key] = style[key]
+  }
+}
+const defaultStyle = {}
+export default class Caret {
+  dom = null
+  rect = null
+  constructor(range) {
+    this.range = range
+    this.dom = document.createElement('span')
+    this.dom.classList.add('custom-caret')
+    this.setStyle(this.dom)
+  }
+  setStyle (style = {}) {
+    const mergeStyle = Object.assign({}, defaultStyle, style)
+    setStyle(this.dom, mergeStyle)
+  }
+  remove () {
+    this.dom.remove()
   }
   update (range, drawCaret = true) {
-    this.rect = this.getRect(range)
+    this.rect = getRect(range)
     if (!drawCaret) return
-    range.editor.ui.body.appendChild(this.dom)
+    range.editor.ui.content.appendChild(this.dom)
     let elm = range.startContainer.elm
     if (!elm) return
     if (!(elm instanceof Element)) {
@@ -56,7 +69,6 @@ export default class Caret {
     const copyStyle = getComputedStyle(elm)
     const caretStyle = {
       top: this.rect.y + 'px',
-      // 光标宽度为2
       left: this.rect.x - 1 + 'px',
       height: this.rect.height + 'px',
       fontSize: copyStyle.fontSize,
@@ -106,7 +118,7 @@ class Measure {
     }
     const copyStyle = getComputedStyle(con)
     const h = multiplication(copyStyle.fontSize, 1.3) / 1
-    const rect = { ...computeOffset(this.dom), height: h }
+    const rect = { x: this.dom.offsetLeft, y: this.dom.offsetTop, height: h || this.dom.offsetHeight }
     this.dom.remove()
     if (container.nodeType === 3 && offset) {
       if (!container.data && container.nextSibling) {
@@ -119,12 +131,22 @@ class Measure {
     return rect
   }
 }
-function computeOffset (dom, res = { x: 0, y: 0, height: null }) {
+function computeOffset (dom, res = { x: 0, y: 0 }) {
   res.height = res.height ?? dom.offsetHeight
   res.x += dom.offsetLeft
   res.y += dom.offsetTop
-  if (dom.offsetParent && dom.offsetParent.tagName !== 'BODY') {
+  if (dom.offsetParent && dom.offsetParent.tagName !== 'HTML') {
     return computeOffset(dom.offsetParent, res)
+  }
+  return res
+
+}
+
+function computeScroll (dom, res = { x: 0, y: 0 }) {
+  res.x += dom.scrollLeft || 0
+  res.y += dom.scrollTop || 0
+  if (dom.parentNode) {
+    return computeScroll(dom.parentNode, res)
   }
   return res
 }
