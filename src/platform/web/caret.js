@@ -50,14 +50,14 @@ export default class Caret {
     this.dom.classList.add('custom-caret')
     this.setStyle(this.dom)
   }
-  setStyle (style = {}) {
+  setStyle(style = {}) {
     const mergeStyle = Object.assign({}, defaultStyle, style)
     setStyle(this.dom, mergeStyle)
   }
-  remove () {
+  remove() {
     this.dom.remove()
   }
-  update (range, drawCaret = true) {
+  update(range, drawCaret = true) {
     this.rect = getRect(range)
     if (!drawCaret) return
     range.editor.ui.content.appendChild(this.dom)
@@ -90,7 +90,7 @@ class Measure {
       return Measure.instance
     }
   }
-  measure (container, offset) {
+  measure(container, offset) {
     // splitText(0)会使原dom销毁造成startContainer向上逃逸
     let temp
     if (container.nodeType === 3) {
@@ -111,14 +111,18 @@ class Measure {
     }
     return this._getRect(container, offset, temp)
   }
-  _getRect (container, offset, temp) {
+  _getRect(container, offset, temp) {
     let con = container
     if (!(container instanceof Element)) {
       con = container.parentNode
     }
     const copyStyle = getComputedStyle(con)
     const h = multiplication(copyStyle.fontSize, 1.3) / 1
-    const rect = { x: this.dom.offsetLeft, y: this.dom.offsetTop, height: h || this.dom.offsetHeight }
+    const rect = {
+      x: this.dom.offsetLeft,
+      y: this.dom.offsetTop,
+      height: h || this.dom.offsetHeight,
+    }
     this.dom.remove()
     if (container.nodeType === 3 && offset) {
       if (!container.data && container.nextSibling) {
@@ -131,7 +135,7 @@ class Measure {
     return rect
   }
 }
-function computeOffset (dom, res = { x: 0, y: 0 }) {
+function computeOffset(dom, res = { x: 0, y: 0 }) {
   res.height = res.height ?? dom.offsetHeight
   res.x += dom.offsetLeft
   res.y += dom.offsetTop
@@ -139,10 +143,9 @@ function computeOffset (dom, res = { x: 0, y: 0 }) {
     return computeOffset(dom.offsetParent, res)
   }
   return res
-
 }
 
-function computeScroll (dom, res = { x: 0, y: 0 }) {
+function computeScroll(dom, res = { x: 0, y: 0 }) {
   res.x += dom.scrollLeft || 0
   res.y += dom.scrollTop || 0
   if (dom.parentNode) {

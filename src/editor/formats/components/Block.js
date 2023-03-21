@@ -36,7 +36,7 @@ export default class Block extends Content {
    * @param {*} range
    * @return {*}
    */
-  contentDelete (commonPath, range) {
+  contentDelete(commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -79,23 +79,27 @@ export default class Block extends Content {
     this.update(commonPath, range)
   }
 
-  onKeydownB (range, event) {
-    this.setFormat(range, event, f => {
+  onKeydownB(range, event) {
+    this.setFormat(range, event, (f) => {
       f.bold = !f.bold
     })
   }
-  onKeydownD (range, event) {
-    this.setFormat(range, event, f => {
+  onKeydownD(range, event) {
+    this.setFormat(range, event, (f) => {
       f.del = !f.del
     })
   }
-  onKeydownS (range, event) {
-    this.setFormat(range, event, f => {
-      f.sup = !f.sup
+  onKeydownS(range, event) {
+    this.setFormat(range, event, (f) => {
+      if (event.shiftKey) {
+        f.sub = !f.sub
+      } else {
+        f.sup = !f.sup
+      }
     })
   }
-  onKeydownU (range, event) {
-    this.setFormat(range, event, f => {
+  onKeydownU(range, event) {
+    this.setFormat(range, event, (f) => {
       f.underline = !f.underline
     })
   }

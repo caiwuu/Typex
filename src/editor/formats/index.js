@@ -88,6 +88,17 @@ const sup = {
     return vn
   },
 }
+const sub = {
+  name: 'sub',
+  type: 'tag',
+  render(vnode) {
+    const vn = <sub></sub>
+    if (vnode) {
+      vnode.children.push(vn)
+    }
+    return vn
+  },
+}
 const table = {
   name: 'table',
   type: 'component',
@@ -133,7 +144,7 @@ const image = {
     return vn
   },
 }
-;[root, bold, image, underline, fontSize, color, paragraph, del, sup, table, row, col].forEach(
+;[root, bold, image, underline, fontSize, color, paragraph, del, sup, sub, table, row, col].forEach(
   (ele) => {
     formater.register(ele)
   }

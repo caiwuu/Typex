@@ -4,7 +4,6 @@ import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
 import { enter } from '../defaultActions/enter'
 
-
 /**
  * @description 内容管理类
  * @export
@@ -23,7 +22,7 @@ export default class Content extends Component {
    * @readonly
    * @memberof Content
    */
-  get contentLength () {
+  get contentLength() {
     return this.$path.len
   }
 
@@ -32,7 +31,7 @@ export default class Content extends Component {
    * @readonly
    * @memberof Content
    */
-  get $path () {
+  get $path() {
     return this.props.path
   }
 
@@ -41,26 +40,25 @@ export default class Content extends Component {
    * @readonly
    * @memberof Content
    */
-  get $editor () {
+  get $editor() {
     return this.props.editor
   }
   /**
    * @description 初始化状态
    * @memberof Content
    */
-  initState () {
+  initState() {
     this.$path._$component = this
   }
-
 
   /**
    * @description 更新状态
    * @param {*} path
    * @param {*} range
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  update (path, range) {
+  update(path, range) {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
@@ -69,7 +67,6 @@ export default class Content extends Component {
     })
   }
 
-
   /**
    * @description 输入处理
    * @param {*} path
@@ -77,7 +74,7 @@ export default class Content extends Component {
    * @param {*} data
    * @memberof Content
    */
-  contentInput (path, range, data) {
+  contentInput(path, range, data) {
     const { offset, endContainer } = range
     path.insertData(offset, data)
     this._updatePoints(endContainer, offset, data.length)
@@ -93,7 +90,7 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  contentDelete (commonPath, range) {
+  contentDelete(commonPath, range) {
     const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -127,10 +124,10 @@ export default class Content extends Component {
    * @param {*} path
    * @param {*} range
    * @param {*} direction
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  caretEnter (path, range, direction) {
+  caretEnter(path, range, direction) {
     if (direction === 'left') {
       let fromPath = this.getPrevLeafPath(path)
       if (!fromPath) return {}
@@ -147,10 +144,10 @@ export default class Content extends Component {
    * @param {*} path
    * @param {*} range
    * @param {*} direction 从哪个方向离开
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  caretLeave (path, range, direction) {
+  caretLeave(path, range, direction) {
     if (direction === 'left') {
       let toPath = this.getPrevLeafPath(path)
       if (!toPath) return {}
@@ -169,7 +166,7 @@ export default class Content extends Component {
    * @param {*} range cursorForward
    * @memberof Content
    */
-  caretForward (path, range) {
+  caretForward(path, range) {
     range.offset < path.len && (range.offset += 1)
   }
   /**
@@ -179,17 +176,17 @@ export default class Content extends Component {
    * @param {*} range 区间
    * @memberof Content
    */
-  caretBackward (path, range) {
+  caretBackward(path, range) {
     range.offset > 0 && (range.offset -= 1)
   }
 
   /**
    * @description 获取上一个叶子
    * @param {*} path
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  getPrevLeafPath (path) {
+  getPrevLeafPath(path) {
     if (!path) return null
     return (path.prevSibling || this.getPrevLeafPath(path.parent))?.lastLeaf
   }
@@ -197,10 +194,10 @@ export default class Content extends Component {
   /**
    * @description  获取下一个叶子
    * @param {*} path
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  getNextLeafPath (path) {
+  getNextLeafPath(path) {
     if (!path) return null
     return (path.nextSibling || this.getNextLeafPath(path.parent))?.firstLeaf
   }
@@ -210,10 +207,10 @@ export default class Content extends Component {
    * @param {*} direction
    * @param {*} range
    * @param {*} event
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  caretMove (direction, range, event) {
+  caretMove(direction, range, event) {
     const path = range.container
     const caretMoveMethod = this[`${direction === 'left' ? 'caretBackward' : 'caretForward'}`]
     const { shiftKey } = event
@@ -239,7 +236,7 @@ export default class Content extends Component {
    * @param {*} event
    * @memberof Content
    */
-  onKeydownArrowLeft (range, event) {
+  onKeydownArrowLeft(range, event) {
     horizontalMove('left', range, event)
   }
 
@@ -249,7 +246,7 @@ export default class Content extends Component {
    * @param {*} event
    * @memberof Content
    */
-  onKeydownArrowRight (range, event) {
+  onKeydownArrowRight(range, event) {
     horizontalMove('right', range, event)
   }
 
@@ -259,7 +256,7 @@ export default class Content extends Component {
    * @param {*} event
    * @memberof Content
    */
-  onKeydownArrowUp (range, event) {
+  onKeydownArrowUp(range, event) {
     verticalMove('up', range, event)
   }
 
@@ -269,7 +266,7 @@ export default class Content extends Component {
    * @param {*} event
    * @memberof Content
    */
-  onKeydownArrowDown (range, event) {
+  onKeydownArrowDown(range, event) {
     verticalMove('down', range, event)
   }
 
@@ -278,7 +275,7 @@ export default class Content extends Component {
    * @param {*} range
    * @memberof Content
    */
-  onKeydownBackspace (range) {
+  onKeydownBackspace(range) {
     del(range, false)
   }
 
@@ -288,7 +285,7 @@ export default class Content extends Component {
    * @param {*} event
    * @memberof Content
    */
-  onKeydownEnter (range, event) {
+  onKeydownEnter(range, event) {
     enter(range, event)
   }
 
@@ -298,7 +295,7 @@ export default class Content extends Component {
    * @param {*} event
    * @memberof Content
    */
-  onInput (range, event) {
+  onInput(range, event) {
     input(range, event)
   }
 
@@ -307,10 +304,10 @@ export default class Content extends Component {
    * @param {*} path
    * @param {*} range
    * @param {*} direction
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  caretWillBeLeaving (path, range, direction) {
+  caretWillBeLeaving(path, range, direction) {
     if (direction === 'left' && range.offset <= 1) {
       let toPath = this.getPrevLeafPath(path)
       if (!toPath) return false
@@ -325,7 +322,6 @@ export default class Content extends Component {
     return direction === 'right' && range.offset === path.len
   }
 
-
   /**
    * @description range端点更新
    * @param {*} container
@@ -334,18 +330,17 @@ export default class Content extends Component {
    * @param {*} newContainer
    * @memberof Content
    */
-  _updatePoints (container, position, distance, newContainer) {
+  _updatePoints(container, position, distance, newContainer) {
     this.$editor.selection.updatePoints(container, position, distance, newContainer)
   }
-
 
   /**
    * @description 获取选中的叶子节点迭代器
    * @param {*} range
-   * @returns {*}  
+   * @returns {*}
    * @memberof Content
    */
-  getSeletedPath (range) {
+  getSeletedPath(range) {
     let start,
       end,
       value,
@@ -370,8 +365,8 @@ export default class Content extends Component {
 
       if (range.endOffset === 0) {
         end = range.endContainer.prevLeaf
-      } else if (range.endOffset === range.startContainer.len) {
-        end = range.startContainer
+      } else if (range.endOffset === range.endContainer.len) {
+        end = range.endContainer
       } else {
         const endSplits = range.endContainer.split(range.endOffset)
         this.$editor.selection.updatePoints(
@@ -411,7 +406,7 @@ export default class Content extends Component {
    * @param {function} callback 格式处理回调
    * @memberof Content
    */
-  setFormat (range, event, callback) {
+  setFormat(range, event, callback) {
     if (event.ctrlKey) {
       event.preventDefault()
       const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
