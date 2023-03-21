@@ -9,7 +9,7 @@ import { Content } from '@/core'
 import Static from './Static'
 
 export default class Image extends Content {
-  render () {
+  render() {
     return (
       // <swapper>
       <div style='display:inline-block'>
@@ -42,31 +42,31 @@ export default class Image extends Content {
     }
     this.update()
   }
-  onAfterUpdate () {
+  onAfterUpdate() {
     this.$editor.selection.updateCaret()
   }
-  contentDelete (path, range) {
+  onContentDelete(path, range) {
     const { endOffset, collapsed } = range
     if (collapsed) {
       if (endOffset > 0) {
         const parent = this.$path.parent.component
         path.delete()
         parent.update()
-        parent.caretEnter(this.$path.parent, range, false)
+        parent.onCaretEnter(this.$path.parent, range, false)
       } else {
         const prevSibling = this.getPrevLeafPath(path)
         if (prevSibling) {
-          prevSibling.component.caretEnter(prevSibling, range, false)
+          prevSibling.component.onCaretEnter(prevSibling, range, false)
         }
       }
     }
   }
-  caretEnter (path, range, direction) {
+  onCaretEnter(path, range, direction) {
     console.log(path, this.$path)
     range.set(path, direction === 'left' ? 0 : 1)
     return { path, range }
   }
-  get contentLength () {
+  get contentLength() {
     return 1
   }
 }

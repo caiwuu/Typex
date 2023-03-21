@@ -29,25 +29,27 @@ const mergeBlock = (o, n, shouldUpdates = []) => {
   }
 }
 export default class Block extends Content {
-  _type = 'block'
+  get _type() {
+    return 'block'
+  }
   /**
    * @desc: 删除动作
    * @param {*} commonPath
    * @param {*} range
    * @return {*}
    */
-  contentDelete(commonPath, range) {
+  onContentDelete(commonPath, range) {
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
         // 执行删除
-        startContainer.contentDelete(endOffset, 1)
+        startContainer.textDelete(endOffset, 1)
         if (this.contentLength === 0) {
           // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
           range.setStart(startContainer, 0)
         } else if (startContainer.len === 0) {
-          const { path: prevSibling } = this.caretLeave(startContainer, range, 'left')
+          const { path: prevSibling } = this.onCaretLeave(startContainer, range, 'left')
           if (!prevSibling) return
           if (prevSibling.blockComponent !== startContainer.blockComponent) {
             range.setStart(startContainer, 0)
@@ -58,7 +60,7 @@ export default class Block extends Content {
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
-        const { path: prevSibling } = this.caretLeave(startContainer, range, 'left')
+        const { path: prevSibling } = this.onCaretLeave(startContainer, range, 'left')
         if (!prevSibling) return
         if (!this.contentLength) {
           const parent = this.$path.parent.component
@@ -68,10 +70,10 @@ export default class Block extends Content {
         mergeBlock(startContainer, prevSibling)
       }
     } else if (startContainer === endContainer) {
-      startContainer.contentDelete(endOffset, endOffset - startOffset)
+      startContainer.textDelete(endOffset, endOffset - startOffset)
     } else {
-      startContainer.contentDelete(startContainer.len, startContainer.len - startOffset)
-      endContainer.contentDelete(endOffset, endOffset)
+      startContainer.textDelete(startContainer.len, startContainer.len - startOffset)
+      endContainer.textDelete(endOffset, endOffset)
       commonPath.deleteBetween(startContainer, endContainer)
       mergeBlock(endContainer, startContainer)
     }

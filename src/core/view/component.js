@@ -10,14 +10,12 @@ import { getVnOrIns } from '../mappings'
 import patch from './vdom/patch'
 import enqueueSetState from './vdom/enqueueSetState'
 
-
 /**
  * @description 组件类
  * @export
  * @class Component
  */
 export default class Component {
-
   /**
    * @description 是否是组件
    * @static
@@ -28,6 +26,7 @@ export default class Component {
   /**
    * @description 状态
    * @memberof Component
+   * @instance
    */
   state = {}
 
@@ -35,6 +34,7 @@ export default class Component {
    * @description nextTick
    * @param {function} fn
    * @memberof Component
+   * @instance
    */
   $nextTick = (fn) => {
     return Promise.resolve().then(fn)
@@ -47,26 +47,29 @@ export default class Component {
    * @description 渲染函数
    * @param {*} h
    * @memberof Component
+   * @instance
    */
-  render (h) {
+  render(h) {
     throw Error('Component does not implement a required interface "render"')
   }
 
   /**
    * @description 设置状态，异步更新
    * @param {*} [partialState={}]
-   * @returns {*}  
+   * @returns {*}
    * @memberof Component
+   * @instance
    */
-  setState (partialState = {}) {
+  setState(partialState = {}) {
     return enqueueSetState(partialState, this)
   }
 
   /**
    * @description 同步更新
    * @memberof Component
+   * @instance
    */
-  syncUpdate () {
+  syncUpdate() {
     const oldVn = getVnOrIns(this)
     const newVn = this.render(h)
     patch(newVn, oldVn)

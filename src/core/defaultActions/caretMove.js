@@ -6,16 +6,15 @@
  * @LastEditTime: 2022-09-23 13:57:58
  */
 
-
 /**
  * @description 水平移动
  * @export
  * @param {*} direction
  * @param {*} range
  * @param {*} event
- * @returns {*}  
+ * @returns {*}
  */
-export function horizontalMove (direction, range, event) {
+export function horizontalMove(direction, range, event) {
   // 拼音输入法聚合输入的时候禁止光标的移动
   if (range.inputState.isComposing) return
   if (!range.collapsed && !event.shiftKey) {
@@ -26,7 +25,7 @@ export function horizontalMove (direction, range, event) {
   if (!range.collapsed && !shiftKey) {
     range.collapse(direction === 'left')
   } else {
-    return range.container.component.caretMove(direction, range, event)
+    return range.container.component.onCaretMove(direction, range, event)
   }
 }
 /**
@@ -36,7 +35,7 @@ export function horizontalMove (direction, range, event) {
  * @param {*} direction
  * @param {*} shiftKey
  */
-export function verticalMove (direction, range, event) {
+export function verticalMove(direction, range, event) {
   if (range.inputState.isComposing) return
   if (!range.collapsed && !event.shiftKey) {
     range.collapse(direction === 'up')
@@ -55,7 +54,7 @@ export function verticalMove (direction, range, event) {
  * @param {*} editor
  * @returns {Boolean}
  */
-function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo, direction) {
+function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, direction) {
   // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
   if (currCaretInfo.blockComponent !== prevCaretInfo.blockComponent) {
     return false
@@ -63,8 +62,10 @@ function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo, direction) 
   // 标识光标是否在同一行移动
   let sameLine = true
   // 判断自动折行(非结构层面的换行,如一行文字太长被浏览器自动换行的情况)
-  if (direction === 'left' && currCaretInfo.x > prevCaretInfo.x ||
-    direction === 'right' && currCaretInfo.x < prevCaretInfo.x) {
+  if (
+    (direction === 'left' && currCaretInfo.x > prevCaretInfo.x) ||
+    (direction === 'right' && currCaretInfo.x < prevCaretInfo.x)
+  ) {
     sameLine = false
   }
   //光标Y坐标和参考点相同说明光标还在本行，最理想的情况放在最后判断
@@ -85,7 +86,7 @@ function isSameLine (initialCaretInfo, prevCaretInfo, currCaretInfo, direction) 
  * @returns {*}
  */
 
-function loop (range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, event) {
+function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = false, event) {
   if (range.collapsed) {
     range.d = 0
   }
