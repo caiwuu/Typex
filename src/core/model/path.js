@@ -7,7 +7,18 @@ import { computeLen, positionCompare, isPrimitive } from '../utils'
  * @class Path
  */
 export class Path {
+  /**
+   * @description 标记删除
+   * @protected
+   * @memberof Path
+   */
   _shouldDelete = false
+
+  /**
+   * @description 标记重建
+   * @protected
+   * @memberof Path
+   */
   _shouldRebuild = false
   constructor({ node, parent, position, prevSibling, nextSibling, children }) {
     this.node = node
@@ -19,7 +30,7 @@ export class Path {
   }
 
   /**
-   * @description 所属组件实例
+   * @description path所属组件的实例
    * @readonly
    * @memberof Path
    */
@@ -28,7 +39,7 @@ export class Path {
   }
 
   /**
-   * @description 内容长度
+   * @description path内容长度
    * @readonly
    * @memberof Path
    */
@@ -37,7 +48,7 @@ export class Path {
   }
 
   /**
-   * @description 对应的真实dom
+   * @description path对应的真实dom
    * @readonly
    * @memberof Path
    */
@@ -58,7 +69,7 @@ export class Path {
   }
 
   /**
-   * @description 最近块级组件实例
+   * @description path所属的块级组件实例
    * @readonly
    * @memberof Path
    */
@@ -68,7 +79,7 @@ export class Path {
   }
 
   /**
-   * @description 对应的虚拟dom
+   * @description path对应的虚拟dom
    * @readonly
    * @memberof Path
    */
@@ -112,7 +123,7 @@ export class Path {
   }
 
   /**
-   * @description 索引
+   * @description 同级索引
    * @readonly
    * @memberof Path
    */
@@ -139,9 +150,9 @@ export class Path {
   }
 
   /**
-   * @description 内容插入
-   * @param {*} pos
-   * @param {*} data
+   * @description 文本插入
+   * @param {String} pos 从根节点组成的索引链 如'0-0-1-1-2'
+   * @param {String} data 插入字符
    * @memberof Path
    */
   insertData(pos, data) {
@@ -150,12 +161,12 @@ export class Path {
 
   /**
    * @description 内容删除
-   * @param {*} pos
-   * @param {*} count
+   * @param {Number} offset 偏移量,开始删除的位置
+   * @param {Number} count  删除的字符数量
    * @memberof Path
    */
-  textDelete(pos, count) {
-    this.node.data = this.node.data.slice(0, pos - count) + this.node.data.slice(pos)
+  textDelete(offset, count) {
+    this.node.data = this.node.data.slice(0, offset - count) + this.node.data.slice(offset)
   }
 
   /**
@@ -176,8 +187,8 @@ export class Path {
     this.node.formats = formats
   }
   /**
-   * @description 设置格式
-   * @param {*} formats
+   * @description 设置格式(只会merge格式，不会强制覆盖其他格式)
+   * @param {Object} formats 格式
    * @memberof Path
    */
   setFormat(formats) {
@@ -185,8 +196,8 @@ export class Path {
   }
   /**
    * @description path分割
-   * @param {*} index
-   * @returns {*}
+   * @param {Number} index 分隔位置
+   * @returns {[Path]} path列表
    * @memberof Path
    */
   split(index) {
@@ -229,8 +240,9 @@ export class Path {
 
   /**
    * @description 位置比较
-   * @param {*} path
-   * @returns {*}
+   * @example a.positionCompare(b),0 a===b;-1 a<b; 1 a>b
+   * @param {Path} path
+   * @returns {Number}
    * @memberof Path
    */
   positionCompare(path) {
