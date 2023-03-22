@@ -3,13 +3,12 @@ import emit from 'mitt'
 import Selection from './selection'
 import { usePlugin } from '.'
 
-
 /**
  * @description 内核初始化
  * @export
  * @param {*} ops
  */
-export default function initCore (ops) {
+export default function initCore(ops) {
   const { editor, formater, platform } = ops
   editor.$eventBus = emit()
   formater.inject('editor', editor)
@@ -20,7 +19,7 @@ export default function initCore (ops) {
   })
   initDispatcher(editor)
 }
-function titleCase (str) {
+function titleCase(str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
 
@@ -28,7 +27,7 @@ function titleCase (str) {
  * @description 事件拦截到对应的组件
  * @param {*} editor
  */
-function initDispatcher (editor) {
+function initDispatcher(editor) {
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
       const count = plugins.platform.nativeSelection.rangeCount
@@ -60,6 +59,7 @@ function initDispatcher (editor) {
         eventHandle(range, event)
       }
     })
+    // TOTO 此处需要性能优化
     Promise.resolve().then(() => {
       editor.selection.updateCaret()
     })

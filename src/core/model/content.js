@@ -230,6 +230,25 @@ export default class Content extends Component {
   }
 
   /**
+   * @description 换行
+   * @param {Range} range
+   * @param {event} event
+   * @memberof Content
+   */
+  onLinefeed(range, event) {
+    event.preventDefault()
+    if (!range.collapsed) {
+      del(range)
+    }
+    const startSplits = range.container.split(range.offset)
+    const cloneParent = range.container.parent.cloneMark()
+    startSplits[1].moveTo(cloneParent)
+    cloneParent.insertAfter(range.container.parent)
+    cloneParent.parent.component.update()
+    range.set(startSplits[1], 0)
+    range.collapse(true)
+  }
+  /**
    * @description 键盘左箭头处理
    * @param {*} range
    * @param {*} event
@@ -291,7 +310,7 @@ export default class Content extends Component {
    * @instance
    */
   onKeydownEnter(range, event) {
-    enter(range, event)
+    this.onLinefeed(range, event)
   }
 
   /**

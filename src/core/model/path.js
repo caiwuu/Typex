@@ -197,7 +197,7 @@ export class Path {
   /**
    * @description path分割
    * @param {Number} index 分隔位置
-   * @returns {[Path]} path列表
+   * @returns {Path[]} path列表
    * @memberof Path
    */
   split(index) {
@@ -239,8 +239,12 @@ export class Path {
   }
 
   /**
-   * @description 位置比较
-   * @example a.positionCompare(b),0 a===b;-1 a<b; 1 a>b
+   * @description - 位置比较
+   * @example
+   * res = a.positionCompare(b),
+   * res=-1: a<b;
+   * res=0: a===b;
+   * res=1: a>b
    * @param {Path} path
    * @returns {Number}
    * @memberof Path
@@ -251,8 +255,8 @@ export class Path {
 
   /**
    * @description 是否源于 xxx
-   * @param {*} path
-   * @returns {*}
+   * @param {Path} path
+   * @returns {Boolean}
    * @memberof Path
    */
   originOf(path) {
@@ -261,7 +265,7 @@ export class Path {
 
   /**
    * @description 插入到path前面
-   * @param {*} path
+   * @param {Path} path
    * @memberof Path
    */
   insertBefore(path) {
@@ -272,7 +276,7 @@ export class Path {
 
   /**
    * @description 插入到path后面
-   * @param {*} path
+   * @param {Path} path
    * @memberof Path
    */
   insertAfter(path) {
@@ -282,7 +286,7 @@ export class Path {
   }
   /**
    * @description 移动到path的children
-   * @param {*} path
+   * @param {Path} path
    * @memberof Path
    */
   moveTo(path) {
@@ -293,7 +297,7 @@ export class Path {
 
   /**
    * @description 插入到path前面
-   * @param {*} path
+   * @param {Path} path
    * @memberof Path
    */
   insertChildrenBefore(path) {
@@ -304,7 +308,7 @@ export class Path {
 
   /**
    * @description 插入到path后面
-   * @param {*} path
+   * @param {Path} path
    * @memberof Path
    */
   insertChildrenAfter(path) {
@@ -314,9 +318,9 @@ export class Path {
     path.parent.rebuild()
   }
   /**
-   * 删除两个节点之间的所有节点
-   * @param {*} startPath
-   * @param {*} endPath
+   * @description 删除两个节点之间的所有节点 不包含开始结束节点
+   * @param {Path} startPath 开始节点
+   * @param {Path} endPath 结束节点
    * @memberof Path
    */
   deleteBetween(startPath, endPath) {
@@ -380,24 +384,20 @@ export class Path {
 /**
  * @description 创建path
  * @export
- * @param {*} current
- * @param {*} [parent=null]
- * @param {*} [prevSibling=null]
- * @param {*} [nextSibling=null]
- * @param {number} [index=0]
- * @returns {*}
+ * @param {Object} node 标记
+ * @param node.data {String|Object}
+ * @param node.formats {Object}
+ * @param {Path} [parent=null]
+ * @param {Path} [prevSibling=null]
+ * @param {Path} [nextSibling=null]
+ * @param {Number} [index=0]
+ * @returns {Path}
  */
-export function createPath(
-  current,
-  parent = null,
-  prevSibling = null,
-  nextSibling = null,
-  index = 0
-) {
+export function createPath(node, parent = null, prevSibling = null, nextSibling = null, index = 0) {
   const position = parent ? parent.position + '-' + index : '0'
-  current.position = position
+  node.position = position
   const config = {
-    node: current,
+    node: node,
     parent: parent,
     position: position,
     prevSibling: prevSibling,
@@ -405,9 +405,9 @@ export function createPath(
     children: [],
   }
   const path = new Path(config)
-  if (current.data.marks) {
+  if (node.data.marks) {
     let currPath = null
-    current.data.marks.reduce((prevPath, currMark, index) => {
+    node.data.marks.reduce((prevPath, currMark, index) => {
       currPath = createPath(currMark, path, prevPath, null, index)
       if (prevPath) {
         prevPath.nextSibling = currPath

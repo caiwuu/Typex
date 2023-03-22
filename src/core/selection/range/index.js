@@ -143,7 +143,7 @@ export default class Range {
       this.startContainer = this.endContainer
     }
     this.d = 0
-    this.editor.selection.drawRangeBg()
+    // this.editor.selection.drawRangeBg()
   }
 
   /**
