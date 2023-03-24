@@ -5,37 +5,30 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-31 17:13:41
  */
-import { createPath, queryCommonPath, queryPath, Formater, Content, Path } from './model'
-import Selection from './selection'
-import { createRef, createVnode, patch, Component, insertedInsQueue } from './view'
-import * as utils from './utils.js'
-import { setVnElm, setVnIns, setVnPath, getVnOrElm, getVnOrPath, getVnOrIns } from './mappings'
-import plugins from './plugins'
+import { usePlugin } from './pluginContext'
 import initCore from './initCore'
-const core = {
-  createPath,
-  queryCommonPath,
-  queryPath,
-  Formater,
-  Content,
-  Path,
-  Selection,
-  createRef,
-  createVnode,
-  patch,
-  Component,
-  insertedInsQueue,
-  utils,
-  setVnElm,
-  setVnIns,
-  setVnPath,
-  getVnOrElm,
-  getVnOrPath,
-  getVnOrIns,
-}
-const usePlugin = (plugin) => {
-  return plugin.install(plugins, core)
-}
+import core from './core'
+
+const createPath = core.createPath,
+  queryCommonPath = core.queryCommonPath,
+  queryPath = core.queryPath,
+  Formater = core.Formater,
+  Content = core.Content,
+  Block = core.Block,
+  Path = core.Path,
+  Selection = core.Selection,
+  createRef = core.createRef,
+  createVnode = core.createVnode,
+  patch = core.patch,
+  Component = core.Component,
+  insertedInsQueue = core.insertedInsQueue,
+  utils = core.utils,
+  setVnElm = core.setVnElm,
+  setVnIns = core.setVnIns,
+  setVnPath = core.setVnPath,
+  getVnOrElm = core.getVnOrElm,
+  getVnOrPath = core.getVnOrPath,
+  getVnOrIns = core.getVnOrIns
 
 export {
   createPath,
@@ -43,6 +36,7 @@ export {
   queryPath,
   Formater,
   Content,
+  Block,
   Path,
   Selection,
   createRef,

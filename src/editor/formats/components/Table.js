@@ -7,7 +7,7 @@
  */
 import { createRef } from '@/core'
 import formater from '..'
-import Block from './Block'
+import { Block } from '@/core'
 export class Table extends Block {
   render() {
     return (

@@ -1,7 +1,7 @@
-import plugins from './plugins'
+import pluginContext from './pluginContext'
 import emit from 'mitt'
 import Selection from './selection'
-import { usePlugin } from '.'
+import { usePlugin } from './pluginContext'
 
 /**
  * @description 内核初始化
@@ -30,9 +30,9 @@ function titleCase(str) {
 function initDispatcher(editor) {
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
-      const count = plugins.platform.nativeSelection.rangeCount
+      const count = pluginContext.platform.nativeSelection.rangeCount
       for (let i = 0; i < count; i++) {
-        const nativeRange = plugins.platform.nativeSelection.getRangeAt(i)
+        const nativeRange = pluginContext.platform.nativeSelection.getRangeAt(i)
         nativeRange.collapse(true)
       }
       editor.selection.updateRanges(event.altKey)

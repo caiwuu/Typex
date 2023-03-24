@@ -1,11 +1,11 @@
 import * as web from './web'
-import context from './context'
+import coreContext from './coreContext'
 const platform = {
   ...web,
 }
-platform.install = (plugins, core) => {
-  context.core = core
-  plugins.platform = web
+platform.install = (pluginContext, core) => {
+  coreContext.core = core
+  pluginContext.platform = web
   return platform.initIntercept
 }
 export default platform

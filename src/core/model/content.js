@@ -2,7 +2,6 @@ import Component from '../view/component'
 import { horizontalMove, verticalMove } from '../defaultActions/caretMove'
 import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
-import { enter } from '../defaultActions/enter'
 
 /**
  * @description 内容管理类

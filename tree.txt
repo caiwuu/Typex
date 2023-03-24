@@ -2,6 +2,7 @@ src
 ├─index.js
 ├─style.styl
 ├─platform
+|    ├─coreContext.js
 |    ├─index.js
 |    ├─web
 |    |  ├─caret.js
@@ -20,30 +21,31 @@ src
 |    |  |     ├─index.js
 |    |  |     ├─keyboardIntercept.js
 |    |  |     └mouseIntercept.js
-├─modelTestDemo
-|       ├─index.js
-|       ├─colorPicker
-|       |      ├─hue.js
-|       |      ├─index.js
-|       |      ├─palette.js
-|       |      └utils.js
 ├─editor
 |   ├─data.js
 |   ├─index.js
 |   ├─mount.js
+|   ├─toolBar
+|   |    ├─iconfont.js
+|   |    ├─index.js
+|   |    └toolBar.styl
 |   ├─formats
 |   |    ├─index.js
 |   |    ├─components
 |   |    |     ├─Block.js
 |   |    |     ├─Image.js
+|   |    |     ├─index.js
 |   |    |     ├─Inline.js
 |   |    |     ├─Paragraph.js
 |   |    |     ├─Root.js
-|   |    |     ├─Table.js
-|   |    |     └index.js
+|   |    |     ├─Static.js
+|   |    |     └Table.js
 ├─core
+|  ├─core.js
 |  ├─index.js
+|  ├─initCore.js
 |  ├─mappings.js
+|  ├─pluginContext.js
 |  ├─utils.js
 |  ├─view
 |  |  ├─component.js
@@ -58,13 +60,16 @@ src
 |  |     ├─style.css
 |  |     ├─range
 |  |     |   └index.js
+|  ├─ot
+|  | └operation.js
 |  ├─model
 |  |   ├─content.js
 |  |   ├─formater.js
 |  |   ├─index.js
 |  |   └path.js
-|  ├─actions
-|  |    ├─caretMove.js
-|  |    ├─delete.js
-|  |    ├─index.js
-|  |    └insert.js
+|  ├─history
+|  |    └index.js
+|  ├─defaultActions
+|  |       ├─caretMove.js
+|  |       ├─delete.js
+|  |       └input.js

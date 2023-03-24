@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-14 16:55:56
  */
-import plugins from '@/core/plugins'
+import pluginContext from '@/core/pluginContext'
 
 /**
  * @description 选区范围类
@@ -27,7 +27,7 @@ export default class Range {
     this.startOffset = startOffset
     this.editor = editor
     this.d = d
-    this.caret = new plugins.platform.Caret(this)
+    this.caret = new pluginContext.platform.Caret(this)
   }
 
   /**

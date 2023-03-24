@@ -53,7 +53,7 @@
       },
       "add_scripts": "function foo(){console.log('foo')}",
 
-      "footer": "This is footer",
+      "footer": "<div style='font-size: 16px;color: #ff6c6c;text-align:center'>Typex 欢迎各位对编辑器感兴趣的同学加入 QQ群:616405713</div>",
 
       "exclude_inherited": true,
 

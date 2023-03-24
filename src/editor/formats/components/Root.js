@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-11-22 16:21:46
  */
 import formater from '../index'
-import Block from './Block'
+import { Block } from '@/core'
 // 根组件
 export default class Root extends Block {
   render() {

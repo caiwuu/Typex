@@ -8,3 +8,4 @@
 export { createPath, queryPath, queryCommonPath, Path } from './path'
 export { default as Formater } from './formater'
 export { default as Content } from './content'
+export { default as Block } from './block'

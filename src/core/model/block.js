@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-11-22 16:20:35
  */
-import { Content } from '@/core'
+import Content from './content'
 const mergeBlock = (o, n, shouldUpdates = []) => {
   const oBlock = o.blockComponent
   if (o.blockComponent !== n.blockComponent) {

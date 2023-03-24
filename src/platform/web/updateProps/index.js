@@ -2,7 +2,7 @@ import { attributesModule } from './modules/attributes'
 import { listenersModule } from './modules/listeners'
 import { classesModule } from './modules/classes'
 import { stylesModule } from './modules/styles'
-import context from '../../context'
+import coreContext from '../../coreContext'
 /**
  * @desc: 更新dom属性
  * @param {*} vnode
@@ -11,7 +11,7 @@ import context from '../../context'
  */
 export default function updateProps(vnode, oldVnode) {
   if (typeof vnode.type === 'function') return
-  const elm = context.core.getVnOrElm(vnode)
+  const elm = coreContext.core.getVnOrElm(vnode)
   if (vnode.type === 'text') {
     if (vnode.children !== oldVnode.children) {
       elm.data = vnode.children

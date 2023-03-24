@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-11-22 16:21:40
  */
 import formater from '../index'
-import Block from './Block'
+import { Block } from '@/core'
 import Static from './Static'
 export default class Paragraph extends Block {
   render() {

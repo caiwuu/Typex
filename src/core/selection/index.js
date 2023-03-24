@@ -1,4 +1,4 @@
-import plugins from '@/core/plugins'
+import pluginContext from '@/core/pluginContext'
 import Range from './range'
 
 /**
@@ -8,7 +8,7 @@ import Range from './range'
  */
 export default class Selection {
   ranges = []
-  nativeSelection = plugins.platform.nativeSelection
+  nativeSelection = pluginContext.platform.nativeSelection
   constructor(editor) {
     this.editor = editor
   }
