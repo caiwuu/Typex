@@ -13,12 +13,12 @@ import ToolBar from './toolBar'
  * @param {*} h
  * @return {*}
  */
-function renderRoot(editor, contentRef) {
+function renderRoot (editor, contentRef) {
   return (
     <div class='editor-wrappe'>
       <ToolBar tools={[...editor.toolBarOption]}></ToolBar>
       <div id='editor-content' style='position:relative' ref={contentRef}>
-        {formater.render(editor.$path)}
+        {formater.renderRoot(editor.$path)}
       </div>
     </div>
   )
@@ -29,7 +29,7 @@ function renderRoot(editor, contentRef) {
  * @param {*} editor
  * @return {*}
  */
-export default function mount(id) {
+export default function mount (id) {
   this.ui.body = document.getElementById(id)
   const mountDom = document.createElement('div')
   const contentRef = createRef()
@@ -38,6 +38,5 @@ export default function mount(id) {
   formater.editor = this
 
   patch(renderRoot(this, contentRef, h), mountDom)
-  console.log(contentRef.current)
   this.ui.content = contentRef.current
 }

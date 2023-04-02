@@ -1,5 +1,5 @@
 import { getVnOrElm, getVnOrPath, getVnOrIns } from '../mappings'
-import { computeLen, positionCompare, isPrimitive } from '../utils'
+import { computeLen, typeOf, positionCompare, isPrimitive } from '../utils'
 
 /**
  * @description 路径类
@@ -34,7 +34,8 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get component() {
+  get component () {
+    console.log("component");
     return this._$component || this.parent.component
   }
 
@@ -43,7 +44,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get len() {
+  get len () {
     return computeLen(this)
   }
 
@@ -52,7 +53,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get elm() {
+  get elm () {
     if (typeof this.vn.type === 'function') {
       return getVnOrElm(getVnOrIns(this.vn.ins))
     }
@@ -64,8 +65,8 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get pathType() {
-    return typeof this.node.data === 'string' ? 3 : 1
+  get dataType () {
+    return typeOf(this.node.data)
   }
 
   /**
@@ -73,7 +74,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get blockComponent() {
+  get blockComponent () {
     if (this.component._type === 'block') return this.component
     return this.parent.blockComponent
   }
@@ -83,7 +84,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get vn() {
+  get vn () {
     return getVnOrPath(this)
   }
 
@@ -92,7 +93,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get isLeaf() {
+  get isLeaf () {
     return this.children.length === 0
   }
 
@@ -101,7 +102,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get firstLeaf() {
+  get firstLeaf () {
     let path = this
     while (path.children && path.children.length) {
       path = path.children[0]
@@ -114,7 +115,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get lastLeaf() {
+  get lastLeaf () {
     let path = this
     while (path.children && path.children.length) {
       path = path.children[path.children.length - 1]
@@ -127,7 +128,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get index() {
+  get index () {
     return this.position.split('-').slice(-1)[0] / 1
   }
 
@@ -136,7 +137,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get prevLeaf() {
+  get prevLeaf () {
     return (this.prevSibling || this.parent?.prevLeaf)?.lastLeaf
   }
 
@@ -145,7 +146,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get nextLeaf() {
+  get nextLeaf () {
     return (this.nextSibling || this.parent?.nextLeaf)?.firstLeaf
   }
 
@@ -155,7 +156,7 @@ export class Path {
    * @param {String} data 插入字符
    * @memberof Path
    */
-  insertData(pos, data) {
+  insertData (pos, data) {
     this.node.data = this.node.data.slice(0, pos) + data + this.node.data.slice(pos)
   }
 
@@ -165,7 +166,7 @@ export class Path {
    * @param {Number} count  删除的字符数量
    * @memberof Path
    */
-  textDelete(offset, count) {
+  textDelete (offset, count) {
     this.node.data = this.node.data.slice(0, offset - count) + this.node.data.slice(offset)
   }
 
@@ -173,7 +174,7 @@ export class Path {
    * @description 清除格式
    * @memberof Path
    */
-  clearFormat() {
+  clearFormat () {
     this.node.formats = {}
   }
 
@@ -182,7 +183,7 @@ export class Path {
    * @param {*} [{ data = '', formats = {} }={}]
    * @memberof Path
    */
-  setNode({ data = '', formats = {} } = {}) {
+  setNode ({ data = '', formats = {} } = {}) {
     this.node.data = data
     this.node.formats = formats
   }
@@ -191,7 +192,7 @@ export class Path {
    * @param {Object} formats 格式
    * @memberof Path
    */
-  setFormat(formats) {
+  setFormat (formats) {
     Object.assign(this.node.formats, formats)
   }
   /**
@@ -200,15 +201,26 @@ export class Path {
    * @returns {Path[]} path列表
    * @memberof Path
    */
-  split(index) {
-    if (!this.isLeaf) throw 'Non-leaf nodes are indivisible'
-    const newPath = createPath({
-      data: this.node.data.slice(index),
-      formats: { ...this.node.formats },
-    })
-    this.textDelete(this.len, this.len - index)
-    newPath.insertAfter(this)
-    return [this, newPath]
+  split (index) {
+    if (this.isLeaf) {
+      const newPath = createPath({
+        data: this.node.data.slice(index),
+        formats: { ...this.node.formats },
+      })
+      this.textDelete(this.len, this.len - index)
+      newPath.insertAfter(this)
+      return [this, newPath]
+    } else {
+      const newPath = createPath({
+        data: [],
+        formats: { ...this.node.formats },
+      })
+      this.children.slice(index).forEach(path => {
+        path.moveTo(newPath)
+      })
+      newPath.insertAfter(this)
+      return [this, newPath]
+    }
   }
 
   /**
@@ -216,24 +228,24 @@ export class Path {
    * @returns {Path}
    * @memberof Path
    */
-  cloneMark() {
+  cloneMark () {
     return createPath({
-      data: isPrimitive(this.node.data) ? '' : this.node.data.marks ? { marks: [] } : {},
+      data: isPrimitive(this.node.data) ? '' : this.node.data ? [] : {},
       formats: { ...this.node.formats },
     })
   }
   /**
    * @description path删除
-   * @param {boolean} [notEmpty=false]
+   * @param {boolean} [delEmptyParent=false]
    * @memberof Path
    */
-  delete(notEmpty = false) {
+  delete (delEmptyParent = false) {
     if (!this.parent) {
       return
     }
     this._shouldDelete = true
     this.parent.rebuild()
-    if (notEmpty && !this.parent.len) {
+    if (delEmptyParent && !this.parent.len) {
       this.parent.delete(true)
     }
   }
@@ -249,7 +261,7 @@ export class Path {
    * @returns {Number}
    * @memberof Path
    */
-  positionCompare(path) {
+  positionCompare (path) {
     return positionCompare(this, path)
   }
 
@@ -259,7 +271,7 @@ export class Path {
    * @returns {Boolean}
    * @memberof Path
    */
-  originOf(path) {
+  originOf (path) {
     return this.position.includes(path.position + '-')
   }
 
@@ -268,7 +280,7 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertBefore(path) {
+  insertBefore (path) {
     path.parent.children.splice(path.index, 0, this)
     this.delete(true)
     path.parent.rebuild()
@@ -279,7 +291,7 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertAfter(path) {
+  insertAfter (path) {
     path.parent.children.splice(path.index + 1, 0, this)
     this.delete(true)
     path.parent.rebuild()
@@ -289,7 +301,7 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  moveTo(path) {
+  moveTo (path) {
     path.children.push(this)
     this.delete(true)
     path.rebuild()
@@ -300,7 +312,7 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertChildrenBefore(path) {
+  insertChildrenBefore (path) {
     path.parent.children.splice(path.index, 0, ...this.children)
     this.delete(true)
     path.parent.rebuild()
@@ -311,7 +323,7 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertChildrenAfter(path) {
+  insertChildrenAfter (path) {
     path.parent.children.splice(path.index + 1, 0, ...this.children)
     this.delete(true)
     if (path.len === 0) path.delete(true)
@@ -323,7 +335,7 @@ export class Path {
    * @param {Path} endPath 结束节点
    * @memberof Path
    */
-  deleteBetween(startPath, endPath) {
+  deleteBetween (startPath, endPath) {
     const pathsToRebuild = []
     if (this === startPath || this === endPath || startPath === endPath) return
     const traverse = (path) => {
@@ -347,7 +359,8 @@ export class Path {
    * @description 重构链表树
    * @memberof Path
    */
-  rebuild() {
+  rebuild () {
+    if (this.dataType !== 'Array') return
     this._shouldRebuild = false
     let cachePath = null
     this.children = this.children.filter((ele) => {
@@ -358,12 +371,12 @@ export class Path {
       }
     })
     // 为了保持marks索引，使用length = 0来清空数组
-    if (this.node.data.marks) this.node.data.marks.length = 0
+    this.node.data.length = 0
     this.children.forEach((path, index) => {
       // 更新父级
       path.parent = this
       // 同步mark子节点
-      this.node.data.marks.push(path.node)
+      this.node.data.push(path.node)
       // 重新维护链表结构
       path.prevSibling = cachePath
       if (cachePath) {
@@ -393,7 +406,7 @@ export class Path {
  * @param {Number} [index=0]
  * @returns {Path}
  */
-export function createPath(node, parent = null, prevSibling = null, nextSibling = null, index = 0) {
+export function createPath (node, parent = null, prevSibling = null, nextSibling = null, index = 0) {
   const position = parent ? parent.position + '-' + index : '0'
   node.position = position
   const config = {
@@ -405,9 +418,9 @@ export function createPath(node, parent = null, prevSibling = null, nextSibling 
     children: [],
   }
   const path = new Path(config)
-  if (node.data.marks) {
+  if (node.data) {
     let currPath = null
-    node.data.marks.reduce((prevPath, currMark, index) => {
+    node.data.reduce?.((prevPath, currMark, index) => {
       currPath = createPath(currMark, path, prevPath, null, index)
       if (prevPath) {
         prevPath.nextSibling = currPath
@@ -425,7 +438,7 @@ export function createPath(node, parent = null, prevSibling = null, nextSibling 
  * @param {*} path
  * @returns {*}
  */
-function queryRootPath(path) {
+function queryRootPath (path) {
   while (path.parent) {
     path = path.parent
   }
@@ -437,7 +450,7 @@ function queryRootPath(path) {
  * @param {path} path
  * @return {path}
  */
-export function queryCommonPath(path1, path2) {
+export function queryCommonPath (path1, path2) {
   if (path1 === path2) return path1
   if (path1.position === '0') return path1
   if (path2.position === '0') return path2
@@ -460,7 +473,7 @@ export function queryCommonPath(path1, path2) {
  * @param {path} path
  * @return {path}
  */
-export function queryPath(target, path) {
+export function queryPath (target, path) {
   if (target instanceof Path) return target
   if (target.nodeType) return queryPathByElm(target)
   if (target._isVnode) return queryPathByVn(target)
@@ -473,7 +486,7 @@ export function queryPath(target, path) {
  * @param {*} elm
  * @returns {*}
  */
-function queryPathByElm(elm) {
+function queryPathByElm (elm) {
   const vn = getVnOrElm(elm)
   if (!vn) return null
   return queryPathByVn(vn)
@@ -484,7 +497,7 @@ function queryPathByElm(elm) {
  * @param {*} vn
  * @returns {*}
  */
-function queryPathByVn(vn) {
+function queryPathByVn (vn) {
   const path = getVnOrPath(vn)
   if (!path) return null
   return path
@@ -496,7 +509,7 @@ function queryPathByVn(vn) {
  * @param {*} rootPath
  * @returns {*}
  */
-function queryPathByPosition(position, rootPath) {
+function queryPathByPosition (position, rootPath) {
   const posArr = position.split('-')
   return posArr.slice(1).reduce((prev, index) => {
     return prev.children[index]

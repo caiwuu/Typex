@@ -16,11 +16,12 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get _type() {
+  get _type () {
     return 'inline'
   }
   constructor(props) {
     super(props)
+    console.log(this.$path.node.data);
     this.initState()
   }
 
@@ -30,7 +31,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get contentLength() {
+  get contentLength () {
     return this.$path.len
   }
 
@@ -40,7 +41,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get $path() {
+  get $path () {
     return this.props.path
   }
 
@@ -50,7 +51,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get $editor() {
+  get $editor () {
     return this.props.editor
   }
   /**
@@ -58,7 +59,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  initState() {
+  initState () {
     this.$path._$component = this
   }
 
@@ -70,7 +71,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  update(path, range) {
+  update (path, range) {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
@@ -87,7 +88,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  contentInput(path, range, data) {
+  contentInput (path, range, data) {
     const { offset, endContainer } = range
     path.insertData(offset, data)
     this._updatePoints(endContainer, offset, data.length)
@@ -104,7 +105,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onContentDelete(commonPath, range) {
+  onContentDelete (commonPath, range) {
     const { endContainer, endOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
@@ -142,7 +143,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretEnter(path, range, direction) {
+  onCaretEnter (path, range, direction) {
     if (direction === 'left') {
       let fromPath = path.prevLeaf
       if (!fromPath) return {}
@@ -163,7 +164,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretLeave(path, range, direction) {
+  onCaretLeave (path, range, direction) {
     if (direction === 'left') {
       let toPath = path.prevLeaf
       if (!toPath) return {}
@@ -183,7 +184,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretForward(path, range) {
+  onCaretForward (path, range) {
     range.offset < path.len && (range.offset += 1)
   }
 
@@ -195,7 +196,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretBackward(path, range) {
+  onCaretBackward (path, range) {
     range.offset > 0 && (range.offset -= 1)
   }
 
@@ -208,7 +209,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretMove(direction, range, event) {
+  onCaretMove (direction, range, event) {
     const path = range.container
     const caretMoveMethod = this[`${direction === 'left' ? 'onCaretBackward' : 'onCaretForward'}`]
     const { shiftKey } = event
@@ -231,17 +232,22 @@ export default class Content extends Component {
   /**
    * @description 换行
    * @param {Range} range
-   * @param {event} event
+   * @param {event} [event=null]
    * @memberof Content
    */
-  onLinefeed(range, event) {
-    event.preventDefault()
+  onLinefeed (range, event = null) {
+    if (range.inputState.isComposing) return
+    event?.preventDefault?.()
     if (!range.collapsed) {
       del(range)
     }
     const startSplits = range.container.split(range.offset)
     const cloneParent = range.container.parent.cloneMark()
+    debugger
     startSplits[1].moveTo(cloneParent)
+    // range.container.parent.children.slice(startSplits[1].index).forEach(path => {
+    //   path.moveTo(cloneParent)
+    // })
     cloneParent.insertAfter(range.container.parent)
     cloneParent.parent.component.update()
     range.set(startSplits[1], 0)
@@ -254,7 +260,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowLeft(range, event) {
+  onKeydownArrowLeft (range, event) {
     horizontalMove('left', range, event)
   }
 
@@ -265,7 +271,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowRight(range, event) {
+  onKeydownArrowRight (range, event) {
     horizontalMove('right', range, event)
   }
 
@@ -276,7 +282,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowUp(range, event) {
+  onKeydownArrowUp (range, event) {
     verticalMove('up', range, event)
   }
 
@@ -287,7 +293,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowDown(range, event) {
+  onKeydownArrowDown (range, event) {
     verticalMove('down', range, event)
   }
 
@@ -297,7 +303,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownBackspace(range) {
+  onKeydownBackspace (range) {
     del(range, false)
   }
 
@@ -308,7 +314,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownEnter(range, event) {
+  onKeydownEnter (range, event) {
     this.onLinefeed(range, event)
   }
 
@@ -319,7 +325,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onInput(range, event) {
+  onInput (range, event) {
     input(range, event)
   }
 
@@ -332,7 +338,8 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretWillBeLeaving(path, range, direction) {
+  onCaretWillBeLeaving (path, range, direction) {
+    console.log('onCaretWillBeLeaving');
     if (direction === 'left' && range.offset <= 1) {
       let toPath = path.prevLeaf
       if (!toPath) return false
@@ -356,7 +363,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  _updatePoints(container, position, distance, newContainer) {
+  _updatePoints (container, position, distance, newContainer) {
     this.$editor.selection.updatePoints(container, position, distance, newContainer)
   }
 
@@ -367,7 +374,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  getSeletedPath(range) {
+  getSeletedPath (range) {
     let start,
       end,
       value,
@@ -429,14 +436,14 @@ export default class Content extends Component {
   /**
    * @description 格式设置
    * @param {*} range
-   * @param {*} event
+   * @param {*} [event={ ctrlKey: true }]
    * @param {function} callback 格式处理回调
    * @memberof Content
    * @instance
    */
-  setFormat(range, event, callback) {
-    if (event.ctrlKey) {
-      event.preventDefault()
+  setFormat (range, event = { ctrlKey: true }, callback) {
+    if (event?.ctrlKey) {
+      event?.preventDefault?.()
       const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
       const selectedPath = this.getSeletedPath(range)
       for (const p of selectedPath) {

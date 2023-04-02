@@ -27,7 +27,9 @@ class Formater {
   inject (propName, prop) {
     this[propName] = prop
   }
-
+  renderRoot (rootPath) {
+    return this.render({ children: [rootPath] })
+  }
   /**
    * @description path 渲染
    * @param {*} path
