@@ -52,7 +52,10 @@ export default class Component {
   render(h) {
     throw Error('Component does not implement a required interface "render"')
   }
-
+  generateVdom(h) {
+    typeof this.onBeforeRender === 'function' && this.onBeforeRender()
+    return this.render(h)
+  }
   /**
    * @description 设置状态，异步更新
    * @param {*} [partialState={}]

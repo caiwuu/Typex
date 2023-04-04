@@ -10,7 +10,7 @@ export default function createElm(vnode) {
   if (typeof vnode.type === 'function') {
     if (vnode.type.isComponent) {
       const ins = new vnode.type(vnode.props)
-      const vn = ins.render(coreContext.core.createVnode)
+      const vn = ins.generateVdom(coreContext.core.createVnode)
       vnode.ins = ins
       ins._$pv = vnode
       coreContext.core.setVnIns(ins, vn)

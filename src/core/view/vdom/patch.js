@@ -242,7 +242,7 @@ function patchVnode(vnode, oldVnode) {
       ins._$pv = vnode
       const oldVn = getVnOrIns(ins)
       ins.props = Object.freeze({ ...vnode.props })
-      const newVn = ins.render(h)
+      const newVn = ins.generateVdom(h)
       patchVnode(newVn, oldVn)
     } else {
       // 函数组件

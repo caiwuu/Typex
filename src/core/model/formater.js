@@ -1,7 +1,6 @@
 import { default as h } from '../view/vdom/createVnode'
 import { setVnPath } from '../mappings'
 
-
 /**
  * @description 格式管理类
  * @class Formater
@@ -14,7 +13,7 @@ class Formater {
    * @param {*} format
    * @memberof Formater
    */
-  register (format) {
+  register(format) {
     this.formatMap.set(format.name, format)
   }
 
@@ -24,19 +23,19 @@ class Formater {
    * @param {*} prop
    * @memberof Formater
    */
-  inject (propName, prop) {
+  inject(propName, prop) {
     this[propName] = prop
   }
-  renderRoot (rootPath) {
+  renderRoot(rootPath) {
     return this.render({ children: [rootPath] })
   }
   /**
    * @description path 渲染
    * @param {*} path
-   * @returns {*}  
+   * @returns {*}
    * @memberof Formater
    */
-  render (path) {
+  render(path) {
     const gs = this._group(
       {
         paths: path.children,
@@ -52,10 +51,10 @@ class Formater {
    * @description 渲染调用
    * @param {*} vn
    * @param {*} current
-   * @returns {*}  
+   * @returns {*}
    * @memberof Formater
    */
-  _invokeRender (vn, current) {
+  _invokeRender(vn, current) {
     return current.fmt.render(vn, current.value, h)
   }
 
@@ -65,7 +64,7 @@ class Formater {
    * @param {*} basePath
    * @memberof Formater
    */
-  mergePointsContainer (path, basePath) {
+  mergePointsContainer(path, basePath) {
     this.editor.selection.rangePoints
       .filter((point) => point.container === path)
       .forEach((point) => {
@@ -80,10 +79,10 @@ class Formater {
   /**
    * @description 文本路径合并
    * @param {*} paths
-   * @returns {*}  
+   * @returns {*}
    * @memberof Formater
    */
-  _mergeTextPath (paths) {
+  _mergeTextPath(paths) {
     const basePath = paths[0]
     const pathsLen = paths.length
     if (pathsLen === 1) return basePath
@@ -100,10 +99,10 @@ class Formater {
    * @description 格式分组
    * @param {*} gs
    * @param {*} flag
-   * @returns {*}  
+   * @returns {*}
    * @memberof Formater
    */
-  _generateGroups (gs, flag) {
+  _generateGroups(gs, flag) {
     return gs
       .map((g) => {
         let componentQuene
@@ -198,10 +197,10 @@ class Formater {
    * @readonly
    * @memberof Formater
    */
-  get types () {
+  get types() {
     return [...this.formatMap.keys()]
   }
-  _getFormats (objs) {
+  _getFormats(objs) {
     return objs.map((obj) => {
       const key = Object.keys(obj)[0]
       return {
@@ -214,10 +213,10 @@ class Formater {
   /**
    * @description 根据格式名获取格式
    * @param {*} key
-   * @returns {*}  
+   * @returns {*}
    * @memberof Formater
    */
-  get (key) {
+  get(key) {
     return this.formatMap.get(key) || {}
   }
 
@@ -229,7 +228,7 @@ class Formater {
    * @returns {*}  {boolean}
    * @memberof Formater
    */
-  _canAdd (path, prevPath, key) {
+  _canAdd(path, prevPath, key) {
     /**
      * 当前无格式
      */
@@ -249,10 +248,10 @@ class Formater {
    * @param {*} _group
    * @param {*} index
    * @param {*} [r=[]]
-   * @returns {*}  
+   * @returns {*}
    * @memberof Formater
    */
-  _group (_group, index, r = []) {
+  _group(_group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
     let prevPath = null
