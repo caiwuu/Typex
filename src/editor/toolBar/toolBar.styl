@@ -1,53 +1,58 @@
-.editor-wrappe
+.editor-tool-bar
+    .icon
+        width 1.2em
+        height 1.2em
+        vertical-align -0.15em
+        fill currentColor
+        overflow hidden
     border solid 1px #eee
-    .tool-bar-item
+    .editor-tool-bar-item
         padding 4px 10px
         display inline-block
         border-radius 4px
         cursor pointer
         user-select none
-    .tool-bar
-        background rgb(40 40 40)
-        padding 6px
+    background rgb(40 40 40)
+    padding 6px
     #editor-content
         padding 16px
         min-height 200px
-.editor-tooltip
-    position relative
-    display inline-block
-.editor-tooltip .tooltiptext
-    opacity 0
-    width 60px
-    font-size 12px
-    background-color black
-    color #fff
-    text-align center
-    border-radius 6px
-    padding 5px 0
-    position absolute
-    z-index 1
-    top 140%
-    left 50%
-    margin-left -30px
-    transition opacity 600ms ease-out
-.editor-tooltip .tooltiptext::after
-    content ''
-    position absolute
-    left 50%
-    margin-left -5px
-    border-width 5px
-    border-style solid
-.editor-tooltip:hover .tooltiptext
-    opacity 1
-// bottom
-.editor-tooltip .tooltiptext.bottom
-    top 140%
-.editor-tooltip .tooltiptext.bottom::after
-    bottom 100%
-    border-color transparent transparent black transparent
-// top
-.editor-tooltip .tooltiptext.top
-    top -140%
-.editor-tooltip .tooltiptext.top::after
-    top 100%
-    border-color black transparent transparent transparent
+    .editor-tooltip
+        position relative
+        display inline-block
+    .editor-tooltip .tooltiptext
+        opacity 0
+        width 60px
+        font-size 12px
+        background-color black
+        color #fff
+        text-align center
+        border-radius 6px
+        padding 5px 0
+        position absolute
+        z-index 1
+        top 140%
+        left 50%
+        margin-left -30px
+        transition opacity 600ms ease-out
+    .editor-tooltip .tooltiptext::after
+        content ''
+        position absolute
+        left 50%
+        margin-left -5px
+        border-width 5px
+        border-style solid
+    .editor-tooltip:hover .tooltiptext
+        opacity 1
+    // bottom
+    .editor-tooltip .tooltiptext.bottom
+        top 140%
+    .editor-tooltip .tooltiptext.bottom::after
+        bottom 100%
+        border-color transparent transparent black transparent
+    // top
+    .editor-tooltip .tooltiptext.top
+        top -140%
+    .editor-tooltip .tooltiptext.top::after
+        top 100%
+        border-color black transparent transparent transparent

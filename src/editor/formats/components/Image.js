@@ -9,7 +9,7 @@ import { Content } from '@/core'
 import Static from './Static'
 
 export default class Image extends Content {
-  render() {
+  render () {
     return (
       // <swapper>
       <div style='display:inline-block'>
@@ -42,10 +42,10 @@ export default class Image extends Content {
     }
     this.update()
   }
-  onAfterUpdate() {
+  onAfterUpdate () {
     this.$editor.selection.updateCaret()
   }
-  onContentDelete(path, range) {
+  onContentDelete (path, range) {
     const { endOffset, collapsed } = range
     if (collapsed) {
       if (endOffset > 0) {
@@ -61,12 +61,11 @@ export default class Image extends Content {
       }
     }
   }
-  onCaretEnter(path, range, direction) {
-    console.log(path, this.$path)
+  onCaretEnter (path, range, direction) {
     range.set(path, direction === 'left' ? 0 : 1)
     return { path, range }
   }
-  get contentLength() {
+  get contentLength () {
     return 1
   }
 }

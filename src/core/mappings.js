@@ -5,48 +5,50 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-23 13:57:07
  */
-const vnElmMap = new WeakMap()
-const vnInsMap = new WeakMap()
-const pathVNMap = new WeakMap()
+const vdomElmMap = new WeakMap()
+const vdomInsMap = new WeakMap()
+const pathVdomMap = new WeakMap()
 
-function getVnOrPath(key) {
+function getVdomOrPath (key) {
   // 通过vn找path
-  if (key._isVnode) {
-    const path = pathVNMap.get(key)
-    if (path) return path
-    if (key.type === 'text') {
-      return pathVNMap.get(key)
-    } else {
-      const ins = getVnOrIns(key)
-      if (ins) return pathVNMap.get(ins._$pv)
+  if (key.vnodeType) {
+    if ([3, 4].includes(key.vnodeType)) {
+      return pathVdomMap.get(key)
+    }
+    if (key.vnodeType === 1) {
+      const vdom = getVdomOrIns(key)
+      if (vdom) return pathVdomMap.get(vdom)
       return null
     }
-
+    if (key.vnodeType === 2) {
+      const vdom = getVdomOrIns(key.type)
+      if (vdom) return pathVdomMap.get(vdom)
+      return null
+    }
     // 通过path找vn
   } else {
-    let vn = pathVNMap.get(key)
-    if (typeof vn.type === 'function') {
-      vn = getVnOrIns(vn.ins)
-    }
-    return vn
+    return pathVdomMap.get(key)
   }
 }
-function getVnOrIns(key) {
-  return vnInsMap.get(key)
+function getVdomOrIns (key) {
+  return vdomInsMap.get(key)
 }
-function getVnOrElm(key) {
-  if (key.ins) {
-    return vnElmMap.get(getVnOrIns(key.ins))
+function getVdomOrElm (key) {
+  if (key.vnodeType === 1) {
+    return vdomElmMap.get(getVdomOrIns(key))
   }
-  return vnElmMap.get(key)
+  if (key.vnodeType === 2) {
+    return vdomElmMap.get(getVdomOrIns(key.type))
+  }
+  return vdomElmMap.get(key)
 }
-function setVnElm(vn, elm) {
-  vnElmMap.set(elm, vn).set(vn, elm)
+function setVdomOrElm (vn, elm) {
+  vdomElmMap.set(elm, vn).set(vn, elm)
 }
-function setVnIns(vn, ins) {
-  vnInsMap.set(ins, vn).set(vn, ins)
+function setVdomOrIns (vn, ins) {
+  vdomInsMap.set(ins, vn).set(vn, ins)
 }
-function setVnPath(vn, path) {
-  pathVNMap.set(vn, path).set(path, vn)
+function setVdomOrPath (vn, path) {
+  pathVdomMap.set(vn, path).set(path, vn)
 }
-export { setVnElm, setVnIns, setVnPath, getVnOrElm, getVnOrPath, getVnOrIns }
+export { setVdomOrElm, setVdomOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVdomOrIns }

@@ -5,7 +5,8 @@
  * @LastEditor:
  * @LastEditTime: 2022-11-22 16:20:35
  */
-import Content from './content'
+import { Content } from '@/core'
+
 const mergeBlock = (o, n, shouldUpdates = []) => {
   const oBlock = o.blockComponent
   if (o.blockComponent !== n.blockComponent) {
@@ -14,7 +15,6 @@ const mergeBlock = (o, n, shouldUpdates = []) => {
         .filter((point) => point.container === n)
         .forEach((point) => {
           if (point.pointName === 'start') {
-            console.log(n.nextLeaf)
             point.range.setStart(n.nextLeaf, 0)
           } else {
             point.range.setEnd(n.nextLeaf, 0)
@@ -82,27 +82,35 @@ export default class Block extends Content {
   }
 
   onKeydownB(range, event) {
-    this.setFormat(range, event, (f) => {
-      f.bold = !f.bold
-    })
+    if (event?.ctrlKey) {
+      this.setFormat(range, (f) => {
+        f.bold = !f.bold
+      })
+    }
   }
   onKeydownD(range, event) {
-    this.setFormat(range, event, (f) => {
-      f.del = !f.del
-    })
+    if (event?.ctrlKey) {
+      this.setFormat(range, (f) => {
+        f.del = !f.del
+      })
+    }
   }
   onKeydownS(range, event) {
-    this.setFormat(range, event, (f) => {
-      if (event.shiftKey) {
-        f.sub = !f.sub
-      } else {
-        f.sup = !f.sup
-      }
-    })
+    if (event?.ctrlKey) {
+      this.setFormat(range, (f) => {
+        if (event.shiftKey) {
+          f.sub = !f.sub
+        } else {
+          f.sup = !f.sup
+        }
+      })
+    }
   }
   onKeydownU(range, event) {
-    this.setFormat(range, event, (f) => {
-      f.underline = !f.underline
-    })
+    if (event?.ctrlKey) {
+      this.setFormat(range, (f) => {
+        f.underline = !f.underline
+      })
+    }
   }
 }

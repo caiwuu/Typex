@@ -1,5 +1,5 @@
 import { default as h } from '../view/vdom/createVnode'
-import { setVnPath } from '../mappings'
+import { setVdomOrPath } from '../mappings'
 
 /**
  * @description 格式管理类
@@ -13,7 +13,7 @@ class Formater {
    * @param {*} format
    * @memberof Formater
    */
-  register(format) {
+  register (format) {
     this.formatMap.set(format.name, format)
   }
 
@@ -23,10 +23,10 @@ class Formater {
    * @param {*} prop
    * @memberof Formater
    */
-  inject(propName, prop) {
+  inject (propName, prop) {
     this[propName] = prop
   }
-  renderRoot(rootPath) {
+  renderRoot (rootPath) {
     return this.render({ children: [rootPath] })
   }
   /**
@@ -35,7 +35,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  render(path) {
+  render (path) {
     const gs = this._group(
       {
         paths: path.children,
@@ -54,7 +54,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _invokeRender(vn, current) {
+  _invokeRender (vn, current) {
     return current.fmt.render(vn, current.value, h)
   }
 
@@ -64,7 +64,7 @@ class Formater {
    * @param {*} basePath
    * @memberof Formater
    */
-  mergePointsContainer(path, basePath) {
+  mergePointsContainer (path, basePath) {
     this.editor.selection.rangePoints
       .filter((point) => point.container === path)
       .forEach((point) => {
@@ -82,7 +82,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _mergeTextPath(paths) {
+  _mergeTextPath (paths) {
     const basePath = paths[0]
     const pathsLen = paths.length
     if (pathsLen === 1) return basePath
@@ -102,7 +102,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _generateGroups(gs, flag) {
+  _generateGroups (gs, flag) {
     return gs
       .map((g) => {
         let componentQuene
@@ -123,12 +123,12 @@ class Formater {
              */
 
             // 内容为空时 将path指向他父级的vdom
-            setVnPath(mergedTextPath, mergedTextPath.parent.vn)
+            setVdomOrPath(mergedTextPath, mergedTextPath.parent.vn)
             mergedTextPath.clearFormat()
           } else {
             // 输入内容时 重新指向创建vdom
             vtext = h('text', {}, [mergedTextPath.node.data])
-            setVnPath(mergedTextPath, vtext)
+            setVdomOrPath(mergedTextPath, vtext)
           }
           return vtext
 
@@ -141,7 +141,7 @@ class Formater {
           const fmt = componentQuene[0].fmt
           const pv = fmt.render(null, { path, editor: this.editor }, h)
           // 为所有component类型的path映射vnode
-          setVnPath(path, pv)
+          setVdomOrPath(path, pv)
           return pv
 
           // 属性和标签格式
@@ -178,11 +178,11 @@ class Formater {
             let vtext = null
             if (flag === 0) {
               vtext = h('br')
-              setVnPath(mergedTextPath, vn)
+              setVdomOrPath(mergedTextPath, vn)
               mergedTextPath.clearFormat()
             } else {
               vtext = h('text', {}, [mergedTextPath.node.data])
-              setVnPath(mergedTextPath, vtext)
+              setVdomOrPath(mergedTextPath, vtext)
             }
             vn.children = [vtext]
           }
@@ -197,10 +197,10 @@ class Formater {
    * @readonly
    * @memberof Formater
    */
-  get types() {
+  get types () {
     return [...this.formatMap.keys()]
   }
-  _getFormats(objs) {
+  _getFormats (objs) {
     return objs.map((obj) => {
       const key = Object.keys(obj)[0]
       return {
@@ -216,7 +216,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  get(key) {
+  get (key) {
     return this.formatMap.get(key) || {}
   }
 
@@ -228,7 +228,7 @@ class Formater {
    * @returns {*}  {boolean}
    * @memberof Formater
    */
-  _canAdd(path, prevPath, key) {
+  _canAdd (path, prevPath, key) {
     /**
      * 当前无格式
      */
@@ -251,7 +251,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _group(_group, index, r = []) {
+  _group (_group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
     let prevPath = null

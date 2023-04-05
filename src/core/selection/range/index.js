@@ -153,7 +153,7 @@ export default class Range {
    * @instance
    */
   updateCaret(drawCaret = true) {
-    this.caret.update(this, drawCaret)
+    this.caret.update(drawCaret)
     this.editor.focus()
   }
 

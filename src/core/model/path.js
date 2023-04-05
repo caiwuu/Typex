@@ -1,4 +1,4 @@
-import { getVnOrElm, getVnOrPath, getVnOrIns } from '../mappings'
+import { getVdomOrElm, getVdomOrPath, getVdomOrIns } from '../mappings'
 import { computeLen, typeOf, positionCompare, isPrimitive } from '../utils'
 
 /**
@@ -53,10 +53,7 @@ export class Path {
    * @memberof Path
    */
   get elm() {
-    if (typeof this.vn.type === 'function') {
-      return getVnOrElm(getVnOrIns(this.vn.ins))
-    }
-    return getVnOrElm(this.vn)
+    return getVdomOrElm(this.vn)
   }
 
   /**
@@ -84,7 +81,7 @@ export class Path {
    * @memberof Path
    */
   get vn() {
-    return getVnOrPath(this)
+    return getVdomOrPath(this)
   }
 
   /**
@@ -475,7 +472,7 @@ export function queryCommonPath(path1, path2) {
 export function queryPath(target, path) {
   if (target instanceof Path) return target
   if (target.nodeType) return queryPathByElm(target)
-  if (target._isVnode) return queryPathByVn(target)
+  if (target.vnodeType) return queryPathByVn(target)
   if (typeof target === 'string') return queryPathByPosition(target, path)
   throw 'queryPath的参数必须是elm|vn|position'
 }
@@ -486,7 +483,7 @@ export function queryPath(target, path) {
  * @returns {*}
  */
 function queryPathByElm(elm) {
-  const vn = getVnOrElm(elm)
+  const vn = getVdomOrElm(elm)
   if (!vn) return null
   return queryPathByVn(vn)
 }
@@ -497,7 +494,7 @@ function queryPathByElm(elm) {
  * @returns {*}
  */
 function queryPathByVn(vn) {
-  const path = getVnOrPath(vn)
+  const path = getVdomOrPath(vn)
   if (!path) return null
   return path
 }

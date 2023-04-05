@@ -17,6 +17,8 @@ function renderRoot (editor, contentRef) {
   return (
     <div class='editor-wrappe'>
       <ToolBar tools={[...editor.toolBarOption]}></ToolBar>
+
+
       <div id='editor-content' style='position:relative' ref={contentRef}>
         {formater.renderRoot(editor.$path)}
       </div>

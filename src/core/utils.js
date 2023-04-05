@@ -34,13 +34,13 @@ export function computeLen (path) {
   }
 }
 
-export function throttle (fn, wait) {
+export function throttle (fn, wait, immediately = true) {
   let inThrottle, lastFn, lastTime
   return function () {
     const context = this,
       args = arguments
     if (!inThrottle) {
-      fn.apply(context, args)
+      immediately && fn.apply(context, args)
       lastTime = Date.now()
       inThrottle = true
     } else {

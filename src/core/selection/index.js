@@ -169,6 +169,7 @@ export default class Selection {
   /**
    * @description 从native重新设置选区
    * @memberof Selection
+   * @private
    * @instance
    */
   _resetRangesFromNative() {
@@ -352,8 +353,8 @@ export default class Selection {
   drawRangeBg(range) {
     const currRange = range || this.getRangeAt(0)
     if (!currRange) return
-    this.nativeSelection.removeAllRanges()
     const { startContainer, startOffset, endContainer, endOffset } = currRange
+    this.nativeSelection.removeAllRanges()
     const createNativeRangeOps = {
       startContainer: startContainer.elm,
       endContainer: endContainer.elm,
@@ -361,5 +362,66 @@ export default class Selection {
       endOffset,
     }
     this.nativeSelection.addRange(this.createNativeRange(createNativeRangeOps))
+  }
+  /**
+   * @description 获取选中的叶子节点迭代器
+   * @returns {Iterator} 迭代器
+   * @memberof Selection
+   * @instance
+   */
+  getSeletedPath() {
+    if (this.collapsed) return []
+    const range = this.ranges[0]
+    let start,
+      end,
+      value,
+      done = false
+    if (range.collapsed) {
+      done = true
+    } else {
+      if (range.startOffset === 0) {
+        start = range.startContainer
+      } else if (range.startOffset === range.startContainer.len) {
+        start = range.startContainer.nextLeaf
+      } else {
+        const startSplits = range.startContainer.split(range.startOffset)
+        this.updatePoints(
+          range.startContainer,
+          range.startOffset + 1,
+          -range.startOffset,
+          startSplits[1]
+        )
+        start = startSplits[1]
+      }
+
+      if (range.endOffset === 0) {
+        end = range.endContainer.prevLeaf
+      } else if (range.endOffset === range.endContainer.len) {
+        end = range.endContainer
+      } else {
+        const endSplits = range.endContainer.split(range.endOffset)
+        this.updatePoints(range.endContainer, range.endOffset + 1, -range.endOffset, endSplits[1])
+        end = endSplits[0]
+      }
+    }
+
+    value = start
+    return {
+      length: 0,
+      next: function () {
+        if (!done) {
+          const res = { value, done }
+          done = value === end
+          value = value.nextLeaf
+          this.length++
+          return res
+        } else {
+          return { value: undefined, done }
+        }
+      },
+      [Symbol.iterator]: function () {
+        return this
+      },
+    }
   }
 }

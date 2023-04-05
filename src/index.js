@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-08-26 15:22:44
  */
 // model 模块功能覆盖测试
-// import './modelTestDemo/index'
+import './modelTestDemo/index'
 // 编辑器demo
 import createEditor from './editor'
 import './style.styl'
@@ -41,16 +41,19 @@ const toolBar = [
     tooltip: '加粗',
     command: 'bold',
     icon: '#icon-bold',
+    commandHandle: (f) => (f.bold = !f.bold),
   },
   {
     tooltip: '下划线',
     command: 'underline',
     icon: '#icon-underline',
+    commandHandle: (f) => (f.underline = !f.underline),
   },
   {
     tooltip: '删除线',
     command: 'deleteline',
     icon: '#icon-del',
+    commandHandle: (f) => (f.del = !f.del),
   },
   {
     tooltip: '背景填充',
@@ -103,8 +106,12 @@ const toolBar = [
     icon: '#icon-clear-style',
   },
 ]
-window.editor = createEditor({
-  data: 'hello world',
-})
-  .setToolBar(toolBar)
-  .mount('editor-root')
+
+// 加入定时器是为了避免table被jsdoc重写
+setTimeout(() => {
+  window.editor = createEditor({
+    data: 'hello world',
+  })
+    .setToolBar(toolBar)
+    .mount('editor-root')
+}, 0)

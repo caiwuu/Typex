@@ -9,7 +9,7 @@ export default class ToolBar extends Component {
   render() {
     const { tools } = this.props
     return (
-      <div class='tool-bar'>
+      <div class='editor-tool-bar'>
         {tools.map((ele) => (
           <Tooltip width='64' content={ele.tooltip}>
             <ToolBarItem {...{ ...ele, onCommand: this.onCommand }}></ToolBarItem>
@@ -33,7 +33,7 @@ class ToolBarItem extends Component {
     return (
       <span
         onClick={this.click}
-        class='tool-bar-item'
+        class='editor-tool-bar-item'
         style={`color: ${this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
@@ -50,8 +50,7 @@ class ToolBarItem extends Component {
     this.setState({
       value: !this.state.value,
     })
-    // this.props.onCommand('fontStyle', this.props.command, true)
-    // this.dialogRef.current.toggle()
+    this.props.editor.command(this.props.command)
   }
 }
 

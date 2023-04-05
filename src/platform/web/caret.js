@@ -1,5 +1,8 @@
 import { multiplication } from './utils'
+
+/** @type {Function} */
 let getRect
+// 提供两种计算光标坐标的方法，优先使用原生的getClientRects，因为性能较好
 if (Range.prototype.getClientRects) {
   getRect = (range) => {
     const nativeRange = document.createRange()
@@ -35,33 +38,109 @@ if (Range.prototype.getClientRects) {
   }
 }
 
+/**
+ * @description 设置光标的样式
+ * @param {*} dom
+ * @param {*} style
+ */
 const setStyle = (dom, style) => {
   for (const key in style) {
     dom.style[key] = style[key]
   }
 }
-const defaultStyle = {}
+
+/**
+ * @description 光标类
+ * @export
+ * @class Caret
+ */
 export default class Caret {
+  /**
+   * @description 光标dom
+   * @memberof Caret
+   * @instance
+   */
   dom = null
+
+  /**
+   * @description 光标坐标
+   * @memberof Caret
+   * @instance
+   */
   rect = null
+
+  /**
+   * @description 默认样式
+   * @memberof Caret
+   * @instance
+   */
+  defaultStyle = {}
+
+  /**
+   * @description 当前样式
+   * @memberof Caret
+   * @instance
+   */
+  style = {}
   constructor(range) {
     this.range = range
     this.dom = document.createElement('span')
     this.dom.classList.add('custom-caret')
     this.setStyle(this.dom)
   }
+
+  /**
+   * @description 设置光标样式
+   * @param {*} [style={}]
+   * @memberof Caret
+   * @instance
+   */
   setStyle(style = {}) {
-    const mergeStyle = Object.assign({}, defaultStyle, style)
-    setStyle(this.dom, mergeStyle)
+    Object.assign(this.style, this.defaultStyle, style)
   }
+
+  /**
+   * @description 光标移除
+   * @memberof Caret
+   * @instance
+   */
   remove() {
     this.dom.remove()
   }
-  update(range, drawCaret = true) {
-    this.rect = getRect(range)
+
+  /**
+   * @description 光标隐藏
+   * @memberof Caret
+   * @instance
+   */
+  hidden() {
+    if (this.style.display === 'none') return
+    this.setStyle({ display: 'none' })
+    this.draw()
+  }
+
+  /**
+   * @description 光标显示
+   * @memberof Caret
+   * @instance
+   */
+  show() {
+    if (this.style.display === 'inline-block') return
+    this.setStyle({ display: 'inline-block' })
+    this.draw()
+  }
+
+  /**
+   * @description 光标更新
+   * @param {boolean} [drawCaret=true]
+   * @memberof Caret
+   * @instance
+   */
+  update(drawCaret = true) {
+    this.rect = getRect(this.range)
     if (!drawCaret) return
-    range.editor.ui.content.appendChild(this.dom)
-    let elm = range.startContainer.elm
+    this.range.editor.ui.content.appendChild(this.dom)
+    let elm = this.range.startContainer.elm
     if (!elm) return
     if (!(elm instanceof Element)) {
       elm = elm.parentNode
@@ -73,14 +152,37 @@ export default class Caret {
       height: this.rect.height + 'px',
       fontSize: copyStyle.fontSize,
       background: copyStyle.color,
-      display: range.collapsed ? 'inline-block' : 'none',
+      display: this.range.collapsed ? 'inline-block' : 'none',
     }
     this.setStyle(caretStyle)
+    this.draw()
+  }
+
+  /**
+   * @description 绘制光标
+   * @memberof Caret
+   * @instance
+   */
+  draw() {
+    setStyle(this.dom, this.style)
   }
 }
 
+/**
+ * @description 光标坐标测量器
+ * @class Measure
+ */
 class Measure {
+  /**
+   * @description 辅助测量dom
+   * @memberof Measure
+   */
   dom = null
+
+  /**
+   * @description 单例模式 实例
+   * @memberof Measure
+   */
   instance = null
   constructor() {
     if (!Measure.instance) {
@@ -90,6 +192,14 @@ class Measure {
       return Measure.instance
     }
   }
+
+  /**
+   * @description 测量方法
+   * @param {*} container
+   * @param {*} offset
+   * @returns {*}
+   * @memberof Measure
+   */
   measure(container, offset) {
     // splitText(0)会使原dom销毁造成startContainer向上逃逸
     let temp
@@ -111,6 +221,16 @@ class Measure {
     }
     return this._getRect(container, offset, temp)
   }
+
+  /**
+   * @description 获取坐标
+   * @param {*} container
+   * @param {*} offset
+   * @param {*} temp
+   * @private
+   * @returns {*}
+   * @memberof Measure
+   */
   _getRect(container, offset, temp) {
     let con = container
     if (!(container instanceof Element)) {
@@ -135,6 +255,13 @@ class Measure {
     return rect
   }
 }
+
+/**
+ * @description 累计偏移量计算
+ * @param {*} dom
+ * @param {*} [res={ x: 0, y: 0 }]
+ * @returns {*}
+ */
 function computeOffset(dom, res = { x: 0, y: 0 }) {
   res.height = res.height ?? dom.offsetHeight
   res.x += dom.offsetLeft
@@ -145,6 +272,12 @@ function computeOffset(dom, res = { x: 0, y: 0 }) {
   return res
 }
 
+/**
+ * @description  累计滚动距离计算
+ * @param {*} dom
+ * @param {*} [res={ x: 0, y: 0 }]
+ * @returns {*}
+ */
 function computeScroll(dom, res = { x: 0, y: 0 }) {
   res.x += dom.scrollLeft || 0
   res.y += dom.scrollTop || 0

@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-09-26 14:38:59
  */
 import { default as h } from './vdom/createVnode'
-import { getVnOrIns } from '../mappings'
+import { getVdomOrIns } from '../mappings'
 import patch from './vdom/patch'
 import enqueueSetState from './vdom/enqueueSetState'
 
@@ -22,6 +22,16 @@ export default class Component {
    * @memberof Component
    */
   static isComponent = true
+
+  /**
+   * @description 是否是组件
+   * @readonly
+   * @memberof Component
+   * @instance
+   */
+  get isComponent() {
+    return true
+  }
 
   /**
    * @description 状态
@@ -52,6 +62,15 @@ export default class Component {
   render(h) {
     throw Error('Component does not implement a required interface "render"')
   }
+
+  /**
+   * @description 生成vdom
+   * @param {*} h
+   * @returns {*}
+   * @instance
+   * @private
+   * @memberof Component
+   */
   generateVdom(h) {
     typeof this.onBeforeRender === 'function' && this.onBeforeRender()
     return this.render(h)
@@ -71,9 +90,10 @@ export default class Component {
    * @description 同步更新
    * @memberof Component
    * @instance
+   * @private
    */
   syncUpdate() {
-    const oldVn = getVnOrIns(this)
+    const oldVn = getVdomOrIns(this)
     const newVn = this.render(h)
     patch(newVn, oldVn)
   }

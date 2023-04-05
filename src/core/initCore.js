@@ -59,9 +59,13 @@ function initDispatcher(editor) {
         eventHandle(range, event)
       }
     })
-    // TOTO 此处需要性能优化
-    Promise.resolve().then(() => {
-      editor.selection.updateCaret()
-    })
+  })
+  editor.on('selectionchange', () => {
+    const nativeSelection = pluginContext.platform.nativeSelection
+    if (nativeSelection && !nativeSelection.isCollapsed) {
+      editor.selection.ranges.forEach((range) => {
+        range.caret.hidden()
+      })
+    }
   })
 }

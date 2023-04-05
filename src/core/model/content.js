@@ -77,6 +77,7 @@ export default class Content extends Component {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
+      this.$editor.selection.updateCaret()
       // 执行更新后钩子
       this.onAfterUpdate && this.onAfterUpdate({ range, path })
     })
@@ -245,7 +246,6 @@ export default class Content extends Component {
     }
     const startSplits = range.container.split(range.offset)
     const cloneParent = range.container.parent.cloneMark()
-    // startSplits[1].moveTo(cloneParent)
     range.container.parent.children.slice(startSplits[1].index).forEach((path) => {
       path.moveTo(cloneParent)
     })
@@ -263,6 +263,7 @@ export default class Content extends Component {
    */
   onKeydownArrowLeft(range, event) {
     horizontalMove('left', range, event)
+    this.$editor.selection.updateCaret()
   }
 
   /**
@@ -274,6 +275,7 @@ export default class Content extends Component {
    */
   onKeydownArrowRight(range, event) {
     horizontalMove('right', range, event)
+    this.$editor.selection.updateCaret()
   }
 
   /**
@@ -285,6 +287,7 @@ export default class Content extends Component {
    */
   onKeydownArrowUp(range, event) {
     verticalMove('up', range, event)
+    this.$editor.selection.updateCaret()
   }
 
   /**
@@ -296,6 +299,7 @@ export default class Content extends Component {
    */
   onKeydownArrowDown(range, event) {
     verticalMove('down', range, event)
+    this.$editor.selection.updateCaret()
   }
 
   /**
@@ -340,7 +344,6 @@ export default class Content extends Component {
    * @instance
    */
   onCaretWillBeLeaving(path, range, direction) {
-    console.log('onCaretWillBeLeaving')
     if (direction === 'left' && range.offset <= 1) {
       let toPath = path.prevLeaf
       if (!toPath) return false
@@ -369,88 +372,18 @@ export default class Content extends Component {
   }
 
   /**
-   * @description 获取选中的叶子节点迭代器
-   * @param {Range} range 选区范围
-   * @returns {Iterator} 迭代器
-   * @memberof Content
-   * @instance
-   */
-  getSeletedPath(range) {
-    let start,
-      end,
-      value,
-      done = false
-    if (range.collapsed) {
-      done = true
-    } else {
-      if (range.startOffset === 0) {
-        start = range.startContainer
-      } else if (range.startOffset === range.startContainer.len) {
-        start = range.startContainer.nextLeaf
-      } else {
-        const startSplits = range.startContainer.split(range.startOffset)
-        this._updatePoints(
-          range.startContainer,
-          range.startOffset + 1,
-          -range.startOffset,
-          startSplits[1]
-        )
-        start = startSplits[1]
-      }
-
-      if (range.endOffset === 0) {
-        end = range.endContainer.prevLeaf
-      } else if (range.endOffset === range.endContainer.len) {
-        end = range.endContainer
-      } else {
-        const endSplits = range.endContainer.split(range.endOffset)
-        this.$editor.selection.updatePoints(
-          range.endContainer,
-          range.endOffset + 1,
-          -range.endOffset,
-          endSplits[1]
-        )
-        end = endSplits[0]
-      }
-    }
-
-    value = start
-    return {
-      length: 0,
-      next: function () {
-        if (!done) {
-          const res = { value, done }
-          done = value === end
-          value = value.nextLeaf
-          this.length++
-          return res
-        } else {
-          return { value: undefined, done }
-        }
-      },
-      [Symbol.iterator]: function () {
-        return this
-      },
-    }
-  }
-
-  /**
    * @description 格式设置
    * @param {*} range
-   * @param {*} [event={ ctrlKey: true }]
    * @param {function} callback 格式处理回调
    * @memberof Content
    * @instance
    */
-  setFormat(range, event = { ctrlKey: true }, callback) {
-    if (event?.ctrlKey) {
-      event?.preventDefault?.()
-      const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
-      const selectedPath = this.getSeletedPath(range)
-      for (const p of selectedPath) {
-        callback(p.node.formats)
-      }
-      commonPath.component.update()
+  setFormat(range, callback) {
+    const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
+    const selectedPath = this.$editor.selection.getSeletedPath()
+    for (const path of selectedPath) {
+      callback(path.node.formats)
     }
+    commonPath.component.update()
   }
 }

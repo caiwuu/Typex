@@ -7,9 +7,9 @@
  */
 import { createRef } from '@/core'
 import formater from '..'
-import { Block } from '@/core'
+import Block from './block'
 export class Table extends Block {
-  render() {
+  render () {
     return (
       <table border='1' style='border-collapse:collapse;width:600px'>
         {formater.render(this.$path)}
@@ -18,7 +18,7 @@ export class Table extends Block {
   }
 }
 export class Row extends Block {
-  render() {
+  render () {
     return <tr>{formater.render(this.$path)}</tr>
   }
 }
@@ -27,7 +27,7 @@ export class Col extends Block {
     super(props)
     this.state._$root = createRef()
   }
-  render() {
+  render () {
     return (
       <td ref={this.state._$root} style='text-align:center;width:50%'>
         {formater.render(this.$path)}
