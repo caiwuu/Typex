@@ -5,23 +5,18 @@
  * @LastEditor:
  * @LastEditTime: 2022-11-22 16:21:18
  */
-import { createVnode as h, patch, createRef } from '@/core'
-import formater from './formats'
+import { createVnode as h, patch } from '@/core'
 import ToolBar from './toolBar'
 /**
  * @desc: 渲染根节点
  * @param {*} h
  * @return {*}
  */
-function renderRoot (editor, contentRef) {
+function renderRoot(editor) {
   return (
     <div class='editor-wrappe'>
       <ToolBar tools={[...editor.toolBarOption]}></ToolBar>
-
-
-      <div id='editor-content' style='position:relative' ref={contentRef}>
-        {formater.renderRoot(editor.$path)}
-      </div>
+      {editor.renderContent(h)}
     </div>
   )
 }
@@ -31,14 +26,7 @@ function renderRoot (editor, contentRef) {
  * @param {*} editor
  * @return {*}
  */
-export default function mount (id) {
-  this.ui.body = document.getElementById(id)
-  const mountDom = document.createElement('div')
-  const contentRef = createRef()
-
-  this.ui.body.appendChild(mountDom)
-  formater.editor = this
-
-  patch(renderRoot(this, contentRef, h), mountDom)
-  this.ui.content = contentRef.current
+export default function mount(id) {
+  document.getElementById(id).appendChild(patch(renderRoot(this, h)))
+  return this
 }

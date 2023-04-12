@@ -5,7 +5,6 @@
  * @LastEditor:
  * @LastEditTime: 2022-11-22 16:21:40
  */
-import formater from '../index'
 import Block from './block'
 import Static from './Static'
 export default class Paragraph extends Block {
@@ -21,7 +20,7 @@ export default class Paragraph extends Block {
         {/* </div> */}
         {/* </Static> */}
         {/* <editor-content> */}
-        {formater.render(this.$path)}
+        {this.renderContent}
         {/* </editor-content> */}
       </p>
     )

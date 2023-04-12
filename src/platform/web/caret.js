@@ -23,8 +23,8 @@ if (Range.prototype.getClientRects) {
       rect = nativeRange.getClientRects()[0]
     }
     nativeRange.setStart(range.container.elm, range.offset)
-    const scroll = computeScroll(range.editor.ui.content)
-    const offset = computeOffset(range.editor.ui.content)
+    const scroll = computeScroll(range.editor.contentRef.current)
+    const offset = computeOffset(range.editor.contentRef.current)
     return {
       x: rect.x + scroll.x - offset.x,
       y: rect.y + scroll.y - offset.y,
@@ -139,7 +139,7 @@ export default class Caret {
   update(drawCaret = true) {
     this.rect = getRect(this.range)
     if (!drawCaret) return
-    this.range.editor.ui.content.appendChild(this.dom)
+    this.range.editor.contentRef.current.appendChild(this.dom)
     let elm = this.range.startContainer.elm
     if (!elm) return
     if (!(elm instanceof Element)) {

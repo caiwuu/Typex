@@ -1,31 +1,19 @@
 #editor-content:focus, .custom-input:focus
   outline none
-
 #editor-content
   word-break break-all
-
-  // 模拟输入样式
+  padding 15px
   .custom-input-iframe
     top -100px
     left 0
     background transparent
     color transparent
-    width 10px
+    width 0px
     height 0px
     pointer-events none
     border none
     caret-color transparent
     position absolute
-    .custom-input
-      top -100px
-      left 0
-      position absolute
-      pointer-events none
-      width 1px
-      background transparent
-      border none
-      padding 0
-
   // 光标样式
   .custom-caret
     top -100px
@@ -37,7 +25,6 @@
     padding 0
     display block
     animation caret 1s infinite 0.5s steps(1, start)
-
   // 光标动画
   @keyframes static-caret
     0%
@@ -51,22 +38,18 @@
       opacity 0
     100%
       opacity 1
-
   // 不可编辑元素禁止选中
   .editor-disabled
     user-select none
-
   // 选取颜色
   ::selection
     background rgb(186, 210, 250)
-
   // 表格样式
-  table td, td 
-    background-color: #ffffff
-  table td,th,td,th,th,td 
-    display: table-cell
-    margin: 0
-    padding: 0
-    text-align: left
-    vertical-align: middle
-  
+  table td, td
+    background-color #ffffff
+  table td, th, td, th, th, td
+    display table-cell
+    margin 0
+    padding 0
+    text-align left
+    vertical-align middle

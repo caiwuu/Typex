@@ -6,20 +6,19 @@
  * @LastEditTime: 2022-11-22 16:35:56
  */
 import { createRef } from '@/core'
-import formater from '..'
 import Block from './block'
 export class Table extends Block {
   render () {
     return (
       <table border='1' style='border-collapse:collapse;width:600px'>
-        {formater.render(this.$path)}
+        {this.renderContent}
       </table>
     )
   }
 }
 export class Row extends Block {
   render () {
-    return <tr>{formater.render(this.$path)}</tr>
+    return <tr>{this.renderContent}</tr>
   }
 }
 export class Col extends Block {
@@ -30,7 +29,7 @@ export class Col extends Block {
   render () {
     return (
       <td ref={this.state._$root} style='text-align:center;width:50%'>
-        {formater.render(this.$path)}
+        {this.renderContent}
       </td>
     )
   }

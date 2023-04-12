@@ -8,10 +8,10 @@
 import { throttle } from '../utils'
 const nativeSelection = document.getSelection()
 export default class MouseIntercept {
-  _selectionchangeHandle = throttle(() => {
+  selectionchangeHandle = throttle(() => {
     this.editor.emit('selectionchange')
   }, 500)
-  _handMousedown = throttle((event) => {
+  handMousedown (event) {
     this.editor.emit('mouseEvents', event)
     // 没按shift的时候按下左键折叠选区
     if (!event.shiftKey && event.button === 0) {
@@ -20,28 +20,28 @@ export default class MouseIntercept {
         const nativeRange = nativeSelection.getRangeAt(i)
         nativeRange.collapse(true)
       }
-      this.editor.selection.updateRanges(event.altKey)
+      this.editor.selection.updateRangesFromNative(event.altKey)
     }
-  }, 50)
-  _handMouseup = throttle((event) => {
+  }
+  handMouseup (event) {
     // 有选区或者按了shift,更新选区（isCollapsed这里必须使用原生的，因为内核的选区此时还未更新）
     if (!nativeSelection.collapsed || event.shiftKey) {
-      this.editor.selection.updateRanges(event.altKey)
+      this.editor.selection.updateRangesFromNative(event.altKey)
     }
     this.editor.focus()
-  }, 50)
+  }
   constructor(editor) {
     this.editor = editor
-    this._addListeners()
+    this.addListeners()
   }
-  destroy() {
-    this.editor.ui.content.removeEventListener('mouseup', this._handMouseup.bind(this))
-    this.editor.ui.content.removeEventListener('mousedown', this._handMousedown.bind(this))
-    document.removeEventListener('selectionchange', this._selectionchangeHandle)
+  destroy () {
+    this.editor.contentRef.current.removeEventListener('mouseup', this.handMouseup.bind(this))
+    this.editor.contentRef.current.removeEventListener('mousedown', this.handMousedown.bind(this))
+    document.removeEventListener('selectionchange', this.selectionchangeHandle)
   }
-  _addListeners() {
-    this.editor.ui.content.addEventListener('mouseup', this._handMouseup.bind(this))
-    this.editor.ui.content.addEventListener('mousedown', this._handMousedown.bind(this))
-    document.addEventListener('selectionchange', this._selectionchangeHandle)
+  addListeners () {
+    this.editor.contentRef.current.addEventListener('mouseup', this.handMouseup.bind(this))
+    this.editor.contentRef.current.addEventListener('mousedown', this.handMousedown.bind(this))
+    document.addEventListener('selectionchange', this.selectionchangeHandle)
   }
 }

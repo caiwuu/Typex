@@ -1,10 +1,6 @@
-import { setStyle, multiplication, throttle } from '../utils'
+import { setStyle, multiplication } from '../utils'
 export default class KeyboardIntercept {
   input = null
-  _throttleKeydown = throttle((event) => {
-    event?.preventDefault?.()
-    this.editor.emit('keyboardEvents', event)
-  }, 0)
   constructor(editor) {
     this.editor = editor
     this._initIframe()
@@ -14,27 +10,7 @@ export default class KeyboardIntercept {
   _initIframe() {
     this.iframe = document.createElement('iframe')
     this.iframe.classList.add('custom-input-iframe')
-    this.editor.ui.content.appendChild(this.iframe)
-    const iframedocument = this.iframe.contentDocument
-    const style = iframedocument.createElement('style')
-    style.innerHTML = `
-      .custom-input:focus {
-       outline: none;
-    }
-      .custom-input {
-        top: 0;
-        left: 0;
-        pointer-events: none;
-        width: 2px;
-        background: transparent;
-        border: none;
-        padding: 0;
-        opacity: 0;
-        caret-color: transparent;
-        color: transparent;
-      }
-    `
-    iframedocument.head.appendChild(style)
+    this.editor.contentRef.current.appendChild(this.iframe)
   }
   _initInput() {
     const iframedocument = this.iframe.contentDocument
@@ -74,8 +50,7 @@ export default class KeyboardIntercept {
     this.iframe.contentDocument.addEventListener('keyup', this._handGolobalKeydown.bind(this))
   }
   _handGolobalKeydown(event) {
-    event.preventDefault()
-    this._throttleKeydown(event)
+    this.editor.emit('keyboardEvents', event)
   }
   _inputEvent(event) {
     this.editor.emit('keyboardEvents', event)

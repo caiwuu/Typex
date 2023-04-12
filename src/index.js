@@ -41,19 +41,19 @@ const toolBar = [
     tooltip: '加粗',
     command: 'bold',
     icon: '#icon-bold',
-    commandHandle: (f) => (f.bold = !f.bold),
+    commandHandle: (path) => (path.node.formats.bold = !path.node.formats.bold),
   },
   {
     tooltip: '下划线',
     command: 'underline',
     icon: '#icon-underline',
-    commandHandle: (f) => (f.underline = !f.underline),
+    commandHandle: (path) => (path.node.formats.underline = !path.node.formats.underline),
   },
   {
     tooltip: '删除线',
     command: 'deleteline',
     icon: '#icon-del',
-    commandHandle: (f) => (f.del = !f.del),
+    commandHandle: (path) => (path.node.formats.del = !path.node.formats.del),
   },
   {
     tooltip: '背景填充',
@@ -104,6 +104,7 @@ const toolBar = [
     tooltip: '清除样式',
     command: 'clearStyle',
     icon: '#icon-clear-style',
+    commandHandle: (path) => (path.node.formats = {}),
   },
 ]
 

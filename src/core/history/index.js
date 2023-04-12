@@ -5,10 +5,6 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-14 16:15:36
  */
-const reverseOpMap = {
-  insert: 'del',
-  del: 'insert',
-}
 export default class History {
   size = 50
   queue = []
@@ -18,36 +14,29 @@ export default class History {
     this.size = size
     this.editor = editor
   }
-  push(ops) {
+  push(transaction) {
     if (this.queue.length === this.size) {
       this.queue.shift()
     }
     this.current++
     // 撤销之后再操作会覆盖之后的操作
-    this.queue.splice(this.current, this.size, ops)
+    this.queue.splice(this.current, this.size, transaction)
   }
   todo() {
     if (this.current === this.queue.length - 1) {
       return false
     } else {
       this.current++
-      return this.queue[this.current]
+      return this.queue[this.current].apply()
     }
   }
   undo() {
-    if (this.current === 0) {
+    if (this.current === -1) {
       return false
     } else {
+      const res = this.queue[this.current].rollback()
       this.current--
-      return this.genReverseOp(this.queue[this.current])
+      return res
     }
-  }
-  // 生成逆操作
-  genReverseOp(ops) {
-    return [...ops].reverse().map((op) => ({
-      position: op.position,
-      type: reverseOpMap[op.type],
-      op: [...op.op].reverse(),
-    }))
   }
 }

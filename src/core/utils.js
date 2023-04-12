@@ -158,3 +158,49 @@ export function positionCompare (a, b) {
 export function typeOf (data) {
   return Object.prototype.toString.call(data).slice(8, -1);
 }
+
+export function classCheck (newTarget, baseClass, abstractMethod) {
+  if (newTarget === baseClass) {
+    throw new Error(`${baseClass.name} class can\`t instantiate`);
+  }
+  abstractMethod.forEach(methodName => {
+    if (!newTarget.prototype.hasOwnProperty(methodName)) throw new Error(`please overwrite ${methodName} method`)
+  })
+}
+
+/**
+   * @description 合并选区断点容器
+   * @param {*} path
+   * @param {*} basePath
+   * @memberof Formater
+   */
+export function mergePointsContainer (path, basePath, editor) {
+  editor.selection.rangePoints
+    .filter((point) => point.container === path)
+    .forEach((point) => {
+      if (point.pointName === 'start') {
+        point.range.setStart(basePath, basePath.len + point.offset)
+      } else {
+        point.range.setEnd(basePath, basePath.len + point.offset)
+      }
+    })
+}
+
+/**
+   * @description 文本路径合并
+   * @param {*} paths
+   * @returns {*}
+   * @memberof Formater
+   */
+export function mergeTextPath (paths, editor) {
+  const basePath = paths[0]
+  const pathsLen = paths.length
+  if (pathsLen === 1) return basePath
+  for (let i = 0; i < pathsLen - 1; i++) {
+    // 对在该节点的选区断点进行合并到basePath
+    mergePointsContainer(basePath.nextSibling, basePath, editor)
+    basePath.node.data += basePath.nextSibling.node.data
+    basePath.nextSibling.delete()
+  }
+  return basePath
+}

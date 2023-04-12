@@ -9,22 +9,24 @@ import { Content } from '@/core'
 import Static from './Static'
 
 export default class Image extends Content {
+  state = {
+    initProp: null,
+  }
   render () {
     return (
-      // <swapper>
       <div style='display:inline-block'>
-        {/* <div
-            onMousedown={this.onMousedown}
-            onClick={this.sizeChange}
-            style='display:inline-block;height:10px;width:10px;background:red;user-select:none'
-          ></div> */}
+        我是image的一部分
+        <div
+          onMousedown={this.onMousedown}
+          onClick={this.sizeChange}
+          style='display:inline-block;height:15px;width:15px;background:red;user-select:none'
+        ></div>
         <img
           onMousedown={this.onMousedown}
           onClick={this.sizeChange}
           {...this.$path.node.data}
         ></img>
       </div>
-      // </swapper>
     )
   }
   // 阻止事件冒泡导致光标移动
@@ -33,12 +35,15 @@ export default class Image extends Content {
     e.stopPropagation()
   }
   sizeChange = (e) => {
-    if (this.$path.node.data.width === '50px') {
-      this.$path.node.data.width = '200px'
-      this.$path.node.data.height = '200px'
+    if (!this.state.initProp) {
+      this.state.initProp = { ...this.$path.node.data }
+    }
+    if (this.$path.node.data.width === this.state.initProp.width) {
+      this.$path.node.data.width = '100px'
+      this.$path.node.data.height = '100px'
     } else {
-      this.$path.node.data.width = '50px'
-      this.$path.node.data.height = '50px'
+      this.$path.node.data.width = this.state.initProp.width
+      this.$path.node.data.height = this.state.initProp.height
     }
     this.update()
   }

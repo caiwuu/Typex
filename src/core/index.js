@@ -8,6 +8,7 @@
 import { usePlugin } from './pluginContext'
 import initCore from './initCore'
 import core from './core'
+import Typex from './Typex'
 
 const createPath = core.createPath,
   queryCommonPath = core.queryCommonPath,
@@ -49,4 +50,5 @@ export {
   getVdomOrIns,
   usePlugin,
   initCore,
+  Typex,
 }

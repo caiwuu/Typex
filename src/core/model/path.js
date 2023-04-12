@@ -1,4 +1,4 @@
-import { getVdomOrElm, getVdomOrPath, getVdomOrIns } from '../mappings'
+import { getVdomOrElm, getVdomOrPath } from '../mappings'
 import { computeLen, typeOf, positionCompare, isPrimitive } from '../utils'
 
 /**
@@ -58,6 +58,21 @@ export class Path {
 
   /**
    * @description 路径类型
+   * @readonly
+   * @memberof Path
+   */
+  get pathType() {
+    switch (this.dataType) {
+      case 'String':
+        return 3
+      case 'Object':
+        return 2
+      case 'Array':
+        return 1
+    }
+  }
+  /**
+   * @description 数据类型
    * @readonly
    * @memberof Path
    */
@@ -198,7 +213,7 @@ export class Path {
    * @memberof Path
    */
   split(index) {
-    if (this.isLeaf) {
+    if (this.pathType === 3) {
       const newPath = createPath({
         data: this.node.data.slice(index),
         formats: { ...this.node.formats },
@@ -405,6 +420,7 @@ export class Path {
 export function createPath(node, parent = null, prevSibling = null, nextSibling = null, index = 0) {
   const position = parent ? parent.position + '-' + index : '0'
   node.position = position
+  if (!node.formats) node.formats = {}
   const config = {
     node: node,
     parent: parent,

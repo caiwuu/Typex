@@ -1,20 +1,18 @@
-import { Formater } from '@/core'
-const formater = new Formater()
 import { Table, Row, Col, Image, Paragraph, Root } from './components'
 const root = {
   name: 'root',
   type: 'component',
-  render(vnode, props) {
+  render (parentVnode, props) {
     return <Root {...props}></Root>
   },
 }
 const paragraph = {
   name: 'paragraph',
   type: 'component',
-  render(vnode, props) {
+  render (parentVnode, props) {
     const vn = <Paragraph {...props}></Paragraph>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -23,10 +21,10 @@ const paragraph = {
 const bold = {
   name: 'bold',
   type: 'tag',
-  render(vnode) {
+  render (parentVnode) {
     const vn = <strong></strong>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -34,10 +32,10 @@ const bold = {
 const underline = {
   name: 'underline',
   type: 'tag',
-  render(vnode) {
+  render (parentVnode) {
     const vn = <u></u>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -45,22 +43,22 @@ const underline = {
 const fontSize = {
   name: 'fontSize',
   type: 'attribute',
-  render(vnode, value) {
-    if (vnode) {
-      if (!vnode.props.style) vnode.props.style = {}
-      vnode.props.style['font-size'] = value
+  render (parentVnode, value) {
+    if (parentVnode) {
+      if (!parentVnode.props.style) parentVnode.props.style = {}
+      parentVnode.props.style['fontSize'] = value
     } else {
-      return <span style={{ 'font-size': value }}></span>
+      return <span style={{ fontSize: value }}></span>
     }
   },
 }
 const color = {
   name: 'color',
   type: 'attribute',
-  render(vnode, value) {
-    if (vnode) {
-      if (!vnode.props.style) vnode.props.style = {}
-      vnode.props.style['color'] = value
+  render (parentVnode, value) {
+    if (parentVnode) {
+      if (!parentVnode.props.style) parentVnode.props.style = {}
+      parentVnode.props.style['color'] = value
     } else {
       return <span style={{ color: value }}></span>
     }
@@ -69,10 +67,10 @@ const color = {
 const del = {
   name: 'del',
   type: 'tag',
-  render(vnode) {
+  render (parentVnode) {
     const vn = <del></del>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -80,10 +78,10 @@ const del = {
 const sup = {
   name: 'sup',
   type: 'tag',
-  render(vnode) {
+  render (parentVnode) {
     const vn = <sup></sup>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -91,10 +89,10 @@ const sup = {
 const sub = {
   name: 'sub',
   type: 'tag',
-  render(vnode) {
+  render (parentVnode) {
     const vn = <sub></sub>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -102,10 +100,10 @@ const sub = {
 const table = {
   name: 'table',
   type: 'component',
-  render(vnode, props) {
+  render (parentVnode, props) {
     const vn = <Table {...props}></Table>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -113,10 +111,10 @@ const table = {
 const row = {
   name: 'row',
   type: 'component',
-  render(vnode, props) {
+  render (parentVnode, props) {
     const vn = <Row {...props}></Row>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
@@ -124,29 +122,23 @@ const row = {
 const col = {
   name: 'col',
   type: 'component',
-  render(vnode, props) {
+  render (parentVnode, props) {
     const vn = <Col {...props}></Col>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
 }
 const image = {
   name: 'image',
-  isLeaf: true,
   type: 'component',
-  render(vnode, props) {
+  render (parentVnode, props) {
     const vn = <Image {...props}></Image>
-    if (vnode) {
-      vnode.children.push(vn)
+    if (parentVnode) {
+      parentVnode.children.push(vn)
     }
     return vn
   },
 }
-;[root, bold, image, underline, fontSize, color, paragraph, del, sup, sub, table, row, col].forEach(
-  (ele) => {
-    formater.register(ele)
-  }
-)
-export default formater
+export default [root, bold, image, underline, fontSize, color, paragraph, del, sup, sub, table, row, col]

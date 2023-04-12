@@ -2,6 +2,8 @@ import pluginContext from './pluginContext'
 import emit from 'mitt'
 import Selection from './selection'
 import { usePlugin } from './pluginContext'
+import Formater from '@/core/model/formater'
+import History from './history/index'
 
 /**
  * @description 内核初始化
@@ -9,13 +11,17 @@ import { usePlugin } from './pluginContext'
  * @param {*} ops
  */
 export default function initCore(ops) {
-  const { editor, formater, platform } = ops
+  const { editor, formats, plugins } = ops
+  const fmtIns = new Formater()
+  fmtIns.register(formats)
   editor.$eventBus = emit()
-  formater.inject('editor', editor)
-  const initIntercept = usePlugin(platform)
+  fmtIns.inject('editor', editor)
+  editor.formater = fmtIns
+  editor.history = new History(20, editor)
+  usePlugin(plugins)
   editor.selection = new Selection(editor)
   Promise.resolve().then(() => {
-    initIntercept(editor)
+    pluginContext.platform.initIntercept(editor)
   })
   initDispatcher(editor)
 }
@@ -35,7 +41,7 @@ function initDispatcher(editor) {
         const nativeRange = pluginContext.platform.nativeSelection.getRangeAt(i)
         nativeRange.collapse(true)
       }
-      editor.selection.updateRanges(event.altKey)
+      editor.selection.updateRangesFromNative(event.altKey)
     }
   })
   editor.on('keyboardEvents', (event) => {
@@ -52,11 +58,11 @@ function initDispatcher(editor) {
       } else {
         eventHandle = path.component[`on${titleCase(event.type)}`]?.bind(path.component)
       }
-      if (event.key && typeof quickEventHandle === 'function') {
-        quickEventHandle(range, event)
-      }
       if (typeof eventHandle === 'function') {
         eventHandle(range, event)
+      }
+      if (event.key && typeof quickEventHandle === 'function') {
+        quickEventHandle(range, event)
       }
     })
   })

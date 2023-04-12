@@ -10,11 +10,15 @@ class Formater {
 
   /**
    * @description 注册格式
-   * @param {*} format
+   * @param {*} formats
    * @memberof Formater
    */
-  register (format) {
-    this.formatMap.set(format.name, format)
+  register (formats) {
+    formats.forEach(
+      (format) => {
+        this.formatMap.set(format.name, format)
+      }
+    )
   }
 
   /**
@@ -200,6 +204,14 @@ class Formater {
   get types () {
     return [...this.formatMap.keys()]
   }
+
+  /**
+   * @description _getFormats
+   * @param {*} objs
+   * @returns {*}
+   * @memberof Formater
+   * @private
+   */
   _getFormats (objs) {
     return objs.map((obj) => {
       const key = Object.keys(obj)[0]
@@ -227,6 +239,7 @@ class Formater {
    * @param {*} key
    * @returns {*}  {boolean}
    * @memberof Formater
+   * @private
    */
   _canAdd (path, prevPath, key) {
     /**
@@ -245,22 +258,23 @@ class Formater {
 
   /**
    * @description 公共格式提取分组法
-   * @param {*} _group
+   * @param {*} group
    * @param {*} index
    * @param {*} [r=[]]
    * @returns {*}
    * @memberof Formater
+   * @private
    */
-  _group (_group, index, r = []) {
+  _group (group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
     let prevPath = null
     let counter = {}
     let prevMaxCounter = 0
-    for (index; index < _group.paths.length; index++) {
+    for (index; index < group.paths.length; index++) {
       let cacheCounter = { ...counter }
-      const path = _group.paths[index]
-      _group.restFormats.forEach((key) => {
+      const path = group.paths[index]
+      group.restFormats.forEach((key) => {
         if (!prevPath) {
           counter[key] = 0
           if (path.node.formats[key]) counter[key]++
@@ -274,18 +288,14 @@ class Formater {
        */
       if (
         prevPath &&
-        Object.keys(path.node.formats).some((key) =>
-          ['block', 'component'].includes(this.get(key).type)
-        )
+        Object.keys(path.node.formats).some((key) => this.get(key).type === 'component')
       ) {
         prevPath = null
         break
       }
       if (
         prevPath &&
-        Object.keys(prevPath.node.formats).some((key) =>
-          ['block', 'component'].includes(this.get(key).type)
-        )
+        Object.keys(prevPath.node.formats).some((key) => this.get(key).type === 'component')
       ) {
         prevPath = null
         break
@@ -308,8 +318,8 @@ class Formater {
       grouped.children.push(path)
       grouped.commonFormats = Object.entries(counter)
         .filter((ele) => ele[1] && ele[1] === maxCounter)
-        .map((ele) => ({ [ele[0]]: _group.paths[index].node.formats[ele[0]] }))
-      restFormats = _group.restFormats.filter(
+        .map((ele) => ({ [ele[0]]: group.paths[index].node.formats[ele[0]] }))
+      restFormats = group.restFormats.filter(
         (ele) =>
           !grouped.commonFormats.some((i) => {
             return i[ele]
@@ -334,8 +344,8 @@ class Formater {
       )
     }
     r.push(grouped)
-    if (index < _group.paths.length) {
-      this._group(_group, index, r)
+    if (index < group.paths.length) {
+      this._group(group, index, r)
     }
     return r
   }
