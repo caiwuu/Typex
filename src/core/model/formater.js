@@ -1,5 +1,6 @@
 import { default as h } from '../view/vdom/createVnode'
 import { setVdomOrPath } from '../mappings'
+import { mergeTextPath } from '../utils'
 
 /**
  * @description 格式管理类
@@ -13,12 +14,10 @@ class Formater {
    * @param {*} formats
    * @memberof Formater
    */
-  register (formats) {
-    formats.forEach(
-      (format) => {
-        this.formatMap.set(format.name, format)
-      }
-    )
+  register(formats) {
+    formats.forEach((format) => {
+      this.formatMap.set(format.name, format)
+    })
   }
 
   /**
@@ -27,10 +26,10 @@ class Formater {
    * @param {*} prop
    * @memberof Formater
    */
-  inject (propName, prop) {
+  inject(propName, prop) {
     this[propName] = prop
   }
-  renderRoot (rootPath) {
+  renderRoot(rootPath) {
     return this.render({ children: [rootPath] })
   }
   /**
@@ -39,7 +38,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  render (path) {
+  render(path) {
     const gs = this._group(
       {
         paths: path.children,
@@ -58,45 +57,8 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _invokeRender (vn, current) {
+  _invokeRender(vn, current) {
     return current.fmt.render(vn, current.value, h)
-  }
-
-  /**
-   * @description 合并选区断点容器
-   * @param {*} path
-   * @param {*} basePath
-   * @memberof Formater
-   */
-  mergePointsContainer (path, basePath) {
-    this.editor.selection.rangePoints
-      .filter((point) => point.container === path)
-      .forEach((point) => {
-        if (point.pointName === 'start') {
-          point.range.setStart(basePath, basePath.len + point.offset)
-        } else {
-          point.range.setEnd(basePath, basePath.len + point.offset)
-        }
-      })
-  }
-
-  /**
-   * @description 文本路径合并
-   * @param {*} paths
-   * @returns {*}
-   * @memberof Formater
-   */
-  _mergeTextPath (paths) {
-    const basePath = paths[0]
-    const pathsLen = paths.length
-    if (pathsLen === 1) return basePath
-    for (let i = 0; i < pathsLen - 1; i++) {
-      // 对在该节点的选区断点进行合并到basePath
-      this.mergePointsContainer(basePath.nextSibling, basePath)
-      basePath.node.data += basePath.nextSibling.node.data
-      basePath.nextSibling.delete()
-    }
-    return basePath
   }
 
   /**
@@ -106,7 +68,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _generateGroups (gs, flag) {
+  _generateGroups(gs, flag) {
     return gs
       .map((g) => {
         let componentQuene
@@ -115,7 +77,7 @@ class Formater {
         if (g.commonFormats.length === 0) {
           if (g.children.findIndex((path) => typeof path.node.data === 'object') !== -1)
             throw '格式标记不合法,文本格式不可用于标记非文本的结构'
-          const mergedTextPath = this._mergeTextPath(g.children)
+          const mergedTextPath = mergeTextPath(g.children, this.editor)
           let vtext
           if (mergedTextPath.node.data === '') {
             vtext = flag === 0 ? h('br') : null
@@ -178,7 +140,7 @@ class Formater {
           } else {
             if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
               throw '格式标记不合法,文本格式不可用于标记非文本的结构'
-            const mergedTextPath = this._mergeTextPath(g.children)
+            const mergedTextPath = mergeTextPath(g.children, this.editor)
             let vtext = null
             if (flag === 0) {
               vtext = h('br')
@@ -201,7 +163,7 @@ class Formater {
    * @readonly
    * @memberof Formater
    */
-  get types () {
+  get types() {
     return [...this.formatMap.keys()]
   }
 
@@ -212,7 +174,7 @@ class Formater {
    * @memberof Formater
    * @private
    */
-  _getFormats (objs) {
+  _getFormats(objs) {
     return objs.map((obj) => {
       const key = Object.keys(obj)[0]
       return {
@@ -228,7 +190,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  get (key) {
+  get(key) {
     return this.formatMap.get(key) || {}
   }
 
@@ -241,7 +203,7 @@ class Formater {
    * @memberof Formater
    * @private
    */
-  _canAdd (path, prevPath, key) {
+  _canAdd(path, prevPath, key) {
     /**
      * 当前无格式
      */
@@ -265,7 +227,7 @@ class Formater {
    * @memberof Formater
    * @private
    */
-  _group (group, index, r = []) {
+  _group(group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
     let prevPath = null
