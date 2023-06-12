@@ -1,4 +1,4 @@
-import { SplitText, SetFormats } from './step'
+import { SplitText, SetFormats, DeleteText } from './step'
 class transaction {
   steps = []
   startRanges = []
@@ -8,21 +8,21 @@ class transaction {
     // 初始状态
     this.startRanges = this.editor.selection.stringifyRanges()
   }
-  get commitPath() {
+  get commitPath () {
     return this.editor.queryPath(this.commitPathPosition)
   }
-  addAndApplyStep(step) {
+  addAndApplyStep (step) {
     this.steps.push(step)
     return step.apply(this.editor)
   }
-  commit(path) {
+  commit (path) {
     // 结尾状态
     this.endRanges = this.editor.selection.stringifyRanges()
     this.commitPathPosition = path.position
     path.component.update()
     this.editor.history.push(this)
   }
-  apply() {
+  apply () {
     for (let index = 0; index < this.steps.length; index++) {
       const step = this.steps[index]
       step.apply(this.editor)
@@ -31,7 +31,7 @@ class transaction {
       this.editor.selection.recoverRangesFromJson(this.endRanges)
     })
   }
-  rollback() {
+  rollback () {
     for (let index = this.steps.length; index > 0; index--) {
       const step = this.steps[index - 1]
       step.invert(this.editor)
@@ -42,7 +42,7 @@ class transaction {
   }
 }
 
-export function setFormat(editor, format) {
+export function setFormat (editor, format) {
   const ts = new transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const commonPath = editor.queryCommonPath(range.startContainer, range.endContainer)
@@ -55,8 +55,17 @@ export function setFormat(editor, format) {
     commonPath.component.update()
   })
 }
+export function deleteText (editor, count) {
+  const ts = new transaction(editor)
+  editor.selection.ranges.forEach((range) => {
+    const deleteTextStep = new DeleteText(range.container, range.offset, count)
+    ts.addAndApplyStep(deleteTextStep)
+    ts.commit(range.container.parent)
+    range.container.parent.component.update()
+  })
+}
 
-function getLeafPathInRange(range, editor, ts) {
+function getLeafPathInRange (range, editor, ts) {
   if (range.collapsed) return []
   let start,
     end,

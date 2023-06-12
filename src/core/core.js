@@ -9,7 +9,7 @@ import { createPath, queryCommonPath, queryPath, Formater, Content, Path } from 
 import Selection from './selection'
 import { createRef, createVnode, patch, Component } from './view'
 import { SplitText } from './transform/step'
-import { setFormat } from './transform/transaction'
+import { setFormat, deleteText } from './transform/transaction'
 import * as utils from './utils.js'
 import {
   setVdomOrElm,
@@ -45,3 +45,4 @@ export default core
 
 
 window.setFormat = setFormat
+window.deleteText = deleteText
