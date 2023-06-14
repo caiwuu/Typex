@@ -59,6 +59,9 @@ export default class Selection {
     })
     return points
   }
+  get rangesSnapshot () {
+    return this.ranges.map(range => range.snapshot)
+  }
 
   /**
    * @description 清除范围选区
@@ -438,12 +441,9 @@ export default class Selection {
       },
     }
   }
-  stringifyRanges () {
-    return this.ranges.map(range => range.toJson())
-  }
-  recoverRangesFromJson (jsonRanges) {
+  recoverRangesFromSnapshot (rangesSnapshot) {
     this.removeAllRanges()
-    this.ranges = jsonRanges.map(jsonRange =>
+    this.ranges = rangesSnapshot.map(jsonRange =>
       this.createRange({
         startContainer: this.editor.queryPath(jsonRange.startContainer),
         endContainer: this.editor.queryPath(jsonRange.endContainer),

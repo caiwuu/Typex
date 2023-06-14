@@ -88,6 +88,15 @@ export default class Range {
       this.startContainer = container
     }
   }
+  get snapshot () {
+    return {
+      endContainer: this.endContainer.position,
+      startContainer: this.startContainer.position,
+      endOffset: this.endOffset,
+      startOffset: this.startOffset,
+      d: this.d
+    }
+  }
 
   /**
    * @description 设置容器和偏移量
@@ -166,14 +175,5 @@ export default class Range {
     const index = this.editor.selection.ranges.findIndex((i) => i === this)
     this.caret.remove()
     this.editor.selection.ranges.splice(index, 1)
-  }
-  toJson () {
-    return {
-      endContainer: this.endContainer.position,
-      startContainer: this.startContainer.position,
-      endOffset: this.endOffset,
-      startOffset: this.startOffset,
-      d: this.d
-    }
   }
 }

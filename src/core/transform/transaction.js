@@ -6,7 +6,7 @@ class transaction {
   constructor(editor) {
     this.editor = editor
     // 初始状态
-    this.startRanges = this.editor.selection.stringifyRanges()
+    this.startRanges = this.editor.selection.rangesSnapshot
   }
   get commitPath () {
     return this.editor.queryPath(this.commitPathPosition)
@@ -17,7 +17,7 @@ class transaction {
   }
   commit (path) {
     // 结尾状态
-    this.endRanges = this.editor.selection.stringifyRanges()
+    this.endRanges = this.editor.selection.rangesSnapshot
     this.commitPathPosition = path.position
     path.component.update()
     this.editor.history.push(this)
@@ -28,7 +28,7 @@ class transaction {
       step.apply(this.editor)
     }
     this.commitPath.component.update().then(() => {
-      this.editor.selection.recoverRangesFromJson(this.endRanges)
+      this.editor.selection.recoverRangesFromSnapshot(this.endRanges)
     })
   }
   rollback () {
@@ -37,7 +37,7 @@ class transaction {
       step.invert(this.editor)
     }
     this.commitPath.component.update().then(() => {
-      this.editor.selection.recoverRangesFromJson(this.startRanges)
+      this.editor.selection.recoverRangesFromSnapshot(this.startRanges)
     })
   }
 }
