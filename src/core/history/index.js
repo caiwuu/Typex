@@ -8,34 +8,38 @@
 export default class History {
   size = 50
   queue = []
-  current = -1
+  idx = -1
   editor = null
   constructor(size, editor) {
     this.size = size
     this.editor = editor
   }
+  get current() {
+    return this.queue[this.idx]
+  }
   push(transaction) {
+    if (this.current === transaction) return
     if (this.queue.length === this.size) {
       this.queue.shift()
     }
-    this.current++
+    this.idx++
     // 撤销之后再操作会覆盖之后的操作
-    this.queue.splice(this.current, this.size, transaction)
+    this.queue.splice(this.idx, this.size, transaction)
   }
   todo() {
-    if (this.current === this.queue.length - 1) {
+    if (this.idx === this.queue.length - 1) {
       return false
     } else {
-      this.current++
-      return this.queue[this.current].apply()
+      this.idx++
+      return this.current.apply()
     }
   }
   undo() {
-    if (this.current === -1) {
+    if (this.idx === -1) {
       return false
     } else {
-      const res = this.queue[this.current].rollback()
-      this.current--
+      const res = this.current.rollback()
+      this.idx--
       return res
     }
   }

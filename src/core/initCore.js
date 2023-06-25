@@ -49,7 +49,7 @@ function initDispatcher(editor) {
       const path = range.container
       // 支持简写handle
       const quickEventHandle = event.key
-        ? path.component[`on${titleCase(event.type)}${titleCase(event.key)}`]?.bind(path.component)
+        ? path.component[`on${titleCase(event.type)}${event.key}`]?.bind(path.component)
         : null
       let eventHandle
       // 处理聚合输入

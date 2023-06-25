@@ -86,7 +86,7 @@ export class Path {
    * @memberof Path
    */
   get blockComponent() {
-    if (this.component._type === 'block') return this.component
+    if (this.component.displayType === 'block') return this.component
     return this.parent.blockComponent
   }
 
