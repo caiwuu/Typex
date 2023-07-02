@@ -46,7 +46,7 @@ class Formater {
       },
       0
     )
-    const vn = this._generateGroups(gs, path.len)
+    const vn = this._generateGroups(gs, path.isBlock && path.length === 0)
     return vn
   }
 
@@ -64,11 +64,11 @@ class Formater {
   /**
    * @description 格式分组
    * @param {*} gs
-   * @param {*} flag
+   * @param {*} isEmptyBlock
    * @returns {*}
    * @memberof Formater
    */
-  _generateGroups(gs, flag) {
+  _generateGroups(gs, isEmptyBlock) {
     return gs
       .map((g) => {
         let componentQuene
@@ -78,9 +78,9 @@ class Formater {
           if (g.children.findIndex((path) => typeof path.node.data === 'object') !== -1)
             throw '格式标记不合法,文本格式不可用于标记非文本的结构'
           const mergedTextPath = mergeTextPath(g.children, this.editor)
-          let vtext
-          if (mergedTextPath.node.data === '') {
-            vtext = flag === 0 ? h('br') : null
+          let vtext = null
+          if (isEmptyBlock) {
+            vtext = h('br')
             /* 
              这里借助指针的思想，设计比较巧妙抽象
              改变path指向，从path层面看选区还在path-0位置
@@ -89,9 +89,14 @@ class Formater {
              */
 
             // 内容为空时 将path指向他父级的vdom
-            setVdomOrPath(mergedTextPath, mergedTextPath.parent.vn)
+            // 需要等待 vn生成
+            Promise.resolve().then(() => {
+              console.log(mergedTextPath.parent.vn)
+              setVdomOrPath(mergedTextPath, mergedTextPath.parent.vn)
+            })
             mergedTextPath.clearFormat()
           } else {
+            if (mergedTextPath.node.data === '') console.warn('非法空标签：', mergedTextPath)
             // 输入内容时 重新指向创建vdom
             vtext = h('text', {}, [mergedTextPath.node.data])
             setVdomOrPath(mergedTextPath, vtext)
@@ -136,17 +141,18 @@ class Formater {
             if (!pv) pv = res
           }
           if (g.children[0].commonFormats) {
-            vn.children = this._generateGroups(g.children, flag)
+            vn.children = this._generateGroups(g.children, isEmptyBlock)
           } else {
             if (g.children.findIndex((ele) => typeof ele.data === 'object') !== -1)
               throw '格式标记不合法,文本格式不可用于标记非文本的结构'
             const mergedTextPath = mergeTextPath(g.children, this.editor)
             let vtext = null
-            if (flag === 0) {
+            if (isEmptyBlock) {
               vtext = h('br')
               setVdomOrPath(mergedTextPath, vn)
               mergedTextPath.clearFormat()
             } else {
+              if (mergedTextPath.node.data === '') console.warn('非法空标签：', mergedTextPath)
               vtext = h('text', {}, [mergedTextPath.node.data])
               setVdomOrPath(mergedTextPath, vtext)
             }

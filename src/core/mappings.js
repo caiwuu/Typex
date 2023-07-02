@@ -24,6 +24,7 @@ function getVdomOrPath(key) {
     // 通过path找vn
   } else {
     const vnode = pathVnodeMap.get(key)
+    if (!vnode) return
     if (vnode.vnodeType === 1) return getVdomOrIns(vnode)
     if (vnode.vnodeType === 2) return getVdomOrIns(vnode.type)
     return vnode

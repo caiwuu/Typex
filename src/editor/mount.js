@@ -15,7 +15,7 @@ import ToolBar from './toolBar'
 function renderRoot(editor) {
   return (
     <div class='editor-wrappe'>
-      <ToolBar tools={[...editor.toolBarOption]}></ToolBar>
+      <ToolBar tools={[...editor.toolBarOption]} editor={editor}></ToolBar>
       {editor.renderContent(h)}
     </div>
   )

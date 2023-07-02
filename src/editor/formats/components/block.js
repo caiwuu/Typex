@@ -7,7 +7,7 @@
  */
 import { Content } from '@/core'
 export default class Block extends Content {
-  get _type() {
+  get displayType() {
     return 'block'
   }
   onKeydownb(range, event) {
@@ -22,7 +22,7 @@ export default class Block extends Content {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
-        path.node.formats.del = !path.node.formats.del
+        path.node.formats.deleteline = !path.node.formats.deleteline
       })
     }
   }

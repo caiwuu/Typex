@@ -3,8 +3,24 @@ import './iconfont'
 import './toolBar.styl'
 // 工具栏
 export default class ToolBar extends Component {
+  toolBarItems = []
   constructor(props) {
     super(props)
+    this.props.editor.on('selectionchange', (ops) => {
+      const { startContainer, endContainer } = ops
+      const selectLeafs = []
+      let current = startContainer
+      while (1) {
+        selectLeafs.push(current)
+        if (current === endContainer) break
+        current = current.nextLeaf
+      }
+      const commonKeyValue = findCommonKeyValuePairs(selectLeafs.map((ele) => ele.node.formats))
+      this.notice(commonKeyValue)
+    })
+  }
+  notice(commonKeyValue) {
+    this.toolBarItems.forEach((item) => item.onNotice(commonKeyValue))
   }
   render() {
     const { tools } = this.props
@@ -12,7 +28,9 @@ export default class ToolBar extends Component {
       <div class='editor-tool-bar'>
         {tools.map((ele) => (
           <Tooltip width='64' content={ele.tooltip}>
-            <ToolBarItem {...{ ...ele, onCommand: this.onCommand }}></ToolBarItem>
+            <ToolBarItem
+              {...{ ...ele, onCommand: this.onCommand, toolBarItems: this.toolBarItems }}
+            ></ToolBarItem>
           </Tooltip>
         ))}
       </div>
@@ -26,15 +44,23 @@ export default class ToolBar extends Component {
 class ToolBarItem extends Component {
   constructor(props) {
     super(props)
-    this.state = { value: true }
+    this.state = { value: false }
+    this.props.toolBarItems.push(this)
     this.dialogRef = createRef()
+  }
+  onNotice(commonKeyValue) {
+    if (commonKeyValue[this.props.command] !== this.state.value) {
+      this.setState({
+        value: commonKeyValue[this.props.command],
+      })
+    }
   }
   render() {
     return (
       <span
         onClick={this.click}
         class='editor-tool-bar-item'
-        style={`color: ${this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
+        style={`color: ${!this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
@@ -46,7 +72,6 @@ class ToolBarItem extends Component {
     )
   }
   click = () => {
-    console.log('click')
     this.setState({
       value: !this.state.value,
     })
@@ -90,4 +115,19 @@ export class Dialog extends Component {
   toggle() {
     this.setState({ visiable: !this.state.visiable })
   }
+}
+function findCommonKeyValuePairs(lists) {
+  if (lists.length === 0) return {}
+
+  const commonPairs = {}
+
+  for (const key in lists[0]) {
+    const value = lists[0][key]
+
+    if (lists.every((obj) => obj[key] === value)) {
+      commonPairs[key] = value
+    }
+  }
+
+  return commonPairs
 }

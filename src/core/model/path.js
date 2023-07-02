@@ -8,18 +8,12 @@ import { computeLen, typeOf, positionCompare, isPrimitive } from '../utils'
  */
 export class Path {
   /**
-   * @description 标记删除
+   * @description 重建标记 0：无操作 ；1：删除
    * @protected
    * @memberof Path
    */
-  _shouldDelete = false
+  rebuildFlag = 0
 
-  /**
-   * @description 标记重建
-   * @protected
-   * @memberof Path
-   */
-  _shouldRebuild = false
   constructor({ node, parent, position, prevSibling, nextSibling, children }) {
     this.node = node
     this.parent = parent
@@ -27,6 +21,12 @@ export class Path {
     this.prevSibling = prevSibling
     this.nextSibling = nextSibling
     this.children = children
+  }
+  get isBlock() {
+    return this === this?.component.$path && this?.component.displayType === 'block'
+  }
+  get $editor() {
+    return this._editor || this.parent.$editor
   }
 
   /**
@@ -43,7 +43,7 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get len() {
+  get length() {
     return computeLen(this)
   }
 
@@ -218,7 +218,7 @@ export class Path {
         data: this.node.data.slice(index),
         formats: { ...this.node.formats },
       })
-      this.textDelete(this.len, this.len - index)
+      this.textDelete(this.length, this.length - index)
       newPath.insertAfter(this)
       return [this, newPath]
     } else {
@@ -239,9 +239,17 @@ export class Path {
    * @returns {Path}
    * @memberof Path
    */
-  cloneMark() {
+  clone(cloneChild = false) {
+    let data
+    if (cloneChild) {
+      data = isPrimitive(this.node.data)
+        ? this.node.data
+        : JSON.parse(JSON.stringify(this.node.data))
+    } else {
+      data = isPrimitive(this.node.data) ? '' : this.node.data ? [] : {}
+    }
     return createPath({
-      data: isPrimitive(this.node.data) ? '' : this.node.data ? [] : {},
+      data,
       formats: { ...this.node.formats },
     })
   }
@@ -254,9 +262,9 @@ export class Path {
     if (!this.parent) {
       return
     }
-    this._shouldDelete = true
+    this.rebuildFlag = 1
     this.parent.rebuild()
-    if (delEmptyParent && !this.parent.len) {
+    if (delEmptyParent && !this.parent.length) {
       this.parent.delete(true)
     }
   }
@@ -291,9 +299,9 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertBefore(path) {
+  insertBefore(path, delEmptyParent) {
     path.parent.children.splice(path.index, 0, this)
-    this.delete(true)
+    this.delete(delEmptyParent)
     path.parent.rebuild()
   }
 
@@ -302,19 +310,52 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertAfter(path) {
+  insertAfter(path, delEmptyParent) {
     path.parent.children.splice(path.index + 1, 0, this)
-    this.delete(true)
+    this.delete(delEmptyParent)
     path.parent.rebuild()
+  }
+  push(path) {
+    this.children.push(path)
+    this.rebuild()
+  }
+  pop() {
+    const item = this.children[this.children.length - 1]
+    item.rebuildFlag = 1
+    this.rebuild()
+    return item
+  }
+  unshift(path) {
+    this.children.unshift(path)
+    this.rebuild()
+  }
+  shift() {
+    const item = this.children[0]
+    item.rebuildFlag = 1
+    this.rebuild()
+    return item
+  }
+  splice(start, deleteCount, ...additems) {
+    const deleteItems = []
+    if (additems.length) this.children.splice(start + 1, 0, ...additems)
+    if (deleteCount > 0) {
+      for (let index = 0; index < deleteCount; index++) {
+        const element = this.children[index + start]
+        element.rebuildFlag = 1
+        deleteItems.push[element]
+      }
+    }
+    this.rebuild()
+    return deleteItems
   }
   /**
    * @description 移动到path的children
    * @param {Path} path
    * @memberof Path
    */
-  moveTo(path) {
+  moveTo(path, delEmptyParent) {
     path.children.push(this)
-    this.delete(true)
+    this.delete(delEmptyParent)
     path.rebuild()
   }
 
@@ -323,9 +364,9 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertChildrenBefore(path) {
+  insertChildrenBefore(path, delEmptyParent) {
     path.parent.children.splice(path.index, 0, ...this.children)
-    this.delete(true)
+    this.delete(delEmptyParent)
     path.parent.rebuild()
   }
 
@@ -334,10 +375,9 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertChildrenAfter(path) {
+  insertChildrenAfter(path, delEmptyParent) {
     path.parent.children.splice(path.index + 1, 0, ...this.children)
-    this.delete(true)
-    if (path.len === 0) path.delete(true)
+    this.delete(delEmptyParent)
     path.parent.rebuild()
   }
   /**
@@ -347,7 +387,6 @@ export class Path {
    * @memberof Path
    */
   deleteBetween(startPath, endPath) {
-    const pathsToRebuild = []
     if (this === startPath || this === endPath || startPath === endPath) return
     const traverse = (path) => {
       for (var i = 0; i < path.children.length; i++) {
@@ -355,16 +394,13 @@ export class Path {
         if (startPath.originOf(ele) || endPath.originOf(ele)) {
           traverse(ele)
         } else if (ele.positionCompare(startPath) === 1 && ele.positionCompare(endPath) === -1) {
-          ele._shouldDelete = true
-          if (!ele.parent?._shouldRebuild) {
-            pathsToRebuild.push(ele.parent)
-            ele.parent._shouldRebuild = true
-          }
+          ele.rebuildFlag = 1
         }
       }
     }
     traverse(this)
-    pathsToRebuild.forEach((path) => path.rebuild())
+    const commonPath = this.$editor.queryCommonPath(startPath, endPath)
+    commonPath.rebuild()
   }
   /**
    * @description 重构链表树
@@ -372,16 +408,15 @@ export class Path {
    */
   rebuild() {
     if (this.dataType !== 'Array') return
-    this._shouldRebuild = false
     let cachePath = null
     this.children = this.children.filter((ele) => {
-      if (ele._shouldDelete) {
-        ele._shouldDelete = false
+      if (ele.rebuildFlag === 1) {
+        ele.rebuildFlag = 0
       } else {
         return true
       }
     })
-    // 为了保持marks索引，使用length = 0来清空数组
+    // 为了保持索引，使用length = 0来清空数组
     this.node.data.length = 0
     this.children.forEach((path, index) => {
       // 更新父级

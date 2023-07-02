@@ -53,7 +53,7 @@ const toolBar = [
     tooltip: '删除线',
     command: 'deleteline',
     icon: '#icon-del',
-    commandHandle: (path) => (path.node.formats.del = !path.node.formats.del),
+    commandHandle: (path) => (path.node.formats.deleteline = !path.node.formats.deleteline),
   },
   {
     tooltip: '背景填充',

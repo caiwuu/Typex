@@ -15,6 +15,7 @@ export default class Typex {
   constructor(options) {
     classCheck(new.target, Typex, abstractMethod)
     this.$path = options.path
+    options.path._editor = this
     initCore({
       editor: this,
       formats: options.formats,

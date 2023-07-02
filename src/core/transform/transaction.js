@@ -8,21 +8,21 @@ class transaction {
     // 初始状态
     this.startRanges = this.editor.selection.rangesSnapshot
   }
-  get commitPath () {
+  get commitPath() {
     return this.editor.queryPath(this.commitPathPosition)
   }
-  addAndApplyStep (step) {
+  addAndApplyStep(step) {
     this.steps.push(step)
     return step.apply(this.editor)
   }
-  commit (path) {
+  commit(path) {
     // 结尾状态
     this.endRanges = this.editor.selection.rangesSnapshot
     this.commitPathPosition = path.position
     path.component.update()
     this.editor.history.push(this)
   }
-  apply () {
+  apply() {
     for (let index = 0; index < this.steps.length; index++) {
       const step = this.steps[index]
       step.apply(this.editor)
@@ -31,7 +31,7 @@ class transaction {
       this.editor.selection.recoverRangesFromSnapshot(this.endRanges)
     })
   }
-  rollback () {
+  rollback() {
     for (let index = this.steps.length; index > 0; index--) {
       const step = this.steps[index - 1]
       step.invert(this.editor)
@@ -42,7 +42,7 @@ class transaction {
   }
 }
 
-export function setFormat (editor, format) {
+export function setFormat(editor, format) {
   const ts = new transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const commonPath = editor.queryCommonPath(range.startContainer, range.endContainer)
@@ -55,7 +55,7 @@ export function setFormat (editor, format) {
     commonPath.component.update()
   })
 }
-export function deleteText (editor, count) {
+export function deleteText(editor, count) {
   const ts = new transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const deleteTextStep = new DeleteText(range.container, range.offset, count)
@@ -65,7 +65,7 @@ export function deleteText (editor, count) {
   })
 }
 
-function getLeafPathInRange (range, editor, ts) {
+function getLeafPathInRange(range, editor, ts) {
   if (range.collapsed) return []
   let start,
     end,
@@ -76,7 +76,7 @@ function getLeafPathInRange (range, editor, ts) {
   } else {
     if (range.startOffset === 0) {
       start = range.startContainer
-    } else if (range.startOffset === range.startContainer.len) {
+    } else if (range.startOffset === range.startContainer.length) {
       start = range.startContainer.nextLeaf
     } else {
       const splitTextStep = new SplitText(range.startContainer, range.startOffset)
@@ -86,7 +86,7 @@ function getLeafPathInRange (range, editor, ts) {
 
     if (range.endOffset === 0) {
       end = range.endContainer.prevLeaf
-    } else if (range.endOffset === range.endContainer.len) {
+    } else if (range.endOffset === range.endContainer.length) {
       end = range.endContainer
     } else {
       const splitTextStep = new SplitText(range.endContainer, range.endOffset)

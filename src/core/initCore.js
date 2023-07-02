@@ -66,8 +66,16 @@ function initDispatcher(editor) {
       }
     })
   })
-  editor.on('selectionchange', () => {
+  editor.on('selectionchange-origin', () => {
     const nativeSelection = pluginContext.platform.nativeSelection
+    const { startContainer, startOffset, endContainer, endOffset } =
+      editor.selection.ranges[0] || {}
+    editor.emit('selectionchange', {
+      startContainer,
+      startOffset,
+      endContainer,
+      endOffset,
+    })
     if (nativeSelection && !nativeSelection.isCollapsed) {
       editor.selection.ranges.forEach((range) => {
         range.caret.hidden()

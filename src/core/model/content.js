@@ -2,11 +2,12 @@ import Component from '../view/component'
 import { horizontalMove, verticalMove } from '../defaultActions/caretMove'
 import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
+import { createPath } from './path'
 
 const mergeBlock = (o, n, shouldUpdates = []) => {
   const oBlock = o.blockComponent
   if (o.blockComponent !== n.blockComponent) {
-    if (n.len === 0) {
+    if (n.length === 0) {
       n.component.$editor.selection.rangePoints
         .filter((point) => point.container === n)
         .forEach((point) => {
@@ -55,7 +56,7 @@ export default class Content extends Component {
    * @instance
    */
   get contentLength() {
-    return this.$path.len
+    return this.$path.length
   }
 
   /**
@@ -102,7 +103,7 @@ export default class Content extends Component {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
-      this.$editor.selection.updateCaret()
+      // this.$editor.selection.updateCaret()
       // 执行更新后钩子
       this.onAfterUpdate && this.onAfterUpdate({ range, path })
     })
@@ -142,7 +143,7 @@ export default class Content extends Component {
         if (this.contentLength === 0) {
           // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
           range.setStart(startContainer, 0)
-        } else if (startContainer.len === 0) {
+        } else if (startContainer.length === 0) {
           const { path: prevSibling } = this.onCaretLeavePath(startContainer, range, 'left')
           if (!prevSibling) return
           if (prevSibling.blockComponent !== startContainer.blockComponent) {
@@ -157,22 +158,31 @@ export default class Content extends Component {
         const { path: prevSibling } = this.onCaretLeavePath(startContainer, range, 'left')
         if (!prevSibling) return
         if (!this.contentLength) {
-          const parent = this.$path.parent.component
           this.$path.delete()
-          parent.update()
+          range.setStart(prevSibling, 0)
+          range.collapse(true)
+          this.$path.parent.component.update().then(() => {
+            range.updateCaret(true)
+          })
         }
         mergeBlock(startContainer, prevSibling)
       }
     } else if (startContainer === endContainer) {
       startContainer.textDelete(endOffset, endOffset - startOffset)
+      if (startContainer.length === 0) {
+        startContainer.delete()
+        range.setStart(startContainer.prevLeaf, startContainer.prevLeaf.length)
+      }
     } else {
-      startContainer.textDelete(startContainer.len, startContainer.len - startOffset)
+      startContainer.textDelete(startContainer.length, startContainer.length - startOffset)
       endContainer.textDelete(endOffset, endOffset)
       commonPath.deleteBetween(startContainer, endContainer)
       mergeBlock(endContainer, startContainer)
     }
     range.collapse(true)
-    this.update(commonPath, range)
+    this.update(commonPath, range).then(() => {
+      range.updateCaret()
+    })
   }
 
   /**
@@ -191,7 +201,7 @@ export default class Content extends Component {
       const isSameBlock = path.blockComponent === fromPath.blockComponent
       range.set(path, isSameBlock ? 1 : 0)
     } else {
-      range.set(path, path.len)
+      range.set(path, path.length)
     }
     return { path, range }
   }
@@ -240,7 +250,7 @@ export default class Content extends Component {
       if (direction === 'left') {
         range.offset > 0 && (range.offset -= 1)
       } else {
-        range.offset < path.len && (range.offset += 1)
+        range.offset < path.length && (range.offset += 1)
       }
     }
     if (!shiftKey) {
@@ -261,15 +271,52 @@ export default class Content extends Component {
     if (!range.collapsed) {
       del(range)
     }
-    const startSplits = range.container.split(range.offset)
-    const cloneParent = range.container.parent.cloneMark()
-    range.container.parent.children.slice(startSplits[1].index).forEach((path) => {
-      path.moveTo(cloneParent)
+    let cloneParent
+    // 空行回车
+    if (!range.container.length) {
+      cloneParent = range.container.parent.clone(true)
+      cloneParent.insertAfter(range.container.parent)
+      range.set(cloneParent.children[0], 0)
+    } else {
+      cloneParent = range.container.parent.clone()
+      let splits = []
+      // 这里有三种情况 光标在path左端 在中间 在右端
+      if (range.offset === 0) {
+        // 在左端
+        splits = [range.container.prevSibling || null, range.container]
+      } else if (range.offset === range.container.length) {
+        // 在右端
+        splits = [range.container, range.container.nextSibling || null]
+      } else {
+        // 在中间
+        splits = range.container.split(range.offset)
+      }
+
+      if (splits[0] === null) {
+        // 向前插入空行
+        const newPath = createPath({ data: '' })
+        cloneParent.push(newPath)
+        cloneParent.insertBefore(range.container.parent)
+      } else if (splits[1] === null) {
+        // 向后插入空行
+        const newPath = createPath({ data: '' })
+        cloneParent.push(newPath)
+        cloneParent.insertAfter(range.container.parent)
+        range.set(cloneParent.children[0], 0)
+      } else {
+        // 分割光标后的内容到新行
+        range.container.parent.children.slice(splits[1].index).forEach((path) => {
+          path.moveTo(cloneParent)
+        })
+        cloneParent.insertAfter(range.container.parent)
+        range.set(cloneParent.children[0], 0)
+      }
+    }
+
+    cloneParent.parent.component.update().then(() => {
+      range.collapse(true)
+      range.updateCaret()
     })
-    cloneParent.insertAfter(range.container.parent)
-    cloneParent.parent.component.update()
-    range.set(startSplits[1], 0)
-    range.collapse(true)
   }
   /**
    * @description 键盘左箭头处理
@@ -381,7 +428,7 @@ export default class Content extends Component {
         return isSameBlock
       }
     }
-    return direction === 'right' && range.offset === path.len
+    return direction === 'right' && range.offset === path.length
   }
 
   /**
@@ -410,6 +457,9 @@ export default class Content extends Component {
     for (const path of selectedPath) {
       callback(path)
     }
-    commonPath.component.update()
+    commonPath.component.update().then(() => {
+      range.updateCaret()
+      this.$editor.selection.drawRangeBg()
+    })
   }
 }

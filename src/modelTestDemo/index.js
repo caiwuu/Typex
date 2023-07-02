@@ -9,7 +9,7 @@ import './style.styl'
 import { createVnode as h, patch } from '@/core'
 import ColorPicker from './colorPicker'
 setTimeout(() => {
-  patch(test(h), document.getElementById('components-test'))
+  // patch(test(h), document.getElementById('components-test'))
   function test() {
     return <ColorPicker color='red'></ColorPicker>
   }

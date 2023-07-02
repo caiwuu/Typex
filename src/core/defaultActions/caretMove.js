@@ -93,10 +93,11 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
   const { path } = horizontalMove(direction, range, event) || {}
   if (!path) return
   range.updateCaret(true)
+  const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
+  const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
+  if (currDistance === 0) return
   if (lineChanged) {
-    const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
     const preDistance = Math.abs(prevCaretInfo.x - initialCaretInfo.x)
-    const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
     // 标识前后光标是否在同一行
     const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, direction)
     if (!(currDistance <= preDistance && sameLine)) {
@@ -106,7 +107,6 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
       return
     }
   }
-  const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
   if (currCaretInfo.x === prevCaretInfo.x && currCaretInfo.y === prevCaretInfo.y) return
   const sameLine = isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, direction)
   if (!sameLine) {

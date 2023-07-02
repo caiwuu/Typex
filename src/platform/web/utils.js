@@ -5,17 +5,17 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-29 17:10:16
  */
-export function multiplication (str, times) {
+export function multiplication(str, times) {
   return str.replace(/(\d*).*/, function ($0, $1) {
     return $1 * times
   })
 }
-export function setStyle (dom, style) {
+export function setStyle(dom, style) {
   for (const key in style) {
     dom.style[key] = style[key]
   }
 }
-export function styleToObj (str) {
+export function styleToObj(str) {
   str = str.trim()
   return str
     .split(';')
@@ -26,7 +26,7 @@ export function styleToObj (str) {
       return prev
     }, {})
 }
-export function throttle (fn, wait, outFn) {
+export function throttle(fn, wait, outFn) {
   let inThrottle, lastFn, lastTime
   return function () {
     const context = this,
@@ -47,5 +47,12 @@ export function throttle (fn, wait, outFn) {
         }
       }, Math.max(wait - (Date.now() - lastTime), 0))
     }
+  }
+}
+export function debounce(fn, ms = 0) {
+  let timeoutId
+  return function (...args) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => fn.apply(this, args), ms)
   }
 }
