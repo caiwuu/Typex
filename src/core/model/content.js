@@ -184,11 +184,14 @@ export default class Content extends Component {
 
           range.setStart(startContainer, 0)
           range.collapse(true)
-          setTimeout(() => {
-            newContainer.parent.parent.blockComponent.update().then(() => {
-              range.updateCaret()
-            })
-          }, 0);
+          this.update(commonPath, range).then(() => {
+            range.updateCaret()
+          })
+          // setTimeout(() => {
+          newContainer.parent.parent.blockComponent.update().then(() => {
+            range.updateCaret()
+          })
+          // }, 0);
         } else {
           this.onContentDelete(range.startContainer, range)
         }
