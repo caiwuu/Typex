@@ -4,26 +4,24 @@ import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
 import { createPath } from './path'
 
-const mergeBlock = (o, n, shouldUpdates = []) => {
+const mergeBlock = (o, n, range, shouldUpdates = []) => {
   const oBlock = o.blockComponent
-  if (o.blockComponent !== n.blockComponent) {
-    if (n.length === 0) {
-      n.component.$editor.selection.rangePoints
-        .filter((point) => point.container === n)
-        .forEach((point) => {
-          if (point.pointName === 'start') {
-            point.range.setStart(n.nextLeaf, 0)
-          } else {
-            point.range.setEnd(n.nextLeaf, 0)
-          }
-        })
-    }
-    o.blockComponent.$path.insertChildrenAfter(n)
-    oBlock.$path.parent.component.update()
-    shouldUpdates.forEach((ins) => {
-      ins.component.update()
-    })
-  }
+  o.blockComponent.$path.insertChildrenAfter(n)
+  // if (n.length === 0) {
+  //   n.component.$editor.selection.rangePoints
+  //     .filter((point) => point.container === n)
+  //     .forEach((point) => {
+  //       if (point.pointName === 'start') {
+  //         point.range.setStart(n.nextLeaf, 0)
+  //       } else {
+  //         point.range.setEnd(n.nextLeaf, 0)
+  //       }
+  //     })
+  // }
+  oBlock.$path.parent.component.update()
+  shouldUpdates.forEach((ins) => {
+    ins.component.update()
+  })
 }
 
 /**
@@ -134,20 +132,23 @@ export default class Content extends Component {
    * @return {*}
    */
   onContentDelete(commonPath, range) {
+    console.log('删除')
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
     if (collapsed) {
       if (endOffset > 0) {
         // 执行删除
         startContainer.textDelete(endOffset, 1)
-        if (this.contentLength === 0) {
+
+        if (startContainer.blockComponent.contentLength === 0) {
           // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
           range.setStart(startContainer, 0)
         } else if (startContainer.length === 0) {
-          const { path: prevSibling } = this.onCaretLeavePath(startContainer, range, 'left')
-          if (!prevSibling) return
-          if (prevSibling.blockComponent !== startContainer.blockComponent) {
-            range.setStart(startContainer, 0)
+          const { path: newContainer } = this.leavePath(range, 'left')
+          if (!newContainer) return
+          startContainer.delete()
+          if (newContainer.blockComponent !== startContainer.blockComponent) {
+            range.setStart(startContainer.nextLeaf, 0)
           } else {
             startContainer.delete()
           }
@@ -155,17 +156,24 @@ export default class Content extends Component {
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
-        const { path: prevSibling } = this.onCaretLeavePath(startContainer, range, 'left')
-        if (!prevSibling) return
-        if (!this.contentLength) {
+        const { path: newContainer } = this.leavePath(range, 'left')
+        if (!newContainer) return
+        if (startContainer.blockComponent.contentLength === 0) {
           this.$path.delete()
-          range.setStart(prevSibling, 0)
+          range.setStart(newContainer, newContainer.length)
           range.collapse(true)
           this.$path.parent.component.update().then(() => {
             range.updateCaret(true)
           })
+        } else if (startContainer.length === 0) {
+          startContainer.delete()
         }
-        mergeBlock(startContainer, prevSibling)
+        range.collapse(true)
+        if (startContainer.blockComponent !== newContainer.blockComponent) {
+          mergeBlock(startContainer, newContainer, range)
+        } else {
+          this.onContentDelete(range.startContainer, range)
+        }
       }
     } else if (startContainer === endContainer) {
       startContainer.textDelete(endOffset, endOffset - startOffset)
@@ -177,7 +185,7 @@ export default class Content extends Component {
       startContainer.textDelete(startContainer.length, startContainer.length - startOffset)
       endContainer.textDelete(endOffset, endOffset)
       commonPath.deleteBetween(startContainer, endContainer)
-      mergeBlock(endContainer, startContainer)
+      mergeBlock(endContainer, startContainer, range)
     }
     range.collapse(true)
     this.update(commonPath, range).then(() => {
@@ -194,13 +202,18 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretEnterPath(path, range, direction) {
+  enterPath(range, direction) {
+    let path = null
     if (direction === 'left') {
-      let fromPath = path.prevLeaf
-      if (!fromPath) return {}
-      const isSameBlock = path.blockComponent === fromPath.blockComponent
+      const formPath = range.endContainer
+      path = formPath.nextLeaf
+      if (!path) return {}
+      const isSameBlock = formPath.blockComponent === path.blockComponent
       range.set(path, isSameBlock ? 1 : 0)
     } else {
+      const formPath = range.startContainer
+      path = formPath.prevLeaf
+      if (!path) return {}
       range.set(path, path.length)
     }
     return { path, range }
@@ -215,16 +228,18 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretLeavePath(path, range, direction) {
+  leavePath(range, direction) {
     if (direction === 'left') {
+      const path = range.startContainer
       let toPath = path.prevLeaf
       if (!toPath) return {}
-      return toPath.component.onCaretEnterPath(toPath, range, 'right')
+      return toPath.component.enterPath(range, 'right')
     } else {
+      const path = range.endContainer
       // 从尾部离开
       let toPath = path.nextLeaf
       if (!toPath) return {}
-      return toPath.component.onCaretEnterPath(toPath, range, 'left')
+      return toPath.component.enterPath(range, 'left')
     }
   }
 
@@ -245,7 +260,7 @@ export default class Content extends Component {
     if (range.d === 0) range.d = direction === 'left' ? -1 : 1
     if (this.isCaretShouldLeavePath(path, range, direction)) {
       // 跨path移动 先执行跨ptah动作 再执行path内移动动作
-      res = this.onCaretLeavePath(path, range, direction)
+      res = this.leavePath(range, direction)
     } else {
       if (direction === 'left') {
         range.offset > 0 && (range.offset -= 1)

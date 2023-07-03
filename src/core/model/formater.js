@@ -91,7 +91,6 @@ class Formater {
             // 内容为空时 将path指向他父级的vdom
             // 需要等待 vn生成
             Promise.resolve().then(() => {
-              console.log(mergedTextPath.parent.vn)
               setVdomOrPath(mergedTextPath, mergedTextPath.parent.vn)
             })
             mergedTextPath.clearFormat()
