@@ -7,23 +7,23 @@
  */
 const vdomElmMap = new WeakMap()
 const vdomInsMap = new WeakMap()
-const pathVnodeMap = new WeakMap()
+const vdomPathMap = new WeakMap()
 
 function getVdomOrPath(key) {
   // 通过vn找path
   if (key.vnodeType) {
-    const res = pathVnodeMap.get(key)
+    const res = vdomPathMap.get(key)
     if (res) return res
     // 如果是文本节点 没找到 那说明这个文本是没有被内容管理器管理的内容
     if (key.vnodeType === 3) return null
     // 如果没找到 可能是组件类型的vdom 需要先找到vnode
     const ins = getVdomOrIns(key)
-    if (ins.$vnode) return pathVnodeMap.get(ins.$vnode)
+    if (ins.$vnode) return vdomPathMap.get(ins.$vnode)
     // 对于函数组件 vnode就是ins本身
-    return pathVnodeMap.get(ins)
+    return vdomPathMap.get(ins)
     // 通过path找vn
   } else {
-    const vnode = pathVnodeMap.get(key)
+    const vnode = vdomPathMap.get(key)
     if (!vnode) return
     if (vnode.vnodeType === 1) return getVdomOrIns(vnode)
     if (vnode.vnodeType === 2) return getVdomOrIns(vnode.type)
@@ -49,6 +49,7 @@ function setVdomOrIns(vn, ins) {
   vdomInsMap.set(ins, vn).set(vn, ins)
 }
 function setVdomOrPath(vn, path) {
-  pathVnodeMap.set(vn, path).set(path, vn)
+  vdomPathMap.set(vn, path).set(path, vn)
 }
 export { setVdomOrElm, setVdomOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVdomOrIns }
+window.aa = { setVdomOrElm, setVdomOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVdomOrIns }
