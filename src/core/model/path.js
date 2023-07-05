@@ -85,9 +85,9 @@ export class Path {
    * @readonly
    * @memberof Path
    */
-  get blockComponent() {
+  get block() {
     if (this.component.displayType === 'block') return this.component
-    return this.parent.blockComponent
+    return this.parent.block
   }
 
   /**

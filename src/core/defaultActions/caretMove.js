@@ -42,8 +42,8 @@ export function verticalMove(direction, range, event) {
     return
   }
   const d = direction === 'up' ? 'left' : 'right'
-  const initialCaretInfo = { ...range.caret.rect, blockComponent: range.container.blockComponent }
-  const prevCaretInfo = { ...range.caret.rect, blockComponent: range.container.blockComponent }
+  const initialCaretInfo = { ...range.caret.rect, block: range.container.block }
+  const prevCaretInfo = { ...range.caret.rect, block: range.container.block }
   loop(range, d, initialCaretInfo, prevCaretInfo, false, event)
 }
 /**
@@ -56,7 +56,7 @@ export function verticalMove(direction, range, event) {
  */
 function isSameLine(initialCaretInfo, prevCaretInfo, currCaretInfo, direction) {
   // 当前光标位置和前一个位置所属块不一致则肯定发生跨行
-  if (currCaretInfo.blockComponent !== prevCaretInfo.blockComponent) {
+  if (currCaretInfo.block !== prevCaretInfo.block) {
     return false
   }
   // 标识光标是否在同一行移动
@@ -93,7 +93,7 @@ function loop(range, direction, initialCaretInfo, prevCaretInfo, lineChanged = f
   const { path } = horizontalMove(direction, range, event) || {}
   if (!path) return
   range.updateCaret(true)
-  const currCaretInfo = { ...range.caret.rect, blockComponent: path.blockComponent }
+  const currCaretInfo = { ...range.caret.rect, block: path.block }
   const currDistance = Math.abs(currCaretInfo.x - initialCaretInfo.x)
   if (currDistance === 0) return
   if (lineChanged) {

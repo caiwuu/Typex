@@ -5,8 +5,8 @@ import { input } from '../defaultActions/input'
 import { createPath } from './path'
 
 const mergeBlock = (o, n, range, shouldUpdates = []) => {
-  const oBlock = o.blockComponent
-  o.blockComponent.$path.insertChildrenAfter(n)
+  const oBlock = o.block
+  o.block.$path.insertChildrenAfter(n)
   // if (n.length === 0) {
   //   n.component.$editor.selection.rangePoints
   //     .filter((point) => point.container === n)
@@ -142,26 +142,25 @@ export default class Content extends Component {
         // 执行删除
         startContainer.textDelete(endOffset, 1)
 
-        if (startContainer.blockComponent.contentLength === 0) {
+        if (startContainer.block.contentLength === 0) {
           // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
           range.setStart(startContainer, 0)
         } else if (startContainer.length === 0) {
-          const { path: newContainer } = this.leavePath(range, 'left')
-          if (!newContainer) return
-          startContainer.delete()
-          if (newContainer.blockComponent !== startContainer.blockComponent) {
+          const prevLeaf = startContainer.prevLeaf
+          if (prevLeaf.block !== startContainer.block || !prevLeaf) {
             range.setStart(startContainer.nextLeaf, 0)
           } else {
-            startContainer.delete()
+            range.setStart(prevLeaf, 0)
           }
+          startContainer.delete()
         } else {
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
         const { path: newContainer } = this.leavePath(range, 'left')
         if (!newContainer) return
-        if (startContainer.blockComponent.contentLength === 0) {
-          startContainer.blockComponent.$path.delete()
+        if (startContainer.block.contentLength === 0) {
+          startContainer.block.$path.delete()
           range.setStart(newContainer, newContainer.length)
           range.collapse(true)
           this.$path.parent.component.update().then(() => {
@@ -171,7 +170,7 @@ export default class Content extends Component {
           startContainer.delete()
         }
         range.collapse(true)
-        if (startContainer.blockComponent !== newContainer.blockComponent) {
+        if (startContainer.block !== newContainer.block) {
           // mergeBlock(startContainer, newContainer, range)
           if (newContainer.length === 0) {
             newContainer.parent.pop()
@@ -201,7 +200,7 @@ export default class Content extends Component {
           // return
           // console.log(this.$editor.$path.children[4].children[0] === startContainer)
           // setTimeout(() => {
-          newContainer.parent.parent.blockComponent.update().then(() => {
+          newContainer.parent.parent.block.update().then(() => {
             range.collapse(true)
             range.updateCaret()
             console.log(this.$editor.selection.ranges[0].startContainer === startContainer)
@@ -245,7 +244,7 @@ export default class Content extends Component {
       const formPath = range.endContainer
       path = formPath.nextLeaf
       if (!path) return {}
-      const isSameBlock = formPath.blockComponent === path.blockComponent
+      const isSameBlock = formPath.block === path.block
       range.set(path, isSameBlock ? 1 : 0)
     } else {
       const formPath = range.startContainer
@@ -473,7 +472,7 @@ export default class Content extends Component {
       let toPath = path.prevLeaf
       if (!toPath) return false
       // 细节处理:同块不同文本光标左移，两个path的交界处 取前一个path的右端点
-      const isSameBlock = path.blockComponent === toPath.blockComponent
+      const isSameBlock = path.block === toPath.block
       if (range.offset === 0) {
         return true
       } else {
