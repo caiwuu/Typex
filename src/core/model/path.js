@@ -35,7 +35,7 @@ export class Path {
    * @memberof Path
    */
   get component() {
-    return this._$component || this.parent.component
+    return this._$component || this.parent?.component
   }
 
   /**
@@ -86,7 +86,7 @@ export class Path {
    * @memberof Path
    */
   get block() {
-    if (this.component.displayType === 'block') return this.component
+    if (this.component?.displayType === 'block') return this.component
     return this.parent.block
   }
 
@@ -253,17 +253,6 @@ export class Path {
       formats: { ...this.node.formats },
     })
   }
-  /**
-   * @description path删除
-   * @memberof Path
-   */
-  delete() {
-    if (!this.parent) {
-      return
-    }
-    this.rebuildFlag = 1
-    this.parent.rebuild()
-  }
 
   /**
    * @description - 位置比较
@@ -295,10 +284,9 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertBefore(path, delEmptyParent) {
-    path.parent.children.splice(path.index, 0, this)
-    this.delete(delEmptyParent)
-    path.parent.rebuild()
+  insertBefore(path) {
+    this.delete()
+    path.parent.splice(path.index, 0, this)
   }
 
   /**
@@ -306,34 +294,96 @@ export class Path {
    * @param {Path} path
    * @memberof Path
    */
-  insertAfter(path, delEmptyParent) {
-    path.parent.children.splice(path.index + 1, 0, this)
-    this.delete(delEmptyParent)
-    path.parent.rebuild()
+  insertAfter(path) {
+    this.delete()
+    path.parent.splice(path.index + 1, 0, this)
   }
+  /**
+   * @description 移动到path的children
+   * @param {Path} path
+   * @memberof Path
+   */
+  moveTo(path) {
+    this.delete()
+    path.push(this)
+  }
+  /**
+   * @description path删除
+   * @memberof Path
+   */
+  delete() {
+    if (!this.parent) {
+      return
+    }
+    this.rebuildFlag = 1
+    this.parent.rebuild()
+    this.component.update()
+  }
+
+  /**
+   * @description 尾部插入children
+   * @param {*} paths
+   * @memberof Path
+   */
   push(...paths) {
+    paths.forEach((i) => (i.rebuildFlag = 0))
     this.children.push(...paths)
     this.rebuild()
+    this.component.update()
   }
+
+  /**
+   * @description 从尾部弹出元素
+   * @returns {*}
+   * @memberof Path
+   */
   pop() {
     const item = this.children[this.children.length - 1]
     item.rebuildFlag = 1
     this.rebuild()
+    this.component.update()
     return item
   }
-  unshift(path) {
-    this.children.unshift(path)
+
+  /**
+   * @description 从头部插入children
+   * @param {*} paths
+   * @memberof Path
+   */
+  unshift(...paths) {
+    paths.forEach((i) => (i.rebuildFlag = 0))
+    this.children.unshift(...paths)
     this.rebuild()
+    this.component.update()
   }
+
+  /**
+   * @description 从头部弹出元素
+   * @returns {*}
+   * @memberof Path
+   */
   shift() {
     const item = this.children[0]
     item.rebuildFlag = 1
     this.rebuild()
+    this.component.update()
     return item
   }
+
+  /**
+   * @description 通过移除或者替换已存在的元素和/或添加新元素就地改变一个数组的内容
+   * @param {*} start
+   * @param {*} deleteCount
+   * @param {*} additems
+   * @returns {deleteItems}
+   * @memberof Path
+   */
   splice(start, deleteCount, ...additems) {
     const deleteItems = []
-    if (additems.length) this.children.splice(start + 1, 0, ...additems)
+    if (additems.length) {
+      additems.forEach((i) => (i.rebuildFlag = 0))
+      this.children.splice(start, 0, ...additems)
+    }
     if (deleteCount > 0) {
       for (let index = 0; index < deleteCount; index++) {
         const element = this.children[index + start]
@@ -342,41 +392,21 @@ export class Path {
       }
     }
     this.rebuild()
+    this.component.update()
     return deleteItems
   }
-  /**
-   * @description 移动到path的children
-   * @param {Path} path
-   * @memberof Path
-   */
-  moveTo(path, delEmptyParent) {
-    path.children.push(this)
-    this.delete(delEmptyParent)
-    path.rebuild()
-  }
 
-  /**
-   * @description 插入到path前面
-   * @param {Path} path
-   * @memberof Path
-   */
-  insertChildrenBefore(path, delEmptyParent) {
-    path.parent.children.splice(path.index, 0, ...this.children)
-    this.delete(delEmptyParent)
-    path.parent.rebuild()
-  }
-
-  /**
-   * @description 插入到path后面
-   * @param {Path} path
-   * @memberof Path
-   */
-  insertChildrenAfter(path, delEmptyParent) {
-    path.parent.children.splice(path.index + 1, 0, ...this.children)
-    this.delete(delEmptyParent)
-    this.parent.rebuild()
-    // path.parent.rebuild()
-  }
+  // /**
+  //  * @description 插入到path后面
+  //  * @param {Path} path
+  //  * @memberof Path
+  //  */
+  // insertChildrenAfter(path) {
+  //   path.parent.children.splice(path.index + 1, 0, ...this.children)
+  //   this.delete()
+  //   this.parent.rebuild()
+  //   // path.parent.rebuild()
+  // }
   /**
    * @description 删除两个节点之间的所有节点 不包含开始结束节点
    * @param {Path} startPath 开始节点
@@ -406,13 +436,7 @@ export class Path {
   rebuild() {
     if (this.dataType !== 'Array') return
     let cachePath = null
-    this.children = this.children.filter((ele) => {
-      if (ele.rebuildFlag === 1) {
-        ele.rebuildFlag = 0
-      } else {
-        return true
-      }
-    })
+    this.children = this.children.filter((ele) => ele.rebuildFlag !== 1)
     // 为了保持索引，使用length = 0来清空数组
     this.node.data.length = 0
     this.children.forEach((path, index) => {

@@ -78,7 +78,9 @@ export default class Content extends Component {
   get $editor() {
     return this.props.editor
   }
-
+  shouldComponentUpdate() {
+    return this.$path.rebuildFlag !== 1
+  }
   /**
    * @description render前调用hook
    * @memberof Content
@@ -157,11 +159,10 @@ export default class Content extends Component {
           this._updatePoints(endContainer, endOffset, -1)
         }
       } else {
-        const { path: newContainer } = this.leavePath(range, 'left')
-        if (!newContainer) return
+        const prevLeaf = startContainer.prevLeaf
         if (startContainer.block.contentLength === 0) {
           startContainer.block.$path.delete()
-          range.setStart(newContainer, newContainer.length)
+          range.setStart(prevLeaf, prevLeaf.length)
           range.collapse(true)
           this.$path.parent.component.update().then(() => {
             range.updateCaret(true)
@@ -169,44 +170,25 @@ export default class Content extends Component {
         } else if (startContainer.length === 0) {
           startContainer.delete()
         }
-        range.collapse(true)
-        if (startContainer.block !== newContainer.block) {
-          // mergeBlock(startContainer, newContainer, range)
-          if (newContainer.length === 0) {
-            newContainer.parent.pop()
-            newContainer.parent.push(...startContainer.parent.children)
+        if (startContainer.block !== prevLeaf.block) {
+          if (prevLeaf.length === 0) {
+            prevLeaf.parent.pop()
+            prevLeaf.parent.push(...startContainer.parent.children)
             startContainer.parent.delete()
             range.setStart(startContainer, 0)
           } else {
-            newContainer.parent.splice(
-              startContainer.index + 1,
-              0,
-              ...startContainer.parent.children
-            )
+            const startContainerParent = startContainer.parent
+            const prevLength = prevLeaf.length
+            prevLeaf.parent.splice(prevLeaf.index + 1, 0, ...startContainer.parent.children)
+            startContainerParent.delete()
+            range.setStart(startContainer, 0)
           }
 
-          range.setStart(startContainer, 0)
           range.collapse(true)
-          console.log(startContainer)
-          // this.update(commonPath, range).then(() => {
-          //   range.updateCaret()
-          // })
-
-          // this.$editor.$path.component.update().then(() => {
-          //   range.collapse(true)
-          //   range.updateCaret()
-          //   console.log(this.$editor.selection.ranges[0].startContainer === startContainer)
-          // })
-          // return
-          // console.log(this.$editor.$path.children[4].children[0] === startContainer)
-          // setTimeout(() => {
-          newContainer.parent.parent.block.update().then(() => {
-            range.collapse(true)
+          prevLeaf.parent.block.update().then(() => {
             range.updateCaret()
-            console.log(this.$editor.selection.ranges[0].startContainer === startContainer)
           })
           return
-          // }, 0);
         } else {
           this.onContentDelete(range.startContainer, range)
         }
@@ -356,10 +338,10 @@ export default class Content extends Component {
         range.set(cloneParent.children[0], 0)
       } else {
         // 分割光标后的内容到新行
+        cloneParent.insertAfter(range.container.parent)
         range.container.parent.children.slice(splits[1].index).forEach((path) => {
           path.moveTo(cloneParent)
         })
-        cloneParent.insertAfter(range.container.parent)
         range.set(cloneParent.children[0], 0)
       }
     }

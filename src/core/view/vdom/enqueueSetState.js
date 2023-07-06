@@ -11,7 +11,7 @@ const componentQueue = []
 export default function enqueueSetState(partialState, component) {
   let deferPromise = null
   if (queue.length === 0) {
-    defer(flush)
+    deferPromise = defer(flush)
   }
   queue.push({
     partialState,
@@ -47,7 +47,7 @@ function flush() {
     component.prevState = component.state
   }
   while ((component = componentQueue.shift())) {
-    component.syncUpdate()
+    component.shouldComponentUpdate() && component.syncUpdate()
   }
 }
 

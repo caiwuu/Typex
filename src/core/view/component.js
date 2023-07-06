@@ -97,4 +97,14 @@ export default class Component {
     const newVn = this.render(h)
     patch(newVn, oldVn)
   }
+
+  /**
+   * @description 控制组件是否需要更新
+   * @returns {*}
+   * @instance
+   * @memberof Component
+   */
+  shouldComponentUpdate() {
+    return true
+  }
 }
