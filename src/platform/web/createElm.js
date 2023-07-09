@@ -1,19 +1,21 @@
 import coreContext from '../coreContext'
 import updateProps from './updateProps'
-export default function createElm(vnode) {
+export default function createElm (vnode) {
   // vnodeType 1 函数组件 2 类组件 3 文本节点 4 dom节点
   let elm
   if (vnode.vnodeType === 1) {
     const vdom = vnode.type(coreContext.core.createVnode, vnode.props)
-    coreContext.core.setVdomOrIns(vnode, vdom)
+    vnode.$vdom = vdom
     elm = createElm(vdom)
     if (vnode.ref) vnode.ref.current = elm
     coreContext.core.setVdomOrElm(elm, vdom)
     updateProps(vdom)
   } else if (vnode.vnodeType === 2) {
-    const vdom = vnode.type.generateVdom(coreContext.core.createVnode)
+    const ins = new vnode.type(vnode.props)
+    const vdom = ins.generateVdom(coreContext.core.createVnode)
+    vnode.$vdom = vdom
     elm = createElm(vdom)
-    coreContext.core.setVdomOrIns(vnode.type, vdom)
+    coreContext.core.setVnodeOrIns(ins, vnode)
     coreContext.core.setVdomOrElm(elm, vdom)
     updateProps(vdom)
   } else if (vnode.vnodeType === 3) {
@@ -41,3 +43,13 @@ export default function createElm(vnode) {
   }
   return elm
 }
+
+// if (element.vnodeType === 2) {
+    //   element.type = new type(props)
+    //   // 执行 onCreated 钩子
+    //   if (typeof element.type.onCreated === 'function') element.type.onCreated()
+    //   // 给ref赋值
+    //   if (element.ref) element.ref.current = element.type
+    //   element.type.$vnode = element
+    //   console.log(element);
+    // }

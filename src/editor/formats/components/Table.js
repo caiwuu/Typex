@@ -11,14 +11,14 @@ export class Table extends Block {
   render () {
     return (
       <table border='1' style='border-collapse:collapse;width:600px'>
-        {this.renderContent}
+        {this.$path.render()}
       </table>
     )
   }
 }
 export class Row extends Block {
   render () {
-    return <tr>{this.renderContent}</tr>
+    return <tr>{this.$path.render()}</tr>
   }
 }
 export class Col extends Block {
@@ -29,7 +29,7 @@ export class Col extends Block {
   render () {
     return (
       <td ref={this.state._$root} style='text-align:center;width:50%'>
-        {this.renderContent}
+        {this.$path.render()}
       </td>
     )
   }

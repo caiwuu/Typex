@@ -1,5 +1,5 @@
 import { getVdomOrElm, getVdomOrPath } from '../mappings'
-import { computeLen, typeOf, positionCompare, isPrimitive } from '../utils'
+import { computeLen, typeOf, positionCompare, isPrimitive, uuid } from '../utils'
 
 /**
  * @description 路径类
@@ -13,7 +13,10 @@ export class Path {
    * @memberof Path
    */
   rebuildFlag = 0
-
+  _uuid = uuid()
+  render () {
+    return this.$editor.formater.render(this)
+  }
   constructor({ node, parent, position, prevSibling, nextSibling, children }) {
     this.node = node
     this.parent = parent
@@ -318,7 +321,7 @@ export class Path {
     this.rebuildFlag = 1
     this.parent.rebuild()
     console.log(this.parent === this.$editor.$path, this);
-    // this.parent.component.update()
+    this.parent.component.update()
   }
 
   /**
@@ -393,7 +396,7 @@ export class Path {
       }
     }
     this.rebuild()
-    // this.component.update()
+    this.component.update()
     return deleteItems
   }
 

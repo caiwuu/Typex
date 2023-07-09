@@ -3,6 +3,8 @@ import { horizontalMove, verticalMove } from '../defaultActions/caretMove'
 import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
 import { createPath } from './path'
+import { uuid } from '../utils'
+
 
 const mergeBlock = (o, n, range, shouldUpdates = []) => {
   const oBlock = o.block
@@ -33,6 +35,7 @@ const mergeBlock = (o, n, range, shouldUpdates = []) => {
  * @extends {Component}
  */
 export default class Content extends Component {
+  uuid = uuid()
   get renderContent () {
     return this.$editor.formater.render(this.$path)
   }
@@ -172,27 +175,28 @@ export default class Content extends Component {
           startContainer.delete()
         }
         if (startContainer.block !== prevLeaf.block) {
+          const startContainerParent = startContainer.parent
           if (prevLeaf.length === 0) {
             prevLeaf.parent.pop()
             prevLeaf.parent.push(...startContainer.parent.children)
-            startContainer.parent.delete()
+            startContainerParent.delete()
             range.setStart(startContainer, 0)
           } else {
-            const startContainerParent = startContainer.parent
             prevLeaf.parent.splice(prevLeaf.index + 1, 0, ...startContainer.parent.children)
-            // startContainerParent.delete()
+            startContainerParent.delete()
             // prevLeaf.parent.component.update()
-            console.log(this.$editor.$path.children[4].component === prevLeaf.parent.component);
-            this.$editor.$path.component.update()
-            this.$editor.$path.children[4].component.update()
-            // range.setStart(startContainer, 0)
+
+            // console.log(this.$editor.$path.children[0].component === prevLeaf.parent.component);
+            // this.$editor.$path.children[0].component.update()
+            // this.$editor.$path.component.update()
+            range.setStart(startContainer, 0)
           }
 
-          // range.collapse(true)
-          // prevLeaf.parent.block.update().then(() => {
-          //   range.updateCaret()
-          // })
-          return
+          range.collapse(true)
+          prevLeaf.parent.block.update().then(() => {
+            range.updateCaret()
+          })
+          // return
         } else {
           this.onContentDelete(range.startContainer, range)
         }
@@ -210,9 +214,9 @@ export default class Content extends Component {
       mergeBlock(endContainer, startContainer, range)
     }
     range.collapse(true)
-    // this.update(commonPath, range).then(() => {
-    //   range.updateCaret()
-    // })
+    this.update(commonPath, range).then(() => {
+      range.updateCaret()
+    })
   }
 
   /**
@@ -332,13 +336,13 @@ export default class Content extends Component {
       if (splits[0] === null) {
         // 向前插入空行
         const newPath = createPath({ data: '' })
-        cloneParent.push(newPath)
         cloneParent.insertBefore(range.container.parent)
+        cloneParent.push(newPath)
       } else if (splits[1] === null) {
         // 向后插入空行
         const newPath = createPath({ data: '' })
-        cloneParent.push(newPath)
         cloneParent.insertAfter(range.container.parent)
+        cloneParent.push(newPath)
         range.set(cloneParent.children[0], 0)
       } else {
         // 分割光标后的内容到新行

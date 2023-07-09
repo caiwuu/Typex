@@ -20,7 +20,7 @@ export default class Paragraph extends Block {
         {/* </div> */}
         {/* </Static> */}
         {/* <editor-content> */}
-        {this.renderContent}
+        {this.$path.render()}
         {/* </editor-content> */}
       </p>
     )

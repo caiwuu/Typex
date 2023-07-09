@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-09-26 14:38:59
  */
 import { default as h } from './vdom/createVnode'
-import { getVdomOrIns } from '../mappings'
+import { getVnodeOrIns } from '../mappings'
 import patch from './vdom/patch'
 import enqueueSetState from './vdom/enqueueSetState'
 
@@ -29,7 +29,7 @@ export default class Component {
    * @memberof Component
    * @instance
    */
-  get isComponent() {
+  get isComponent () {
     return true
   }
 
@@ -59,7 +59,7 @@ export default class Component {
    * @memberof Component
    * @instance
    */
-  render(h) {
+  render (h) {
     throw Error('Component does not implement a required interface "render"')
   }
 
@@ -71,7 +71,7 @@ export default class Component {
    * @private
    * @memberof Component
    */
-  generateVdom(h) {
+  generateVdom (h) {
     typeof this.onBeforeRender === 'function' && this.onBeforeRender()
     return this.render(h)
   }
@@ -82,7 +82,7 @@ export default class Component {
    * @memberof Component
    * @instance
    */
-  setState(partialState = {}) {
+  setState (partialState = {}) {
     return enqueueSetState(partialState, this)
   }
 
@@ -92,10 +92,12 @@ export default class Component {
    * @instance
    * @private
    */
-  syncUpdate() {
-    const oldVn = getVdomOrIns(this)
-    const newVn = this.render(h)
-    patch(newVn, oldVn)
+  syncUpdate () {
+    const oldVndoe = getVnodeOrIns(this)
+    const oldVdom = oldVndoe.$vdom
+    const newVdom = this.render(h)
+    oldVndoe.$vdom = newVdom
+    patch(newVdom, oldVdom)
   }
 
   /**
@@ -104,7 +106,7 @@ export default class Component {
    * @instance
    * @memberof Component
    */
-  shouldComponentUpdate() {
+  shouldComponentUpdate () {
     return true
   }
 }

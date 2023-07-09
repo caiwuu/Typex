@@ -12,7 +12,7 @@ export default class Root extends Block {
   render () {
     const vn = (
       <div>
-        {this.$path.children.length ? this.renderContent : this.state.placeholder(h)}
+        {this.$path.children.length ? this.$path.render() : this.state.placeholder(h)}
       </div>
     )
     return vn

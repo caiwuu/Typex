@@ -23,11 +23,11 @@ const createPath = core.createPath,
   Component = core.Component,
   utils = core.utils,
   setVdomOrElm = core.setVdomOrElm,
-  setVdomOrIns = core.setVdomOrIns,
+  setVnodeOrIns = core.setVnodeOrIns,
   setVdomOrPath = core.setVdomOrPath,
   getVdomOrElm = core.getVdomOrElm,
   getVdomOrPath = core.getVdomOrPath,
-  getVdomOrIns = core.getVdomOrIns
+  getVnodeOrIns = core.getVnodeOrIns
 
 export {
   createPath,
@@ -43,11 +43,11 @@ export {
   Component,
   utils,
   setVdomOrElm,
-  setVdomOrIns,
+  setVnodeOrIns,
   setVdomOrPath,
   getVdomOrElm,
   getVdomOrPath,
-  getVdomOrIns,
+  getVnodeOrIns,
   usePlugin,
   initCore,
   Typex,

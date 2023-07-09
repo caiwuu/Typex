@@ -13,11 +13,11 @@ import { setFormat, deleteText } from './transform/transaction'
 import * as utils from './utils.js'
 import {
   setVdomOrElm,
-  setVdomOrIns,
+  setVnodeOrIns,
   setVdomOrPath,
   getVdomOrElm,
   getVdomOrPath,
-  getVdomOrIns,
+  getVnodeOrIns,
 } from './mappings'
 const core = {
   createPath,
@@ -33,11 +33,11 @@ const core = {
   Component,
   utils,
   setVdomOrElm,
-  setVdomOrIns,
+  setVnodeOrIns,
   setVdomOrPath,
   getVdomOrElm,
   getVdomOrPath,
-  getVdomOrIns,
+  getVnodeOrIns,
   SplitText
 }
 

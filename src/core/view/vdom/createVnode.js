@@ -1,4 +1,4 @@
-import { isPrimitive, isUndef, styleToObj, uuid, mergeObj } from '../../utils'
+import { isPrimitive, isUndef, styleToObj, uuid, mergeObj, isClass, isFunction } from '../../utils'
 const BUILTINPROPSKEY = ['ref', 'key', 'ns'] //不包含在props中的属性
 const INHERITPROPSKEY = ['ns'] // 需要继承的属性
 
@@ -10,7 +10,7 @@ const INHERITPROPSKEY = ['ns'] // 需要继承的属性
  * @param {*} [children=[]]
  * @returns {*}
  */
-export default function createVnode(type, config = {}, children = []) {
+export default function createVnode (type, config = {}, children = []) {
   const props = {}
   const builtinProps = {}
   for (let propName of BUILTINPROPSKEY) {
@@ -54,7 +54,7 @@ const _genChildren = (children, inherit) => {
  * @param {*} children
  * @returns {*}
  */
-function Element(type, builtinProps, props, children) {
+function Element (type, builtinProps, props, children) {
   let element
   if (type === 'text') {
     element = {
@@ -66,13 +66,11 @@ function Element(type, builtinProps, props, children) {
   } else {
     element = {
       _uuid: uuid(),
-      vnodeType: 4,
+      vnodeType: isClass(type) ? 2 : isFunction(type) ? 1 : 4,
       type,
       ...builtinProps,
       props,
     }
-    if (typeof element.type === 'function') element.vnodeType = 1
-    if (type.isComponent) element.vnodeType = 2
 
     const inherit = {}
     for (let propName of INHERITPROPSKEY) {
@@ -83,14 +81,15 @@ function Element(type, builtinProps, props, children) {
     } else {
       element.children = _genChildren(children, inherit)
     }
-    if (element.vnodeType === 2) {
-      element.type = new type(props)
-      // 执行 onCreated 钩子
-      if (typeof element.type.onCreated === 'function') element.type.onCreated()
-      // 给ref赋值
-      if (element.ref) element.ref.current = element.type
-      element.type.$vnode = element
-    }
+    // if (element.vnodeType === 2) {
+    //   element.type = new type(props)
+    //   // 执行 onCreated 钩子
+    //   if (typeof element.type.onCreated === 'function') element.type.onCreated()
+    //   // 给ref赋值
+    //   if (element.ref) element.ref.current = element.type
+    //   element.type.$vnode = element
+    //   console.log(element);
+    // }
   }
   return element
 }

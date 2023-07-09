@@ -5,15 +5,15 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-29 15:07:04
  */
-export function isUndef(v) {
+export function isUndef (v) {
   return v === undefined || v === null
 }
 
-export function isDef(v) {
+export function isDef (v) {
   return v !== undefined && v !== null
 }
 
-export function isPrimitive(value) {
+export function isPrimitive (value) {
   return (
     typeof value === 'string' ||
     typeof value === 'number' ||
@@ -22,7 +22,7 @@ export function isPrimitive(value) {
   )
 }
 
-export function computeLen(path) {
+export function computeLen (path) {
   if (isPrimitive(path.node.data)) {
     return path.node.data.length
   } else if (path.children.length) {
@@ -34,7 +34,7 @@ export function computeLen(path) {
   }
 }
 
-export function throttle(fn, wait, immediately = true) {
+export function throttle (fn, wait, immediately = true) {
   let inThrottle, lastFn, lastTime
   return function () {
     const context = this,
@@ -55,7 +55,7 @@ export function throttle(fn, wait, immediately = true) {
   }
 }
 
-export function debounce(fn, ms = 0) {
+export function debounce (fn, ms = 0) {
   let timeoutId
   return function (...args) {
     clearTimeout(timeoutId)
@@ -65,23 +65,23 @@ export function debounce(fn, ms = 0) {
 
 const _toString = Object.prototype.toString
 
-export function toRawType(value) {
+export function toRawType (value) {
   return _toString.call(value).slice(8, -1).toLowerCase()
 }
 
-export function setStyle(dom, style) {
+export function setStyle (dom, style) {
   for (const key in style) {
     dom.style[key] = style[key]
   }
 }
 
-export function multiplication(str, times) {
+export function multiplication (str, times) {
   return str.replace(/(\d*).*/, function ($0, $1) {
     return $1 * times
   })
 }
 
-export function stringify(obj) {
+export function stringify (obj) {
   let cache = []
   let res = JSON.stringify(obj, (key, value) => {
     if (typeof value === 'object' && value !== null) {
@@ -98,7 +98,7 @@ export function stringify(obj) {
   return res
 }
 
-export function styleToObj(str) {
+export function styleToObj (str) {
   str = str.trim()
   return str
     .split(';')
@@ -110,13 +110,13 @@ export function styleToObj(str) {
     }, {})
 }
 
-export function uuid() {
+export function uuid () {
   return ([1e3] + -1e3 + -4e3 + -8e3).replace(/[018]/g, (c) =>
     (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
   )
 }
 
-export function mergeObj(a, b) {
+export function mergeObj (a, b) {
   for (let propName in b) {
     if (b.hasOwnProperty(propName)) {
       if (isUndef(a[propName]) && !isUndef(b[propName])) {
@@ -126,7 +126,7 @@ export function mergeObj(a, b) {
   }
 }
 // n次执行
-export function times(n, fn, context = undefined, ...args) {
+export function times (n, fn, context = undefined, ...args) {
   let i = 0
   while (i++ < n) {
     fn.call(context, ...args)
@@ -140,7 +140,7 @@ export function times(n, fn, context = undefined, ...args) {
  * @param {*} b
  * @return {*} 0 a===b;-1 a<b; 1 a>b
  */
-export function positionCompare(a, b) {
+export function positionCompare (a, b) {
   if (a === b) return 0
   if (a.originOf(b)) return -1
   if (b.originOf(a)) return 1
@@ -155,11 +155,11 @@ export function positionCompare(a, b) {
   }
 }
 
-export function typeOf(data) {
+export function typeOf (data) {
   return Object.prototype.toString.call(data).slice(8, -1)
 }
 
-export function classCheck(newTarget, baseClass, abstractMethod) {
+export function classCheck (newTarget, baseClass, abstractMethod) {
   if (newTarget === baseClass) {
     throw new Error(`${baseClass.name} class can\`t instantiate`)
   }
@@ -175,7 +175,7 @@ export function classCheck(newTarget, baseClass, abstractMethod) {
  * @param {*} basePath
  * @memberof Formater
  */
-export function mergePointsContainer(path, basePath, editor) {
+export function mergePointsContainer (path, basePath, editor) {
   editor.selection.rangePoints
     .filter((point) => point.container === path)
     .forEach((point) => {
@@ -193,7 +193,7 @@ export function mergePointsContainer(path, basePath, editor) {
  * @returns {*}
  * @memberof Formater
  */
-export function mergeTextPath(paths, editor) {
+export function mergeTextPath (paths, editor) {
   const basePath = paths[0]
   const pathsLen = paths.length
   if (pathsLen === 1) return basePath
@@ -204,4 +204,13 @@ export function mergeTextPath(paths, editor) {
     basePath.nextSibling.delete()
   }
   return basePath
+}
+
+export function isClass (v) {
+  if (typeof v !== 'function') return false
+  return /^class\s/.test(Function.prototype.toString.call(v))
+}
+export function isFunction (v) {
+  if (typeof v !== 'function') return false
+  return /^function\s/.test(Function.prototype.toString.call(v))
 }

@@ -12,7 +12,7 @@ import ToolBar from './toolBar'
  * @param {*} h
  * @return {*}
  */
-function renderRoot(editor) {
+function renderRoot (editor) {
   return (
     <div class='editor-wrappe'>
       <ToolBar tools={[...editor.toolBarOption]} editor={editor}></ToolBar>
@@ -26,7 +26,7 @@ function renderRoot(editor) {
  * @param {*} editor
  * @return {*}
  */
-export default function mount(id) {
+export default function mount (id) {
   document.getElementById(id).appendChild(patch(renderRoot(this, h)))
   return this
 }

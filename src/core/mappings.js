@@ -6,10 +6,10 @@
  * @LastEditTime: 2022-09-23 13:57:07
  */
 const vdomElmMap = new WeakMap()
-const vdomInsMap = new WeakMap()
+const vnodeInsMap = new WeakMap()
 const vdomPathMap = new WeakMap()
 
-function getVdomOrPath(key) {
+function getVdomOrPath (key) {
   // 通过vn找path
   if (key.vnodeType) {
     const res = vdomPathMap.get(key)
@@ -17,7 +17,7 @@ function getVdomOrPath(key) {
     // 如果是文本节点 没找到 那说明这个文本是没有被内容管理器管理的内容
     if (key.vnodeType === 3) return null
     // 如果没找到 可能是组件类型的vdom 需要先找到vnode
-    const ins = getVdomOrIns(key)
+    const ins = getVnodeOrIns(key)
     if (ins.$vnode) return vdomPathMap.get(ins.$vnode)
     // 对于函数组件 vnode就是ins本身
     return vdomPathMap.get(ins)
@@ -25,31 +25,28 @@ function getVdomOrPath(key) {
   } else {
     const vnode = vdomPathMap.get(key)
     if (!vnode) return
-    if (vnode.vnodeType === 1) return getVdomOrIns(vnode)
-    if (vnode.vnodeType === 2) return getVdomOrIns(vnode.type)
+    if (vnode.vnodeType === 1 || vnode.vnodeType === 2) return vnode.$vdom
     return vnode
   }
 }
-function getVdomOrIns(key) {
-  return vdomInsMap.get(key)
+function getVnodeOrIns (key) {
+  return vnodeInsMap.get(key)
 }
-function getVdomOrElm(key) {
-  if (key.vnodeType === 1) {
-    return vdomElmMap.get(getVdomOrIns(key))
-  }
-  if (key.vnodeType === 2) {
-    return vdomElmMap.get(getVdomOrIns(key.type))
+function getVdomOrElm (key) {
+  if (key.vnodeType === 1 || key.vnodeType === 2) {
+    return vdomElmMap.get(key.$vdom)
   }
   return vdomElmMap.get(key)
 }
-function setVdomOrElm(vn, elm) {
+function setVdomOrElm (vn, elm) {
   vdomElmMap.set(elm, vn).set(vn, elm)
 }
-function setVdomOrIns(vn, ins) {
-  vdomInsMap.set(ins, vn).set(vn, ins)
+function setVnodeOrIns (vn, ins) {
+  vnodeInsMap.set(ins, vn).set(vn, ins)
 }
-function setVdomOrPath(vn, path) {
+function setVdomOrPath (vn, path) {
+  console.log('====', vn, path);
   vdomPathMap.set(vn, path).set(path, vn)
 }
-export { setVdomOrElm, setVdomOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVdomOrIns }
-window.aa = { setVdomOrElm, setVdomOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVdomOrIns }
+export { setVdomOrElm, setVnodeOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVnodeOrIns }
+window.aa = { setVdomOrElm, setVnodeOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVnodeOrIns }

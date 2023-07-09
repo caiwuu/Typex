@@ -120,40 +120,40 @@ export const mockData = {
       ],
       formats: { paragraph: true },
     },
-    // {
-    //   data: [
-    //     {
-    //       data: [
-    //         {
-    //           data: [
-    //             {
-    //               data: '1111',
-    //               formats: { color: 'red', bold: true },
-    //             },
-    //             {
-    //               data: '333',
-    //               formats: { del: true, color: 'red', fontSize: '22px' },
-    //             },
-    //           ],
-    //           formats: { col: true },
-    //         },
-    //         {
-    //           data: [
-    //             {
-    //               data: '1111',
-    //               formats: { color: 'green' },
-    //             },
-    //           ],
-    //           formats: { col: true },
-    //         },
-    //       ],
-    //       formats: { row: true },
-    //     },
-    //   ],
-    //   formats: {
-    //     table: true,
-    //   },
-    // },
+    {
+      data: [
+        {
+          data: [
+            {
+              data: [
+                {
+                  data: '1111',
+                  formats: { color: 'red', bold: true },
+                },
+                {
+                  data: '333',
+                  formats: { del: true, color: 'red', fontSize: '22px' },
+                },
+              ],
+              formats: { col: true },
+            },
+            {
+              data: [
+                {
+                  data: '1111',
+                  formats: { color: 'green' },
+                },
+              ],
+              formats: { col: true },
+            },
+          ],
+          formats: { row: true },
+        },
+      ],
+      formats: {
+        table: true,
+      },
+    },
   ],
   formats: { root: true },
 }
