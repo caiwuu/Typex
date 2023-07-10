@@ -5,7 +5,6 @@ import { input } from '../defaultActions/input'
 import { createPath } from './path'
 import { uuid } from '../utils'
 
-
 const mergeBlock = (o, n, range, shouldUpdates = []) => {
   const oBlock = o.block
   o.block.$path.insertChildrenAfter(n)
@@ -36,7 +35,7 @@ const mergeBlock = (o, n, range, shouldUpdates = []) => {
  */
 export default class Content extends Component {
   uuid = uuid()
-  get renderContent () {
+  get renderContent() {
     return this.$editor.formater.render(this.$path)
   }
   /**
@@ -45,7 +44,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get displayType () {
+  get displayType() {
     return 'inline'
   }
   constructor(props) {
@@ -58,7 +57,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get contentLength () {
+  get contentLength() {
     return this.$path.length
   }
 
@@ -68,7 +67,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get $path () {
+  get $path() {
     return this.props.path
   }
 
@@ -78,11 +77,10 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get $editor () {
+  get $editor() {
     return this.props.editor
   }
-  shouldComponentUpdate () {
-    console.log(this.$path.node, this.$path.rebuildFlag);
+  shouldComponentUpdate() {
     return this.$path.rebuildFlag !== 1
   }
   /**
@@ -90,7 +88,7 @@ export default class Content extends Component {
    * @memberof Content
    * @memberof Content
    */
-  onBeforeRender () {
+  onBeforeRender() {
     /*
      * 在diff的时候对于相同的组件类型的vdom,会被当成相同vnode，不会重新创建实例,只会切换props,
      * 但是一定会调用render，因此需要在这里切换path的组件上下文
@@ -105,7 +103,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  update (path, range) {
+  update(path, range) {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
@@ -123,7 +121,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  contentInput (path, range, data) {
+  contentInput(path, range, data) {
     const { offset, endContainer } = range
     path.insertData(offset, data)
     this._updatePoints(endContainer, offset, data.length)
@@ -139,7 +137,7 @@ export default class Content extends Component {
    * @param {*} range
    * @return {*}
    */
-  onContentDelete (commonPath, range) {
+  onContentDelete(commonPath, range) {
     console.log('删除')
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
@@ -228,7 +226,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  enterPath (range, direction) {
+  enterPath(range, direction) {
     let path = null
     if (direction === 'left') {
       const formPath = range.endContainer
@@ -254,7 +252,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  leavePath (range, direction) {
+  leavePath(range, direction) {
     if (direction === 'left') {
       const path = range.startContainer
       let toPath = path.prevLeaf
@@ -278,7 +276,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretMove (direction, range, event) {
+  onCaretMove(direction, range, event) {
     const path = range.container
     const { shiftKey } = event
     let res = { path, range }
@@ -306,7 +304,7 @@ export default class Content extends Component {
    * @param {event} [event=null]
    * @memberof Content
    */
-  onLinefeed (range, event = null) {
+  onLinefeed(range, event = null) {
     if (range.inputState.isComposing) return
     event?.preventDefault?.()
     if (!range.collapsed) {
@@ -366,7 +364,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowLeft (range, event) {
+  onKeydownArrowLeft(range, event) {
     horizontalMove('left', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -378,7 +376,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowRight (range, event) {
+  onKeydownArrowRight(range, event) {
     horizontalMove('right', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -390,7 +388,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowUp (range, event) {
+  onKeydownArrowUp(range, event) {
     verticalMove('up', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -402,7 +400,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowDown (range, event) {
+  onKeydownArrowDown(range, event) {
     verticalMove('down', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -413,7 +411,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownBackspace (range) {
+  onKeydownBackspace(range) {
     del(range, false)
   }
 
@@ -424,15 +422,15 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownEnter (range, event) {
+  onKeydownEnter(range, event) {
     this.onLinefeed(range, event)
   }
-  onKeydownz (range, event) {
+  onKeydownz(range, event) {
     if (event.ctrlKey) {
       this.$editor.history.undo()
     }
   }
-  onKeydownZ (range, event) {
+  onKeydownZ(range, event) {
     if (event.ctrlKey) {
       this.$editor.history.todo()
     }
@@ -444,7 +442,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onInput (range, event) {
+  onInput(range, event) {
     input(range, event)
   }
 
@@ -457,7 +455,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  isCaretShouldLeavePath (path, range, direction) {
+  isCaretShouldLeavePath(path, range, direction) {
     if (direction === 'left' && range.offset <= 1) {
       let toPath = path.prevLeaf
       if (!toPath) return false
@@ -481,7 +479,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  _updatePoints (container, position, distance, newContainer) {
+  _updatePoints(container, position, distance, newContainer) {
     this.$editor.selection.updatePoints(container, position, distance, newContainer)
   }
 
@@ -492,7 +490,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  setFormat (range, callback) {
+  setFormat(range, callback) {
     const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
     const selectedPath = this.$editor.selection.getSeletedPath()
     for (const path of selectedPath) {

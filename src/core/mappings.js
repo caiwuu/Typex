@@ -9,7 +9,7 @@ const vdomElmMap = new WeakMap()
 const vnodeInsMap = new WeakMap()
 const vdomPathMap = new WeakMap()
 
-function getVdomOrPath (key) {
+function getVdomOrPath(key) {
   // 通过vn找path
   if (key.vnodeType) {
     const res = vdomPathMap.get(key)
@@ -29,24 +29,30 @@ function getVdomOrPath (key) {
     return vnode
   }
 }
-function getVnodeOrIns (key) {
+function getVnodeOrIns(key) {
   return vnodeInsMap.get(key)
 }
-function getVdomOrElm (key) {
+function getVdomOrElm(key) {
   if (key.vnodeType === 1 || key.vnodeType === 2) {
     return vdomElmMap.get(key.$vdom)
   }
   return vdomElmMap.get(key)
 }
-function setVdomOrElm (vn, elm) {
+function setVdomOrElm(vn, elm) {
   vdomElmMap.set(elm, vn).set(vn, elm)
 }
-function setVnodeOrIns (vn, ins) {
+function setVnodeOrIns(vn, ins) {
   vnodeInsMap.set(ins, vn).set(vn, ins)
 }
-function setVdomOrPath (vn, path) {
-  console.log('====', vn, path);
+function setVdomOrPath(vn, path) {
   vdomPathMap.set(vn, path).set(path, vn)
 }
 export { setVdomOrElm, setVnodeOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVnodeOrIns }
-window.aa = { setVdomOrElm, setVnodeOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVnodeOrIns }
+window.aa = {
+  setVdomOrElm,
+  setVnodeOrIns,
+  setVdomOrPath,
+  getVdomOrElm,
+  getVdomOrPath,
+  getVnodeOrIns,
+}
