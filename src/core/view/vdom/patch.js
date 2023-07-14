@@ -17,11 +17,7 @@ import { isUndef, isDef } from '../../utils'
  * @returns {*}
  */
 function sameVnode(vnode, oldVnode) {
-  if (typeof vnode?.type === 'string') {
-    return vnode?.key === oldVnode?.key && vnode?.type === oldVnode?.type
-  } else {
-    return vnode?.key === oldVnode?.key && vnode?.type.constructor === oldVnode?.type.constructor
-  }
+  return vnode?.key === oldVnode?.key && vnode?.type === oldVnode?.type
 }
 
 /**

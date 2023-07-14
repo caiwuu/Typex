@@ -5,28 +5,6 @@ import { input } from '../defaultActions/input'
 import { createPath } from './path'
 import { uuid } from '../utils'
 
-const mergeBlock = (o, n, range, shouldUpdates = []) => {
-  const oBlock = o.block
-  o.block.$path.insertChildrenAfter(n)
-  // if (n.length === 0) {
-  //   n.component.$editor.selection.rangePoints
-  //     .filter((point) => point.container === n)
-  //     .forEach((point) => {
-  //       if (point.pointName === 'start') {
-  //         point.range.setStart(n.nextLeaf, 0)
-  //       } else {
-  //         point.range.setEnd(n.nextLeaf, 0)
-  //       }
-  //     })
-  // }
-  oBlock.$path.parent.component.update().then(() => {
-    range.updateCaret()
-  })
-  shouldUpdates.forEach((ins) => {
-    ins.component.update()
-  })
-}
-
 /**
  * @description 内容管理类
  * @export
@@ -107,7 +85,7 @@ export default class Content extends Component {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
-      // this.$editor.selection.updateCaret()
+      this.$editor.selection.drawRangeBg()
       // 执行更新后钩子
       this.onAfterUpdate && this.onAfterUpdate({ range, path })
     })
@@ -209,7 +187,11 @@ export default class Content extends Component {
       startContainer.textDelete(startContainer.length, startContainer.length - startOffset)
       endContainer.textDelete(endOffset, endOffset)
       commonPath.deleteBetween(startContainer, endContainer)
-      mergeBlock(endContainer, startContainer, range)
+      if (startContainer.block !== endContainer.block) {
+        startContainer.parent.splice(startContainer.index + 1, 0, ...endContainer.parent.children)
+      }
+      range.collapse(true)
+      console.log(range.startOffset, range.endOffset, range)
     }
     range.collapse(true)
     this.update(commonPath, range).then(() => {
