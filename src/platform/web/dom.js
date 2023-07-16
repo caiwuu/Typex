@@ -19,6 +19,7 @@ export function appendChild(parentNode, newNode) {
   return parentNode.appendChild(newNode)
 }
 export function removeChild(parentNode, referenceNode) {
+  console.log(referenceNode)
   return parentNode.removeChild(referenceNode)
 }
 

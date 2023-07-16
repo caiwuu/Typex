@@ -18,6 +18,8 @@ import {
   getVdomOrElm,
   getVdomOrPath,
   getVnodeOrIns,
+  setVdomOrIns,
+  getVdomOrIns,
 } from './mappings'
 const core = {
   createPath,
@@ -38,11 +40,12 @@ const core = {
   getVdomOrElm,
   getVdomOrPath,
   getVnodeOrIns,
-  SplitText
+  setVdomOrIns,
+  getVdomOrIns,
+  SplitText,
 }
 
 export default core
-
 
 window.setFormat = setFormat
 window.deleteText = deleteText

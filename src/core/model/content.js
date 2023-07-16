@@ -144,13 +144,12 @@ export default class Content extends Component {
           startContainer.block.$path.delete()
           range.setStart(prevLeaf, prevLeaf.length)
           range.collapse(true)
-          this.$path.parent.component.update().then(() => {
+          startContainer.block.$path.parent.component.update().then(() => {
             range.updateCaret(true)
           })
         } else if (startContainer.length === 0) {
           startContainer.delete()
-        }
-        if (startContainer.block !== prevLeaf.block) {
+        } else if (startContainer.block !== prevLeaf.block) {
           const startContainerParent = startContainer.parent
           if (prevLeaf.length === 0) {
             prevLeaf.parent.pop()
@@ -174,6 +173,8 @@ export default class Content extends Component {
           })
           // return
         } else {
+          range.setStart(prevLeaf, prevLeaf.length)
+          range.collapse(true)
           this.onContentDelete(range.startContainer, range)
         }
       }
@@ -188,13 +189,14 @@ export default class Content extends Component {
       endContainer.textDelete(endOffset, endOffset)
       commonPath.deleteBetween(startContainer, endContainer)
       if (startContainer.block !== endContainer.block) {
+        endContainer.parent.delete()
         startContainer.parent.splice(startContainer.index + 1, 0, ...endContainer.parent.children)
       }
       range.collapse(true)
       console.log(range.startOffset, range.endOffset, range)
     }
     range.collapse(true)
-    this.update(commonPath, range).then(() => {
+    commonPath.component.update(commonPath, range).then(() => {
       range.updateCaret()
     })
   }
@@ -287,6 +289,7 @@ export default class Content extends Component {
    * @memberof Content
    */
   onLinefeed(range, event = null) {
+    console.log(1)
     if (range.inputState.isComposing) return
     event?.preventDefault?.()
     if (!range.collapsed) {

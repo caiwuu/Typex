@@ -88,11 +88,7 @@ class Formater {
              表现层看来这里产生了混乱，不符合编程直觉；从更加抽象的path层面看是统一的；
              */
 
-            // 内容为空时 将path指向他父级的vdom
-            // 需要等待 vn生成
-            Promise.resolve().then(() => {
-              setVdomOrPath(mergedTextPath, mergedTextPath.parent.vn)
-            })
+            setVdomOrPath(mergedTextPath, mergedTextPath.parent.vn)
             mergedTextPath.clearFormat()
           } else {
             if (mergedTextPath.node.data === '') console.warn('非法空标签：', mergedTextPath)

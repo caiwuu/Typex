@@ -5,10 +5,14 @@
  * @LastEditor:
  * @LastEditTime: 2022-09-23 13:57:07
  */
-const vdomElmMap = new WeakMap()
-const vnodeInsMap = new WeakMap()
-const vdomPathMap = new WeakMap()
+const vdomElmMap = new WeakMap() // 记录虚拟dom和真实dom的映射
+const vnodeInsMap = new WeakMap() // 记录组件实例和组件虚拟节点的映射
+const vdomInsMap = new WeakMap() // 记录组件实例和虚拟dom的映射
+const vdomPathMap = new WeakMap() // 记录虚拟dom和Path的映射
 
+function getVdomOrIns(key) {
+  return vdomInsMap.get(key)
+}
 function getVdomOrPath(key) {
   // 通过vn找path
   if (key.vnodeType) {
@@ -17,24 +21,29 @@ function getVdomOrPath(key) {
     // 如果是文本节点 没找到 那说明这个文本是没有被内容管理器管理的内容
     if (key.vnodeType === 3) return null
     // 如果没找到 可能是组件类型的vdom 需要先找到vnode
-    const ins = getVnodeOrIns(key)
-    if (ins.$vnode) return vdomPathMap.get(ins.$vnode)
-    // 对于函数组件 vnode就是ins本身
-    return vdomPathMap.get(ins)
-    // 通过path找vn
+    const ins = getVdomOrIns(key)
+    const componentVnode = getVnodeOrIns(ins)
+    if (ins.vnodeType === 1) {
+      return vdomPathMap.get(ins)
+    } else {
+      return vdomPathMap.get(componentVnode)
+    }
   } else {
-    const vnode = vdomPathMap.get(key)
-    if (!vnode) return
-    if (vnode.vnodeType === 1 || vnode.vnodeType === 2) return vnode.$vdom
-    return vnode
+    // 通过path找vn
+    const vdom = vdomPathMap.get(key)
+    if (!vdom) return
+    return vdom
   }
 }
 function getVnodeOrIns(key) {
   return vnodeInsMap.get(key)
 }
 function getVdomOrElm(key) {
-  if (key.vnodeType === 1 || key.vnodeType === 2) {
-    return vdomElmMap.get(key.$vdom)
+  if (key.vnodeType === 1) {
+    return vdomElmMap.get(vdomInsMap.get(key))
+  }
+  if (key.vnodeType === 2) {
+    return vdomElmMap.get(vdomInsMap.get(vnodeInsMap.get(key)))
   }
   return vdomElmMap.get(key)
 }
@@ -47,7 +56,19 @@ function setVnodeOrIns(vn, ins) {
 function setVdomOrPath(vn, path) {
   vdomPathMap.set(vn, path).set(path, vn)
 }
-export { setVdomOrElm, setVnodeOrIns, setVdomOrPath, getVdomOrElm, getVdomOrPath, getVnodeOrIns }
+function setVdomOrIns(vn, ins) {
+  return vdomInsMap.set(ins, vn).set(vn, ins)
+}
+export {
+  setVdomOrElm,
+  setVnodeOrIns,
+  setVdomOrPath,
+  getVdomOrElm,
+  getVdomOrPath,
+  getVnodeOrIns,
+  setVdomOrIns,
+  getVdomOrIns,
+}
 window.aa = {
   setVdomOrElm,
   setVnodeOrIns,

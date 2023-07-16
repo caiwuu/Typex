@@ -10,7 +10,7 @@ const paragraph = {
   name: 'paragraph',
   type: 'component',
   render(parentVnode, props) {
-    const vn = <Paragraph {...props}></Paragraph>
+    const vn = <Paragraph {...props} key={props.path._uuid}></Paragraph>
     if (parentVnode) {
       parentVnode.children.push(vn)
     }
