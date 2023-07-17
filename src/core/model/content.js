@@ -108,14 +108,105 @@ export default class Content extends Component {
       range.updateCaret()
     })
   }
+  onContentDelete(commonPath, range) {
+    console.log('删除')
+    const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
+    // 选区折叠
+    if (collapsed) {
+      const prevLeaf = startContainer.prevLeaf
+      if (endOffset > 0) {
+        // 执行删除
+        startContainer.textDelete(endOffset, 1)
 
+        if (startContainer.block.contentLength === 0) {
+          // 块级内容被清空
+          range.setStart(startContainer, 0).collapse()
+        } else if (startContainer.length === 0) {
+          // 块不为空 容器为空
+          // 删除容器
+          startContainer.delete()
+
+          if (prevLeaf.block !== startContainer.block || !prevLeaf) {
+            range.setStart(startContainer.nextLeaf, 0).collapse()
+          } else {
+            range.setStart(prevLeaf, 0).collapse()
+          }
+        } else {
+          // 容器不为空
+          // 平移其他range
+          this._updatePoints(endContainer, endOffset, -1)
+
+          // 行内跨标签
+          if (prevLeaf.block === startContainer.block && endOffset === 1) {
+            range.setStart(prevLeaf, prevLeaf.length).collapse()
+          }
+        }
+      } else {
+        // 块为空 光标在头部
+        if (startContainer.block.contentLength === 0) {
+          startContainer.block.$path.delete()
+
+          range.setStart(prevLeaf, prevLeaf.length).collapse()
+          // startContainer.block.$path.parent.component.update().then(() => {
+          //   range.updateCaret(true)
+          // })
+        } else if (startContainer.length === 0) {
+          startContainer.delete()
+        } else if (startContainer.block !== prevLeaf.block) {
+          const startContainerParent = startContainer.parent
+          if (prevLeaf.length === 0) {
+            prevLeaf.parent.pop()
+            prevLeaf.parent.push(...startContainer.parent.children)
+            startContainerParent.delete()
+            range.setStart(startContainer, 0)
+          } else {
+            prevLeaf.parent.splice(prevLeaf.index + 1, 0, ...startContainer.parent.children)
+            startContainerParent.delete()
+            // prevLeaf.parent.component.update()
+
+            // console.log(this.$editor.$path.children[0].component === prevLeaf.parent.component);
+            // this.$editor.$path.children[0].component.update()
+            // this.$editor.$path.component.update()
+            range.setStart(startContainer, 0).collapse()
+          }
+
+          // prevLeaf.parent.block.update().then(() => {
+          //   range.updateCaret()
+          // })
+          // return
+        } else {
+          range.setStart(prevLeaf, prevLeaf.length).collapse()
+          this.onContentDelete(range.startContainer, range)
+        }
+      }
+    } else if (startContainer === endContainer) {
+      startContainer.textDelete(endOffset, endOffset - startOffset)
+      if (startContainer.length === 0) {
+        startContainer.delete()
+        range.setStart(startContainer.prevLeaf, startContainer.prevLeaf.length).collapse()
+      }
+    } else {
+      startContainer.textDelete(startContainer.length, startContainer.length - startOffset)
+      endContainer.textDelete(endOffset, endOffset)
+      commonPath.deleteBetween(startContainer, endContainer)
+      if (startContainer.block !== endContainer.block) {
+        endContainer.parent.delete()
+        startContainer.parent.splice(startContainer.index + 1, 0, ...endContainer.parent.children)
+      }
+      range.collapse(true)
+      console.log(range.startOffset, range.endOffset, range)
+    }
+    commonPath.component.update(commonPath, range).then(() => {
+      range.updateCaret()
+    })
+  }
   /**
    * @desc: 删除动作
    * @param {*} commonPath
    * @param {*} range
    * @return {*}
    */
-  onContentDelete(commonPath, range) {
+  onContentDelete2(commonPath, range) {
     console.log('删除')
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
@@ -142,8 +233,7 @@ export default class Content extends Component {
         const prevLeaf = startContainer.prevLeaf
         if (startContainer.block.contentLength === 0) {
           startContainer.block.$path.delete()
-          range.setStart(prevLeaf, prevLeaf.length)
-          range.collapse(true)
+          range.setStart(prevLeaf, prevLeaf.length).collapse()
           startContainer.block.$path.parent.component.update().then(() => {
             range.updateCaret(true)
           })
@@ -155,7 +245,7 @@ export default class Content extends Component {
             prevLeaf.parent.pop()
             prevLeaf.parent.push(...startContainer.parent.children)
             startContainerParent.delete()
-            range.setStart(startContainer, 0)
+            range.setStart(startContainer, 0).collapse()
           } else {
             prevLeaf.parent.splice(prevLeaf.index + 1, 0, ...startContainer.parent.children)
             startContainerParent.delete()
@@ -164,17 +254,15 @@ export default class Content extends Component {
             // console.log(this.$editor.$path.children[0].component === prevLeaf.parent.component);
             // this.$editor.$path.children[0].component.update()
             // this.$editor.$path.component.update()
-            range.setStart(startContainer, 0)
+            range.setStart(startContainer, 0).collapse()
           }
 
-          range.collapse(true)
           prevLeaf.parent.block.update().then(() => {
             range.updateCaret()
           })
           // return
         } else {
-          range.setStart(prevLeaf, prevLeaf.length)
-          range.collapse(true)
+          range.setStart(prevLeaf, prevLeaf.length).collapse()
           this.onContentDelete(range.startContainer, range)
         }
       }
@@ -182,7 +270,7 @@ export default class Content extends Component {
       startContainer.textDelete(endOffset, endOffset - startOffset)
       if (startContainer.length === 0) {
         startContainer.delete()
-        range.setStart(startContainer.prevLeaf, startContainer.prevLeaf.length)
+        range.setStart(startContainer.prevLeaf, startContainer.prevLeaf.length).collapse()
       }
     } else {
       startContainer.textDelete(startContainer.length, startContainer.length - startOffset)
@@ -195,7 +283,6 @@ export default class Content extends Component {
       range.collapse(true)
       console.log(range.startOffset, range.endOffset, range)
     }
-    range.collapse(true)
     commonPath.component.update(commonPath, range).then(() => {
       range.updateCaret()
     })

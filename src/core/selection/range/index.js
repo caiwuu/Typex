@@ -109,6 +109,7 @@ export default class Range {
     this.container = container
     this.offset = offset
     if (this.collapsed) this.d = 0
+    return this
   }
 
   /**
@@ -122,6 +123,7 @@ export default class Range {
     this.endContainer = endContainer
     this.endOffset = endOffset
     if (this.collapsed) this.d = 0
+    return this
   }
 
   /**
@@ -135,6 +137,7 @@ export default class Range {
     this.startContainer = startContainer
     this.startOffset = startOffset
     if (this.collapsed) this.d = 0
+    return this
   }
 
   /**
@@ -143,7 +146,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  collapse(toStart) {
+  collapse(toStart = true) {
     if (toStart) {
       this.endContainer = this.startContainer
       this.endOffset = this.startOffset
@@ -152,7 +155,7 @@ export default class Range {
       this.startContainer = this.endContainer
     }
     this.d = 0
-    // this.editor.selection.drawRangeBg()
+    return this
   }
 
   /**
