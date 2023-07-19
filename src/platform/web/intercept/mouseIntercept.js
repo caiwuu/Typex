@@ -9,9 +9,18 @@ import { debounce } from '../utils'
 const nativeSelection = document.getSelection()
 export default class MouseIntercept {
   selectionchangeHandle = debounce(() => {
-    this.editor.emit('selectionchange-origin')
+    const selection = window.getSelection();
+    const editorContent = this.editor.contentRef.current
+    if (selection.anchorNode && selection.focusNode) {
+      const anchorElement = selection.anchorNode.parentElement;
+      const focusElement = selection.focusNode.parentElement;
+      // 检查选区的起始点和结束点是否在目标元素内
+      if (anchorElement === editorContent || focusElement === editorContent || editorContent.contains(anchorElement) || editorContent.contains(focusElement)) {
+        this.editor.emit('selectionchange-origin')
+      }
+    }
   }, 200)
-  handMousedown(event) {
+  handMousedown (event) {
     this.editor.emit('mouseEvents', event)
     // 没按shift的时候按下左键折叠选区
     if (!event.shiftKey && event.button === 0) {
@@ -23,7 +32,7 @@ export default class MouseIntercept {
       this.editor.selection.updateRangesFromNative(event.altKey)
     }
   }
-  handMouseup(event) {
+  handMouseup (event) {
     // 有选区或者按了shift,更新选区（isCollapsed这里必须使用原生的，因为内核的选区此时还未更新）
     if (!nativeSelection.collapsed || event.shiftKey) {
       this.editor.selection.updateRangesFromNative(event.altKey)
@@ -34,12 +43,12 @@ export default class MouseIntercept {
     this.editor = editor
     this.addListeners()
   }
-  destroy() {
+  destroy () {
     this.editor.contentRef.current.removeEventListener('mouseup', this.handMouseup.bind(this))
     this.editor.contentRef.current.removeEventListener('mousedown', this.handMousedown.bind(this))
     document.removeEventListener('selectionchange', this.selectionchangeHandle)
   }
-  addListeners() {
+  addListeners () {
     this.editor.contentRef.current.addEventListener('mouseup', this.handMouseup.bind(this))
     this.editor.contentRef.current.addEventListener('mousedown', this.handMousedown.bind(this))
     document.addEventListener('selectionchange', this.selectionchangeHandle)

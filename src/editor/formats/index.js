@@ -2,14 +2,14 @@ import { Table, Row, Col, Image, Paragraph, Root } from './components'
 const root = {
   name: 'root',
   type: 'component',
-  render(parentVnode, props) {
+  render (parentVnode, props) {
     return <Root {...props}></Root>
   },
 }
 const paragraph = {
   name: 'paragraph',
   type: 'component',
-  render(parentVnode, props) {
+  render (parentVnode, props) {
     const vn = <Paragraph {...props} key={props.path._uuid}></Paragraph>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -21,7 +21,7 @@ const paragraph = {
 const bold = {
   name: 'bold',
   type: 'tag',
-  render(parentVnode) {
+  render (parentVnode) {
     const vn = <strong></strong>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -32,7 +32,7 @@ const bold = {
 const underline = {
   name: 'underline',
   type: 'tag',
-  render(parentVnode) {
+  render (parentVnode) {
     const vn = <u></u>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -43,7 +43,7 @@ const underline = {
 const fontSize = {
   name: 'fontSize',
   type: 'attribute',
-  render(parentVnode, value) {
+  render (parentVnode, value) {
     if (parentVnode) {
       if (!parentVnode.props.style) parentVnode.props.style = {}
       parentVnode.props.style['fontSize'] = value
@@ -52,10 +52,22 @@ const fontSize = {
     }
   },
 }
+const background = {
+  name: 'background',
+  type: 'attribute',
+  render (parentVnode, value) {
+    if (parentVnode) {
+      if (!parentVnode.props.style) parentVnode.props.style = {}
+      parentVnode.props.style['background'] = value
+    } else {
+      return <span style={{ background: value }}></span>
+    }
+  },
+}
 const color = {
   name: 'color',
   type: 'attribute',
-  render(parentVnode, value) {
+  render (parentVnode, value) {
     if (parentVnode) {
       if (!parentVnode.props.style) parentVnode.props.style = {}
       parentVnode.props.style['color'] = value
@@ -67,7 +79,7 @@ const color = {
 const deleteline = {
   name: 'deleteline',
   type: 'tag',
-  render(parentVnode) {
+  render (parentVnode) {
     const vn = <del></del>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -78,7 +90,7 @@ const deleteline = {
 const sup = {
   name: 'sup',
   type: 'tag',
-  render(parentVnode) {
+  render (parentVnode) {
     const vn = <sup></sup>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -89,7 +101,7 @@ const sup = {
 const sub = {
   name: 'sub',
   type: 'tag',
-  render(parentVnode) {
+  render (parentVnode) {
     const vn = <sub></sub>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -100,7 +112,7 @@ const sub = {
 const table = {
   name: 'table',
   type: 'component',
-  render(parentVnode, props) {
+  render (parentVnode, props) {
     const vn = <Table {...props}></Table>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -111,7 +123,7 @@ const table = {
 const row = {
   name: 'row',
   type: 'component',
-  render(parentVnode, props) {
+  render (parentVnode, props) {
     const vn = <Row {...props}></Row>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -122,7 +134,7 @@ const row = {
 const col = {
   name: 'col',
   type: 'component',
-  render(parentVnode, props) {
+  render (parentVnode, props) {
     const vn = <Col {...props}></Col>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -133,7 +145,7 @@ const col = {
 const image = {
   name: 'image',
   type: 'component',
-  render(parentVnode, props) {
+  render (parentVnode, props) {
     const vn = <Image {...props}></Image>
     if (parentVnode) {
       parentVnode.children.push(vn)
@@ -155,4 +167,5 @@ export default [
   table,
   row,
   col,
+  background
 ]

@@ -9,18 +9,6 @@
 export const mockData = {
   data: [
     {
-      data: [{ data: 'qwertyuiopqwertyuiop' }],
-      formats: { paragraph: true },
-    },
-    {
-      data: [{ data: '1' }],
-      formats: { paragraph: true },
-    },
-    {
-      data: [{ data: 'qwertyuiopqwertyuiop', formats: { bold: true } }],
-      formats: { paragraph: true },
-    },
-    {
       data: [
         {
           data: '这是一个基于Typex编写的简单富文本编辑器demo',
@@ -35,24 +23,28 @@ export const mockData = {
         {
           data: '是一款全新架构的编辑器内核，该内核不依赖contenteditable;自主实现了光标、模拟输入、模拟选区;数据驱动，组件化，插件化，支持多光标，跨平台的设计。优秀的格式排版系统避免了脏标签的产生（打开控制台你会发现它的标签非常简洁）。多光标：按住alt+左键；加粗/取消加粗：ctrl+b；删除线/取消删除线：ctrl+d；上标/取消上标：ctrl+s ....',
           formats: { color: '#999' },
-        },
-        { data: 'qwertyuiopqwertyuiop' },
+        }
       ],
       formats: { paragraph: true },
     },
     {
       data: [
         {
-          data: '36px-green',
-          formats: { color: 'green', fontSize: '36px' },
+          data: '红色删除线',
+          formats: { deleteline: true, color: 'red' },
         },
         {
-          data: '12px-red',
-          formats: { color: 'red', fontSize: '12px' },
+          data: '上标示例',
+          formats: { sup: true, color: 'green', fontSize: '12px' },
+        },
+        { data: '绿色加粗下划线', formats: { underline: true, color: 'green', bold: true } },
+        {
+          data: '下标示例',
+          formats: { sub: true, color: 'red', fontSize: '12px' },
         },
         {
-          data: '18px-red',
-          formats: { color: 'red', fontSize: '18px' },
+          data: '背景示例',
+          formats: { sub: true, color: 'white', fontSize: '16px', background: 'orange' },
         },
       ],
       formats: { paragraph: true },
@@ -60,7 +52,7 @@ export const mockData = {
     {
       data: [
         {
-          data: '点击图片放大缩小图片=> ',
+          data: '带静态内容的行内图片示例',
           formats: { color: '#ff9999', fontSize: '24px' },
         },
         {
@@ -84,39 +76,10 @@ export const mockData = {
       ],
       formats: { paragraph: true },
     },
-    {
-      data: [
-        {
-          data: 'this is Paragraph',
-          formats: { color: 'green' },
-        },
-      ],
-      formats: { paragraph: true },
-    },
 
     {
       data: [
-        {
-          data: 'world',
-          formats: { del: true, color: 'red' },
-        },
-        { data: 'eee', formats: { del: true, color: 'green' } },
-        {
-          data: 'hhhha',
-          formats: { sup: true, del: true, color: 'green', fontSize: '12px' },
-        },
-        { data: 'qqq', formats: { color: 'green' } },
-        {
-          data: '分词器',
-          formats: { color: 'green' },
-        },
-      ],
-      formats: { paragraph: true },
-    },
-    {
-      data: [
-        { data: 'qqq', formats: { color: 'green' } },
-        { data: 'www', formats: { color: 'red' } },
+        { data: '表格示例:', formats: { color: '#666', bold: true } },
       ],
       formats: { paragraph: true },
     },
@@ -127,12 +90,22 @@ export const mockData = {
             {
               data: [
                 {
-                  data: '1111',
-                  formats: { color: 'red', bold: true },
+                  data: [
+                    {
+                      data: '表格内容1',
+                      formats: { color: 'green' },
+                    },
+                  ],
+                  formats: { paragraph: true },
                 },
                 {
-                  data: '333',
-                  formats: { del: true, color: 'red', fontSize: '22px' },
+                  data: [
+                    {
+                      data: '表格内容2',
+                      formats: { color: 'red', fontSize: '12px' },
+                    },
+                  ],
+                  formats: { paragraph: true },
                 },
               ],
               formats: { col: true },
@@ -140,8 +113,13 @@ export const mockData = {
             {
               data: [
                 {
-                  data: '1111',
-                  formats: { color: 'green' },
+                  data: [
+                    {
+                      data: '表格内容2',
+                      formats: { color: 'Orange', fontSize: '20px', background: '#ddd' },
+                    },
+                  ],
+                  formats: { paragraph: true },
                 },
               ],
               formats: { col: true },
