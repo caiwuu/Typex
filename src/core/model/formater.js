@@ -105,7 +105,7 @@ class Formater {
           // 组件类型单独占一个分组
           const path = g.children[0]
           const fmt = componentQuene[0].fmt
-          const pv = fmt.render(null, { path, editor: this.editor }, h)
+          const pv = fmt.render(null, { path, editor: this.editor }, componentQuene[0].value, h)
           // 为所有component类型的path映射vnode
           setVdomOrPath(path, pv)
           return pv

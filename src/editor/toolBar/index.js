@@ -65,13 +65,14 @@ class ToolBarItem extends Component {
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
-        {/* <Dialog ref={this.dialogRef}>
+        <Dialog ref={this.dialogRef}>
           <span style='color:red'>dialog</span>
-        </Dialog> */}
+        </Dialog>
       </span>
     )
   }
   click = () => {
+    this.dialogRef.current.toggle()
     this.setState({
       value: !this.state.value,
     })
@@ -103,7 +104,7 @@ export class Dialog extends Component {
     return (
       <div>
         {this.state.visiable ? (
-          <div style='background:#ddd;height:200px;position:absolute;top:200px;width:300px;z-index:1'>
+          <div style='background:#ddd;height:200px;position:absolute;top:35px;width:300px;z-index:1'>
             {this.props.children.length ? this.props.children : 'dialog'}
           </div>
         ) : (

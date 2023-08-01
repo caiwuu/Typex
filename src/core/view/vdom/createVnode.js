@@ -10,7 +10,8 @@ const INHERITPROPSKEY = ['ns'] // 需要继承的属性
  * @param {*} [children=[]]
  * @returns {*}
  */
-export default function createVnode (type, config = {}, children = []) {
+export default function createVnode(type, config, children = []) {
+  config = config || {}
   const props = {}
   const builtinProps = {}
   for (let propName of BUILTINPROPSKEY) {
@@ -54,7 +55,7 @@ const _genChildren = (children, inherit) => {
  * @param {*} children
  * @returns {*}
  */
-function Element (type, builtinProps, props, children) {
+function Element(type, builtinProps, props, children) {
   let element
   if (type === 'text') {
     element = {

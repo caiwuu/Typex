@@ -19,11 +19,19 @@ export const mockData = {
     },
     {
       data: [
+        {
+          data: '这是一个基于Typex编写的简单富文本编辑器demo',
+        },
+      ],
+      formats: { header: 4 },
+    },
+    {
+      data: [
         { data: 'Typex', formats: { color: '#ff9999' } },
         {
           data: '是一款全新架构的编辑器内核，该内核不依赖contenteditable;自主实现了光标、模拟输入、模拟选区;数据驱动，组件化，插件化，支持多光标，跨平台的设计。优秀的格式排版系统避免了脏标签的产生（打开控制台你会发现它的标签非常简洁）。多光标：按住alt+左键；加粗/取消加粗：ctrl+b；删除线/取消删除线：ctrl+d；上标/取消上标：ctrl+s ....',
           formats: { color: '#999' },
-        }
+        },
       ],
       formats: { paragraph: true },
     },
@@ -78,9 +86,7 @@ export const mockData = {
     },
 
     {
-      data: [
-        { data: '表格示例:', formats: { color: '#666', bold: true } },
-      ],
+      data: [{ data: '表格示例:', formats: { color: '#666', bold: true } }],
       formats: { paragraph: true },
     },
     {
