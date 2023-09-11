@@ -4,6 +4,7 @@ import { del } from '../defaultActions/delete'
 import { input } from '../defaultActions/input'
 import { createPath } from './path'
 import { uuid } from '../utils'
+import { InsertText } from '../transform/step'
 
 /**
  * @description 内容管理类
@@ -13,7 +14,7 @@ import { uuid } from '../utils'
  */
 export default class Content extends Component {
   uuid = uuid()
-  get renderContent () {
+  get renderContent() {
     return this.$editor.formater.render(this.$path)
   }
   /**
@@ -22,7 +23,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get displayType () {
+  get displayType() {
     return 'inline'
   }
   constructor(props) {
@@ -35,7 +36,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get contentLength () {
+  get contentLength() {
     return this.$path.length
   }
 
@@ -45,7 +46,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get $path () {
+  get $path() {
     return this.props.path
   }
 
@@ -55,10 +56,10 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  get $editor () {
+  get $editor() {
     return this.props.editor
   }
-  shouldComponentUpdate () {
+  shouldComponentUpdate() {
     return this.$path.rebuildFlag !== 1
   }
   /**
@@ -66,7 +67,7 @@ export default class Content extends Component {
    * @memberof Content
    * @memberof Content
    */
-  onBeforeRender () {
+  onBeforeRender() {
     /*
      * 在diff的时候对于相同的组件类型的vdom,会被当成相同vnode，不会重新创建实例,只会切换props,
      * 但是一定会调用render，因此需要在这里切换path的组件上下文
@@ -81,7 +82,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  update (path, range) {
+  update(path, range) {
     // 执行更新前钩子
     this.onBeforeUpdate && this.onBeforeUpdate({ path: path || this.$path, range })
     return this.setState().then(() => {
@@ -99,16 +100,20 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  contentInput (path, range, data) {
-    const { offset, endContainer } = range
-    path.insertData(offset, data)
-    this._updatePoints(endContainer, offset, data.length)
+  contentInput(path, range, data, ts) {
+    // path.insertData(offset, data)
+    // this._updatePoints(endContainer, offset, data.length)
+    const insertTextStep = new InsertText({ range, data })
+    insertTextStep.apply()
+    // ts.addAndApplyStep(insertTextStep)
+    // ts.commit(range.container.parent)
     this.update().then(() => {
       range.collapse(false)
       range.updateCaret()
     })
+    return insertTextStep
   }
-  onContentDelete (commonPath, range) {
+  onContentDelete(commonPath, range) {
     console.log('删除')
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
     // 选区折叠
@@ -127,14 +132,14 @@ export default class Content extends Component {
           if (prevLeaf.block !== startContainer.block || !prevLeaf) {
             range.setStart(startContainer.nextLeaf, 0).collapse()
           } else {
-            range.setStart(prevLeaf, 0).collapse()
+            range.setStart(prevLeaf, prevLeaf.length).collapse()
           }
         } else {
           // 容器不为空
           // 平移其他range
           this._updatePoints(endContainer, endOffset, -1)
           // 行内跨标签
-          if (prevLeaf.block === startContainer.block && endOffset === 1) {
+          if (prevLeaf?.block === startContainer.block && endOffset === 1) {
             range.setStart(prevLeaf, prevLeaf.length).collapse()
           }
         }
@@ -175,7 +180,11 @@ export default class Content extends Component {
       commonPath.deleteBetween(startContainer, endContainer)
       if (startContainer.block !== endContainer.block) {
         endContainer.parent.delete()
-        startContainer.parent.splice(startContainer.index + 1, 0, ...endContainer.parent.children.filter(i => i.length))
+        startContainer.parent.splice(
+          startContainer.index + 1,
+          0,
+          ...endContainer.parent.children.filter((i) => i.length)
+        )
       }
       range.collapse(true)
       console.log(range.startOffset, range.endOffset, range)
@@ -184,89 +193,6 @@ export default class Content extends Component {
       range.updateCaret()
     })
   }
-  /**
-   * @desc: 删除动作
-   * @param {*} commonPath
-   * @param {*} range
-   * @return {*}
-   */
-  onContentDelete2 (commonPath, range) {
-    console.log('删除')
-    const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
-    // 选区折叠
-    if (collapsed) {
-      if (endOffset > 0) {
-        // 执行删除
-        startContainer.textDelete(endOffset, 1)
-
-        if (startContainer.block.contentLength === 0) {
-          // 对于块级 当执行删除块内容为空时候 将被br填充 此时光标停留在段首
-          range.setStart(startContainer, 0)
-        } else if (startContainer.length === 0) {
-          const prevLeaf = startContainer.prevLeaf
-          if (prevLeaf.block !== startContainer.block || !prevLeaf) {
-            range.setStart(startContainer.nextLeaf, 0)
-          } else {
-            range.setStart(prevLeaf, 0)
-          }
-          startContainer.delete()
-        } else {
-          this._updatePoints(endContainer, endOffset, -1)
-        }
-      } else {
-        const prevLeaf = startContainer.prevLeaf
-        if (startContainer.block.contentLength === 0) {
-          startContainer.block.$path.delete()
-          range.setStart(prevLeaf, prevLeaf.length).collapse()
-          startContainer.block.$path.parent.component.update().then(() => {
-            range.updateCaret(true)
-          })
-        } else if (startContainer.length === 0) {
-          startContainer.delete()
-        } else if (startContainer.block !== prevLeaf.block) {
-          const startContainerParent = startContainer.parent
-          if (prevLeaf.length === 0) {
-            prevLeaf.parent.pop()
-            prevLeaf.parent.push(...startContainer.parent.children)
-            startContainerParent.delete()
-            range.setStart(startContainer, 0).collapse()
-          } else {
-            prevLeaf.parent.splice(prevLeaf.index + 1, 0, ...startContainer.parent.children)
-            startContainerParent.delete()
-            range.setStart(startContainer, 0).collapse()
-          }
-
-          prevLeaf.parent.block.update().then(() => {
-            range.updateCaret()
-          })
-          // return
-        } else {
-          range.setStart(prevLeaf, prevLeaf.length).collapse()
-          this.onContentDelete(range.startContainer, range)
-        }
-      }
-    } else if (startContainer === endContainer) {
-      startContainer.textDelete(endOffset, endOffset - startOffset)
-      if (startContainer.length === 0) {
-        startContainer.delete()
-        range.setStart(startContainer.prevLeaf, startContainer.prevLeaf.length).collapse()
-      }
-    } else {
-      startContainer.textDelete(startContainer.length, startContainer.length - startOffset)
-      endContainer.textDelete(endOffset, endOffset)
-      commonPath.deleteBetween(startContainer, endContainer)
-      if (startContainer.block !== endContainer.block) {
-        endContainer.parent.delete()
-        startContainer.parent.splice(startContainer.index + 1, 0, ...endContainer.parent.children)
-      }
-      range.collapse(true)
-      console.log(range.startOffset, range.endOffset, range)
-    }
-    commonPath.component.update(commonPath, range).then(() => {
-      range.updateCaret()
-    })
-  }
-
   /**
    * @description 光标进入
    * @param {*} path
@@ -276,7 +202,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  enterPath (range, direction) {
+  enterPath(range, direction) {
     let path = null
     if (direction === 'left') {
       const formPath = range.endContainer
@@ -302,11 +228,14 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  leavePath (range, direction) {
+  leavePath(range, direction) {
     if (direction === 'left') {
       const path = range.startContainer
       let toPath = path.prevLeaf
       if (!toPath) return {}
+      if (!path) return {}
+      range.set(path, path.length)
+
       return toPath.component.enterPath(range, 'right')
     } else {
       const path = range.endContainer
@@ -326,7 +255,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onCaretMove (direction, range, event) {
+  onCaretMove(direction, range, event) {
     const path = range.container
     const { shiftKey } = event
     let res = { path, range }
@@ -354,7 +283,7 @@ export default class Content extends Component {
    * @param {event} [event=null]
    * @memberof Content
    */
-  onLinefeed (range, event = null) {
+  onLinefeed(range, event = null) {
     console.log(1)
     if (range.inputState.isComposing) return
     event?.preventDefault?.()
@@ -415,7 +344,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowLeft (range, event) {
+  onKeydownArrowLeft(range, event) {
     horizontalMove('left', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -427,7 +356,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowRight (range, event) {
+  onKeydownArrowRight(range, event) {
     horizontalMove('right', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -439,7 +368,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowUp (range, event) {
+  onKeydownArrowUp(range, event) {
     verticalMove('up', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -451,7 +380,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowDown (range, event) {
+  onKeydownArrowDown(range, event) {
     verticalMove('down', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -462,7 +391,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownBackspace (range) {
+  onKeydownBackspace(range) {
     del(range, false)
   }
 
@@ -473,15 +402,15 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownEnter (range, event) {
+  onKeydownEnter(range, event) {
     this.onLinefeed(range, event)
   }
-  onKeydownz (range, event) {
+  onKeydownz(range, event) {
     if (event.ctrlKey) {
       this.$editor.history.undo()
     }
   }
-  onKeydownZ (range, event) {
+  onKeydownZ(range, event) {
     if (event.ctrlKey) {
       this.$editor.history.todo()
     }
@@ -493,8 +422,8 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onInput (range, event) {
-    input(range, event)
+  onInput(range, event, ts) {
+    input(range, event, ts)
   }
 
   /**
@@ -506,7 +435,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  isCaretShouldLeavePath (path, range, direction) {
+  isCaretShouldLeavePath(path, range, direction) {
     if (direction === 'left' && range.offset <= 1) {
       let toPath = path.prevLeaf
       if (!toPath) return false
@@ -530,7 +459,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  _updatePoints (container, position, distance, newContainer) {
+  _updatePoints(container, position, distance, newContainer) {
     this.$editor.selection.updatePoints(container, position, distance, newContainer)
   }
 
@@ -541,7 +470,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  setFormat (range, callback) {
+  setFormat(range, callback) {
     const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
     const selectedPath = this.$editor.selection.getSeletedPath()
     for (const path of selectedPath) {

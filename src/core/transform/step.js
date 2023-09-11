@@ -1,24 +1,27 @@
 import { mergeTextPath } from '../utils'
 class Step {
-  constructor(path, offset) {
-    this.position = path.position
-    this.offset = offset
+  constructor(range) {
+    console.log(range.offset)
+    this.position = range.container.position
+    this.offset = range.offset
+    this.editor = range.editor
   }
-  apply(editor) {
-    const path = editor.queryPath(this.position)
-    return this.applyAction({
-      editor,
+  apply() {
+    const path = this.editor.queryPath(this.position)
+    const res = this.applyAction({
       path,
       offset: this.offset,
     })
+    path.component.update()
+    return res
   }
-  invert(editor) {
-    const path = editor.queryPath(this.position)
+  invert() {
+    const path = this.editor.queryPath(this.position)
     this.invertAction({
-      editor,
       path,
       offset: this.offset,
     })
+    path.component.update()
   }
 }
 export class SplitText extends Step {
@@ -65,5 +68,21 @@ export class DeleteText extends Step {
       this.deleteText +
       ops.path.node.data.slice(ops.offset - this.count)
     editor.selection.updatePoints(ops.path, ops.offset - this.count, this.count)
+  }
+}
+export class InsertText extends Step {
+  constructor({ range, data }) {
+    super(range)
+    this.data = data
+  }
+  applyAction({ path, offset }) {
+    const oldData = path.node.data
+    path.node.data = oldData.slice(0, offset) + this.data + oldData.slice(offset)
+    this.editor.selection.updatePoints(path, offset, this.data.length)
+  }
+  invertAction({ path, offset }) {
+    path.node.data =
+      path.node.data.slice(0, offset) + path.node.data.slice(offset + this.data.length)
+    this.editor.selection.updatePoints(path, offset, -this.data.length)
   }
 }

@@ -1,8 +1,9 @@
-import { SplitText, SetFormats, DeleteText } from './step'
-class transaction {
+import { SplitText, SetFormats, DeleteText, InsertText } from './step'
+export default class Transaction {
   steps = []
   startRanges = []
   endRanges = []
+  commited = false
   constructor(editor) {
     this.editor = editor
     // 初始状态
@@ -15,19 +16,22 @@ class transaction {
     this.steps.push(step)
     return step.apply(this.editor)
   }
-  commit(path) {
+  addStep(step) {
+    this.steps.push(step)
+  }
+  commit() {
+    if (this.steps.length === 0) return
     // 结尾状态
     this.endRanges = this.editor.selection.rangesSnapshot
-    this.commitPathPosition = path.position
-    path.component.update()
     this.editor.history.push(this)
+    this.commited = true
   }
   apply() {
     for (let index = 0; index < this.steps.length; index++) {
       const step = this.steps[index]
       step.apply(this.editor)
     }
-    this.commitPath.component.update().then(() => {
+    setTimeout(() => {
       this.editor.selection.recoverRangesFromSnapshot(this.endRanges)
     })
   }
@@ -36,14 +40,14 @@ class transaction {
       const step = this.steps[index - 1]
       step.invert(this.editor)
     }
-    this.commitPath.component.update().then(() => {
+    setTimeout(() => {
       this.editor.selection.recoverRangesFromSnapshot(this.startRanges)
     })
   }
 }
 
 export function setFormat(editor, format) {
-  const ts = new transaction(editor)
+  const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const commonPath = editor.queryCommonPath(range.startContainer, range.endContainer)
     const paths = getLeafPathInRange(range, editor, ts)
@@ -56,9 +60,19 @@ export function setFormat(editor, format) {
   })
 }
 export function deleteText(editor, count) {
-  const ts = new transaction(editor)
+  const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const deleteTextStep = new DeleteText(range.container, range.offset, count)
+    ts.addAndApplyStep(deleteTextStep)
+    ts.commit(range.container.parent)
+    range.container.parent.component.update()
+  })
+}
+
+export function insertText(editor, data) {
+  const ts = new Transaction(editor)
+  editor.selection.ranges.forEach((range) => {
+    const deleteTextStep = new InsertText(range.container, range.offset, data)
     ts.addAndApplyStep(deleteTextStep)
     ts.commit(range.container.parent)
     range.container.parent.component.update()

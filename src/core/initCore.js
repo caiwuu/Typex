@@ -4,6 +4,7 @@ import Selection from './selection'
 import { usePlugin } from './pluginContext'
 import Formater from '@/core/model/formater'
 import History from './history/index'
+import Transaction from './transform/transaction'
 
 /**
  * @description 内核初始化
@@ -28,12 +29,15 @@ export default function initCore(ops) {
 function titleCase(str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
-
+function isInput(event) {
+  return event.type.startsWith('composition') || event.type === 'input'
+}
 /**
  * @description 事件拦截到对应的组件
  * @param {*} editor
  */
 function initDispatcher(editor) {
+  let ts = null
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
       const count = pluginContext.platform.nativeSelection.rangeCount
@@ -45,26 +49,38 @@ function initDispatcher(editor) {
     }
   })
   editor.on('keyboardEvents', (event) => {
-    editor.selection.ranges.forEach((range) => {
-      const path = range.container
-      // 支持简写handle
-      const quickEventHandle = event.key
-        ? path.component[`on${titleCase(event.type)}${event.key}`]?.bind(path.component)
-        : null
-      let eventHandle
-      // 处理聚合输入
-      if (event.type.startsWith('composition')) {
-        eventHandle = path.component.onInput?.bind(path.component)
-      } else {
-        eventHandle = path.component[`on${titleCase(event.type)}`]?.bind(path.component)
-      }
-      if (typeof eventHandle === 'function') {
-        eventHandle(range, event)
-      }
-      if (event.key && typeof quickEventHandle === 'function') {
-        quickEventHandle(range, event)
-      }
-    })
+    console.log(event.data, event.type)
+    // 输入处理
+    if (isInput(event)) {
+      if (event.data === null) return
+      if (!ts || ts.commited) ts = new Transaction(editor)
+      editor.selection.ranges.forEach((range) => {
+        const path = range.container
+        const eventHandle = path.component.onInput?.bind(path.component)
+        if (typeof eventHandle === 'function') {
+          console.log(ts)
+          eventHandle(range, event, ts)
+        }
+      })
+      ts.commit()
+    } else {
+      // 其他键盘事件处理
+      editor.selection.ranges.forEach((range) => {
+        const path = range.container
+        // 支持简写handle
+        console.log(event.type)
+        const quickEventHandle = event.key
+          ? path.component[`on${titleCase(event.type)}${event.key}`]?.bind(path.component)
+          : null
+        const eventHandle = path.component[`on${titleCase(event.type)}`]?.bind(path.component)
+        if (typeof eventHandle === 'function') {
+          eventHandle(range, event)
+        }
+        if (typeof quickEventHandle === 'function') {
+          quickEventHandle(range, event)
+        }
+      })
+    }
   })
   editor.on('selectionchange-origin', () => {
     const nativeSelection = pluginContext.platform.nativeSelection
