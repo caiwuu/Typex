@@ -1,7 +1,6 @@
 import { mergeTextPath } from '../utils'
 class Step {
   constructor(range) {
-    console.log(range.offset)
     this.position = range.container.position
     this.offset = range.offset
     this.editor = range.editor

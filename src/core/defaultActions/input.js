@@ -53,25 +53,25 @@ export function input(range, e, ts) {
   const { data, type } = transformOps(e)
   if (!range.collapsed) del(range, true)
   if (type === 'input') {
-    console.log(type, '00000000000000000')
+    // console.log(type, '00000000000000000')
     let prevInputValue,
       inputData = data === ' ' ? '\u00A0' : data || ''
     // 键盘字符输入
     if (!range.inputState.isComposing && data) {
-      console.log('键盘输入：================================>', inputData)
+      // console.log('键盘输入：================================>', inputData)
       prevInputValue = range.inputState.value
       times(prevInputValue.length, del, range.editor, range, true)
       ts.addStep(inputText(range, inputData))
     } else {
-      console.log('聚合输入: -------------------------------->', inputData)
+      // console.log('聚合输入: -------------------------------->', inputData)
       prevInputValue = range.inputState.value
       range.inputState.value = inputData
       times(prevInputValue.length, del, range.editor, range, true)
-      console.log(range.offset, prevInputValue.length)
+      // console.log(range.offset, prevInputValue.length)
       insertTextStep = inputText(range, inputData)
     }
   } else if (type === 'compositionstart') {
-    console.log(type, '00000000000000000')
+    // console.log(type, '00000000000000000')
     // console.log('开始聚合输入:', data)
     range.inputState.isComposing = true
   } else if (type === 'compositionend') {
@@ -81,10 +81,10 @@ export function input(range, e, ts) {
      * 2.改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
      */
     setTimeout(() => {
-      console.log(type, '00000000000000000')
+      // console.log(type, '00000000000000000')
       range.inputState.isComposing = false
       range.inputState.value = ''
-      console.log(insertTextStep)
+      // console.log(insertTextStep)
       insertTextStep && ts.addStep(insertTextStep)
       insertTextStep = null
       ts.commit()

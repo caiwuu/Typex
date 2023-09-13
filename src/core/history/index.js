@@ -10,8 +10,8 @@ export default class History {
   queue = []
   idx = -1
   editor = null
-  constructor(size, editor) {
-    this.size = size
+  constructor({ size, editor }) {
+    this.size = size || 50
     this.editor = editor
   }
   get current() {
@@ -21,8 +21,9 @@ export default class History {
     if (this.current === transaction) return
     if (this.queue.length === this.size) {
       this.queue.shift()
+    } else {
+      this.idx++
     }
-    this.idx++
     // 撤销之后再操作会覆盖之后的操作
     this.queue.splice(this.idx, this.size, transaction)
   }

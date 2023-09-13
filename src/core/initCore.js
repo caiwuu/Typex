@@ -11,14 +11,15 @@ import Transaction from './transform/transaction'
  * @export
  * @param {*} ops
  */
-export default function initCore(ops) {
-  const { editor, formats, plugins } = ops
+export default function initCore({ editor, formats, plugins }) {
   const fmtIns = new Formater()
   fmtIns.register(formats)
   editor.$eventBus = emit()
   fmtIns.inject('editor', editor)
   editor.formater = fmtIns
-  editor.history = new History(20, editor)
+  editor.history = new History({
+    editor,
+  })
   usePlugin(plugins)
   editor.selection = new Selection(editor)
   Promise.resolve().then(() => {
@@ -49,7 +50,6 @@ function initDispatcher(editor) {
     }
   })
   editor.on('keyboardEvents', (event) => {
-    console.log(event.data, event.type)
     // 输入处理
     if (isInput(event)) {
       if (event.data === null) return
@@ -58,7 +58,6 @@ function initDispatcher(editor) {
         const path = range.container
         const eventHandle = path.component.onInput?.bind(path.component)
         if (typeof eventHandle === 'function') {
-          console.log(ts)
           eventHandle(range, event, ts)
         }
       })
@@ -68,7 +67,6 @@ function initDispatcher(editor) {
       editor.selection.ranges.forEach((range) => {
         const path = range.container
         // 支持简写handle
-        console.log(event.type)
         const quickEventHandle = event.key
           ? path.component[`on${titleCase(event.type)}${event.key}`]?.bind(path.component)
           : null
