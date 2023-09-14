@@ -13,7 +13,7 @@ import { isPrimitive, times } from '../utils'
  * @param {*} range
  * @param {*} data
  */
-function inputText(range, data, ts) {
+function inputText (range, data, ts) {
   let { startContainer: path } = range
   if (path) {
     if (path.vn.type !== 'text') {
@@ -32,7 +32,7 @@ function inputText(range, data, ts) {
  * @param {*} e
  * @returns {*}
  */
-function transformOps(e) {
+function transformOps (e) {
   if (isPrimitive(e)) {
     return {
       type: 'input',
@@ -49,7 +49,7 @@ function transformOps(e) {
  * @param {*} e
  */
 let insertTextStep = null
-export function input(e, range, ts) {
+export function input (e, range, ts) {
   const { data, type } = transformOps(e)
   if (!range.collapsed) del(range, true)
   if (type === 'input') {
@@ -59,8 +59,8 @@ export function input(e, range, ts) {
     // 键盘字符输入
     if (!range.inputState.isComposing && data) {
       // console.log('键盘输入：================================>', inputData)
-      prevInputValue = range.inputState.value
-      times(prevInputValue.length, del, range.editor, range, true)
+      // prevInputValue = range.inputState.value
+      // times(prevInputValue.length, del, range.editor, range, true)
       ts.addStep(inputText(range, inputData))
     } else {
       // console.log('聚合输入: -------------------------------->', inputData)
