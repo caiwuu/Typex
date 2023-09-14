@@ -49,7 +49,7 @@ function transformOps(e) {
  * @param {*} e
  */
 let insertTextStep = null
-export function input(range, e, ts) {
+export function input(e, range, ts) {
   const { data, type } = transformOps(e)
   if (!range.collapsed) del(range, true)
   if (type === 'input') {
@@ -68,6 +68,7 @@ export function input(range, e, ts) {
       range.inputState.value = inputData
       times(prevInputValue.length, del, range.editor, range, true)
       // console.log(range.offset, prevInputValue.length)
+      console.log('=================', inputData)
       insertTextStep = inputText(range, inputData)
     }
   } else if (type === 'compositionstart') {

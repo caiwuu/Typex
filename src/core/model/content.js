@@ -101,7 +101,7 @@ export default class Content extends Component {
    * @instance
    */
   contentInput(path, range, data, ts) {
-    // path.insertData(offset, data)
+    // path.textInsert(offset, data)
     // this._updatePoints(endContainer, offset, data.length)
     const insertTextStep = new InsertText({ range, data })
     insertTextStep.apply()
@@ -283,7 +283,7 @@ export default class Content extends Component {
    * @param {event} [event=null]
    * @memberof Content
    */
-  onLinefeed(range, event = null) {
+  onLinefeed(event, range) {
     console.log(1)
     if (range.inputState.isComposing) return
     event?.preventDefault?.()
@@ -344,7 +344,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowLeft(range, event) {
+  onKeydownArrowLeft(event, range) {
     horizontalMove('left', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -356,7 +356,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowRight(range, event) {
+  onKeydownArrowRight(event, range) {
     horizontalMove('right', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -368,7 +368,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowUp(range, event) {
+  onKeydownArrowUp(event, range) {
     verticalMove('up', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -380,7 +380,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowDown(range, event) {
+  onKeydownArrowDown(event, range) {
     verticalMove('down', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -391,7 +391,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownBackspace(range) {
+  onKeydownBackspace(event, range) {
     del(range, false)
   }
 
@@ -402,17 +402,17 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownEnter(range, event) {
-    this.onLinefeed(range, event)
+  onKeydownEnter(event, range) {
+    this.onLinefeed(event, range)
   }
-  onKeydownz(range, event) {
+  onKeydownz(event, range) {
     if (event.ctrlKey) {
       this.$editor.history.undo()
     }
   }
-  onKeydownZ(range, event) {
+  onKeydownZ(event, range) {
     if (event.ctrlKey) {
-      this.$editor.history.todo()
+      this.$editor.history.redo()
     }
   }
   /**

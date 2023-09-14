@@ -19,7 +19,7 @@ const toolBar = [
   },
   {
     tooltip: '重做',
-    command: 'todo',
+    command: 'redo',
     icon: '#icon-todo',
   },
   {

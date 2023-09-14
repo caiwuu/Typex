@@ -58,7 +58,7 @@ function initDispatcher(editor) {
         const path = range.container
         const eventHandle = path.component.onInput?.bind(path.component)
         if (typeof eventHandle === 'function') {
-          eventHandle(range, event, ts)
+          eventHandle(event, range, ts)
         }
       })
       ts.commit()
@@ -72,10 +72,10 @@ function initDispatcher(editor) {
           : null
         const eventHandle = path.component[`on${titleCase(event.type)}`]?.bind(path.component)
         if (typeof eventHandle === 'function') {
-          eventHandle(range, event)
+          eventHandle(event, range)
         }
         if (typeof quickEventHandle === 'function') {
-          quickEventHandle(range, event)
+          quickEventHandle(event, range)
         }
       })
     }

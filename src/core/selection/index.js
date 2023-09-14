@@ -302,8 +302,8 @@ export default class Selection {
    * @instance
    */
   updateCaret(drawCaret = true) {
-    this.rangeCount > 1 && this._distinct()
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
+    this.rangeCount > 1 && this._distinct()
     drawCaret && this.drawRangeBg()
   }
 

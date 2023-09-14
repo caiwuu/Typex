@@ -51,22 +51,22 @@ export class SetFormats extends Step {
   }
 }
 export class DeleteText extends Step {
-  constructor(path, offset, count) {
-    super(path, offset)
+  constructor({ range, count }) {
+    super(range)
     this.count = count
   }
-  applyAction(ops) {
-    this.deleteText = ops.path.node.data.slice(ops.offset - this.count, ops.offset)
-    ops.path.node.data =
-      ops.path.node.data.slice(0, this.offset - this.count) + ops.path.node.data.slice(this.offset)
-    editor.selection.updatePoints(ops.path, ops.offset, -this.count)
+  applyAction({ path, offset }) {
+    this.deleteText = path.node.data.slice(offset - this.count, offset)
+    path.node.data =
+      path.node.data.slice(0, this.offset - this.count) + path.node.data.slice(this.offset)
+    editor.selection.updatePoints(path, offset, -this.count)
   }
-  invertAction(ops) {
-    ops.path.node.data =
-      ops.path.node.data.slice(0, ops.offset - this.count) +
+  invertAction({ path, offset }) {
+    path.node.data =
+      path.node.data.slice(0, offset - this.count) +
       this.deleteText +
-      ops.path.node.data.slice(ops.offset - this.count)
-    editor.selection.updatePoints(ops.path, ops.offset - this.count, this.count)
+      path.node.data.slice(offset - this.count)
+    editor.selection.updatePoints(path, offset - this.count, this.count)
   }
 }
 export class InsertText extends Step {
@@ -76,12 +76,14 @@ export class InsertText extends Step {
   }
   applyAction({ path, offset }) {
     const oldData = path.node.data
-    path.node.data = oldData.slice(0, offset) + this.data + oldData.slice(offset)
+    path.textInsert(offset, this.data)
+    // path.node.data = oldData.slice(0, offset) + this.data + oldData.slice(offset)
     this.editor.selection.updatePoints(path, offset, this.data.length)
   }
   invertAction({ path, offset }) {
-    path.node.data =
-      path.node.data.slice(0, offset) + path.node.data.slice(offset + this.data.length)
-    this.editor.selection.updatePoints(path, offset, -this.data.length)
+    // path.node.data =
+    //   path.node.data.slice(0, offset) + path.node.data.slice(offset + this.data.length)
+    path.textDelete(offset + this.data.length, this.data.length)
+    this.editor.selection.updatePoints(path, offset + this.data.length, -this.data.length)
   }
 }

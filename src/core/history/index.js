@@ -27,7 +27,7 @@ export default class History {
     // 撤销之后再操作会覆盖之后的操作
     this.queue.splice(this.idx, this.size, transaction)
   }
-  todo() {
+  redo() {
     if (this.idx === this.queue.length - 1) {
       return false
     } else {
