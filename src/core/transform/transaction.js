@@ -16,8 +16,8 @@ export default class Transaction {
     this.steps.push(step)
     return step.apply(this.editor)
   }
-  addStep(step) {
-    this.steps.push(step)
+  addStep(...step) {
+    this.steps.push(...step)
   }
   commit() {
     if (this.steps.length === 0) return

@@ -6,14 +6,14 @@ import Formater from '@/core/model/formater'
 import History from './history/index'
 import Transaction from './transform/transaction'
 import { del } from './defaultActions/delete'
-import { isPrimitive, times } from './utils'
+import { times } from './utils'
 
 /**
  * @description 内核初始化
  * @export
  * @param {*} ops
  */
-export default function initCore ({ editor, formats, plugins }) {
+export default function initCore({ editor, formats, plugins }) {
   const fmtIns = new Formater()
   fmtIns.register(formats)
   editor.$eventBus = emit()
@@ -29,71 +29,39 @@ export default function initCore ({ editor, formats, plugins }) {
   })
   initDispatcher(editor)
 }
-function titleCase (str) {
+
+function titleCase(str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
-function isInput (event) {
+function isInput(event) {
   return event.type.startsWith('composition') || event.type === 'input'
 }
-/**
- * @description 文本输入
- * @param {*} range
- * @param {*} data
- */
-function inputText (range, data, ts) {
-  let { startContainer: path } = range
-  if (path) {
-    if (path.vn.type !== 'text') {
-      path = path.firstLeaf
-      range.setEnd(path, 0)
-    }
-    const component = path.parent.component
-    return component.contentInput(path, range, data, ts)
-  } else {
-    console.error('无效path')
-  }
-}
 
-/**
- * @description 操作转换
- * @param {*} e
- * @returns {*}
- */
-function transformOps (e) {
-  if (isPrimitive(e)) {
-    return {
-      type: 'input',
-      data: e,
-    }
-  }
-  return e
-}
 const inputState = {
   value: '',
-  isComposing: false
+  isComposing: false,
 }
-export function input (e, callback) {
+export function input(e, callback) {
   const { data, type } = e
   if (type === 'input') {
     let inputData = data === ' ' ? '\u00A0' : data || ''
     // 键盘字符输入
     if (!inputState.isComposing && data) {
-      console.log('----------', inputData);
       callback({
         data: inputData,
-        type: 'input'
+        type: 'input',
       })
     } else {
       const prevDataLength = inputState.value.length
       inputState.value = inputData
       callback({
         data: inputData,
-        type: "compositioning",
-        prevDataLength
+        type: 'compositioning',
+        prevDataLength,
       })
     }
   } else if (type === 'compositionstart') {
-    inputState.value = ""
+    inputState.value = ''
     inputState.isComposing = true
   } else if (type === 'compositionend') {
     /**
@@ -102,12 +70,11 @@ export function input (e, callback) {
      * 2.改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
      */
     setTimeout(() => {
-      console.log('----------', inputState.value);
       callback({
         data: inputState.value,
-        type: "compositionend",
+        type: 'compositionend',
       })
-      inputState.value = ""
+      inputState.value = ''
       inputState.isComposing = false
     })
     e.target.value = ''
@@ -117,9 +84,10 @@ export function input (e, callback) {
  * @description 事件拦截到对应的组件
  * @param {*} editor
  */
-function initDispatcher (editor) {
+function initDispatcher(editor) {
   let ts = null
   let insertTextStep
+
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
       const count = pluginContext.platform.nativeSelection.rangeCount
@@ -130,49 +98,58 @@ function initDispatcher (editor) {
       editor.selection.updateRangesFromNative(event.altKey)
     }
   })
+
   editor.on('keyboardEvents', (event) => {
     // 输入处理
     if (isInput(event)) {
       if (event.data === null) return
       if (!ts || ts.commited) ts = new Transaction(editor)
       input(event, ({ data, prevDataLength, type }) => {
-        console.log(prevDataLength);
         editor.selection.ranges.forEach((range) => {
           if (!range.collapsed) del(range, true)
           if (prevDataLength) times(prevDataLength, del, editor, range, true)
           const path = range.container
+
           if (type === 'input' || type === 'compositioning') {
             insertTextStep = path.component.insert({ type: 'text', data, range })
           }
+
           if (type === 'input' || type === 'compositionend') {
             ts.addStep(insertTextStep)
-          }
-          console.log(data, ts, prevDataLength);
-          const eventHandle = path.component.onInput?.bind(path.component)
-          if (typeof eventHandle === 'function' && (type === 'input' || type === 'compositionend')) {
-            // eventHandle(event, range)
+
+            const onInputHandle = path.component.onInput
+            if (typeof onInputHandle === 'function') {
+              onInputHandle.call(path.component, event, range)
+            }
           }
         })
         ts.commit()
       })
     } else {
       // 其他键盘事件处理
+      const quickEventKey = event.key ? `${event.type}${event.key}` : null
+      const nornaleventKey = `${event.type}`
       editor.selection.ranges.forEach((range) => {
         const path = range.container
-        // 支持简写handle
-        const quickEventHandle = event.key
-          ? path.component[`on${titleCase(event.type)}${event.key}`]?.bind(path.component)
-          : null
-        const eventHandle = path.component[`on${titleCase(event.type)}`]?.bind(path.component)
-        if (typeof eventHandle === 'function') {
-          eventHandle(event, range)
-        }
+        const quickEventHandle = quickEventKey
+          ? path.component[`on${titleCase(quickEventKey)}`]
+          : null // 支持简写handle
+        const nornaleventHandle = path.component[`on${titleCase(nornaleventKey)}`]
+
         if (typeof quickEventHandle === 'function') {
-          quickEventHandle(event, range)
+          quickEventHandle.call(path.component, event, range)
+        }
+
+        if (typeof nornaleventHandle === 'function') {
+          nornaleventHandle.call(path.component, event, range)
         }
       })
+
+      editor.emit(quickEventKey, event)
+      editor.emit(nornaleventKey, event)
     }
   })
+
   editor.on('selectionchange-origin', () => {
     const nativeSelection = pluginContext.platform.nativeSelection
     const { startContainer, startOffset, endContainer, endOffset } =
@@ -187,6 +164,17 @@ function initDispatcher (editor) {
       editor.selection.ranges.forEach((range) => {
         range.caret.hidden()
       })
+    }
+  })
+
+  editor.on('keydownz', (event) => {
+    if (event.ctrlKey) {
+      editor.history.undo()
+    }
+  })
+  editor.on('keydownZ', (event) => {
+    if (event.ctrlKey) {
+      editor.history.redo()
     }
   })
 }
