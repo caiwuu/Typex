@@ -7,7 +7,10 @@ import History from './history/index'
 import Transaction from './transform/transaction'
 import { del } from './defaultActions/delete'
 import { times } from './utils'
-
+const inputState = {
+  value: '',
+  isComposing: false,
+}
 /**
  * @description 内核初始化
  * @export
@@ -30,56 +33,6 @@ export default function initCore({ editor, formats, plugins }) {
   initDispatcher(editor)
 }
 
-function titleCase(str) {
-  return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
-}
-function isInput(event) {
-  return event.type.startsWith('composition') || event.type === 'input'
-}
-
-const inputState = {
-  value: '',
-  isComposing: false,
-}
-export function input(e, callback) {
-  const { data, type } = e
-  if (type === 'input') {
-    let inputData = data === ' ' ? '\u00A0' : data || ''
-    // 键盘字符输入
-    if (!inputState.isComposing && data) {
-      callback({
-        data: inputData,
-        type: 'input',
-      })
-    } else {
-      const prevDataLength = inputState.value.length
-      inputState.value = inputData
-      callback({
-        data: inputData,
-        type: 'compositioning',
-        prevDataLength,
-      })
-    }
-  } else if (type === 'compositionstart') {
-    inputState.value = ''
-    inputState.isComposing = true
-  } else if (type === 'compositionend') {
-    /**
-     * 这里定时器的作用：
-     * 1.解决在chrome中 回车和失焦两个事件，compositionend和input事件的触发先后不一样
-     * 2.改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
-     */
-    setTimeout(() => {
-      callback({
-        data: inputState.value,
-        type: 'compositionend',
-      })
-      inputState.value = ''
-      inputState.isComposing = false
-    })
-    e.target.value = ''
-  }
-}
 /**
  * @description 事件拦截到对应的组件
  * @param {*} editor
@@ -111,7 +64,7 @@ function initDispatcher(editor) {
           const path = range.container
 
           if (type === 'input' || type === 'compositioning') {
-            insertTextStep = path.component.insert({ type: 'text', data, range })
+            insertTextStep = path.component.insert({ type: 'text', data, range, ts })
           }
 
           if (type === 'input' || type === 'compositionend') {
@@ -119,7 +72,7 @@ function initDispatcher(editor) {
 
             const onInputHandle = path.component.onInput
             if (typeof onInputHandle === 'function') {
-              onInputHandle.call(path.component, event, range)
+              onInputHandle.call(path.component, event, range, ts)
             }
           }
         })
@@ -177,4 +130,50 @@ function initDispatcher(editor) {
       editor.history.redo()
     }
   })
+}
+
+function titleCase(str) {
+  return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
+}
+function isInput(event) {
+  return event.type.startsWith('composition') || event.type === 'input'
+}
+function input(e, callback) {
+  const { data, type } = e
+  if (type === 'input') {
+    let inputData = data === ' ' ? '\u00A0' : data || ''
+    // 键盘字符输入
+    if (!inputState.isComposing && data) {
+      callback({
+        data: inputData,
+        type: 'input',
+      })
+    } else {
+      const prevDataLength = inputState.value.length
+      inputState.value = inputData
+      callback({
+        data: inputData,
+        type: 'compositioning',
+        prevDataLength,
+      })
+    }
+  } else if (type === 'compositionstart') {
+    inputState.value = ''
+    inputState.isComposing = true
+  } else if (type === 'compositionend') {
+    /**
+     * 这里定时器的作用：
+     * 1.解决在chrome中 回车和失焦两个事件，compositionend和input事件的触发先后不一样
+     * 2.改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
+     */
+    setTimeout(() => {
+      callback({
+        data: inputState.value,
+        type: 'compositionend',
+      })
+      inputState.value = ''
+      inputState.isComposing = false
+    })
+    e.target.value = ''
+  }
 }
