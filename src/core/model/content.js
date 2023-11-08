@@ -92,9 +92,10 @@ export default class Content extends Component {
   }
 
   /**
-   * 内容插入处理
-   * @param {data, type, range} param0
-   * @returns
+   * @description 内容插入处理
+   * @param {*} { data, type, range }
+   * @returns {*}  
+   * @memberof Content
    */
   insert({ data, type, range }) {
     if (type === 'text') {
