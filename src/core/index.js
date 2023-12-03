@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-31 17:13:41
  */
-import { usePlugin } from './pluginContext'
+import { usePlugin,pluginContext } from './pluginContext'
 import initCore from './initCore'
 import core from './core'
 import Typex from './Typex'
@@ -53,6 +53,7 @@ export {
   getVnodeOrIns,
   getVdomOrIns,
   usePlugin,
+  pluginContext,
   initCore,
   Typex,
 }

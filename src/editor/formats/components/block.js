@@ -10,7 +10,7 @@ export default class Block extends Content {
   get displayType() {
     return 'block'
   }
-  onKeydownb(range, event) {
+  onKeydownb(event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
@@ -18,7 +18,7 @@ export default class Block extends Content {
       })
     }
   }
-  onKeydownd(range, event) {
+  onKeydownd(event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
@@ -26,7 +26,7 @@ export default class Block extends Content {
       })
     }
   }
-  onKeydowns(range, event) {
+  onKeydowns(event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
@@ -38,7 +38,7 @@ export default class Block extends Content {
       })
     }
   }
-  onKeydownu(range, event) {
+  onKeydownu(event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {

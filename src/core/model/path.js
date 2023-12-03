@@ -17,10 +17,63 @@ export class Path {
   render() {
     return this.$editor.formater.render(this)
   }
-  constructor({ node, parent, position, prevSibling, nextSibling, children }) {
+
+  /**
+   * @description 原始数据节点
+   * @type {Object}
+   * @memberof Path
+   */
+  node = null
+
+  /**
+   * @description 父path
+   * @type {Path}
+   * @memberof Path
+   */
+  parent = null
+
+  /**
+   * @description 同级相对索引
+   * @type {Number}
+   * @memberof Path
+   */
+  index = 0
+
+  /**
+   * @description 前一个兄弟path
+   * @type {Path}
+   * @memberof Path
+   */
+  prevSibling = null
+
+  /**
+   * @description 后一个兄弟path
+   * @type {Path}
+   * @memberof Path
+   */
+  nextSibling = null
+
+  /**
+   * @description 子级path
+   * @type {Array.<Path>}
+   * @memberof Path
+   */
+  children = []
+
+  /**
+   * Creates an instance of Path.
+   * @param {Object} options - The options object.
+   * @param {Object} options.node - 原始数据节点.
+   * @param {Path} options.parent - 父path.
+   * @param {number} options.index - 同级相对索引.
+   * @param {Path} options.prevSibling - 前一个兄弟path.
+   * @param {Path} options.nextSibling - 后一个兄弟path.
+   * @param {Array.<Path>} options.children - 子级path.
+   */
+  constructor({ node, parent, index, prevSibling, nextSibling, children }) {
     this.node = node
     this.parent = parent
-    this.position = position
+    this.index = index
     this.prevSibling = prevSibling
     this.nextSibling = nextSibling
     this.children = children
@@ -138,12 +191,13 @@ export class Path {
   }
 
   /**
-   * @description 同级索引
+   * @description 绝对路径
    * @readonly
    * @memberof Path
    */
-  get index() {
-    return this.position.split('-').slice(-1)[0] / 1
+  get position() {
+    if(this.parent) return `${this.parent.position}-${this.index}`
+    return '0'
   }
 
   /**
@@ -446,12 +500,13 @@ export class Path {
       }
       path.nextSibling = null
       cachePath = path
+      path.index = index
       // 更新位置坐标
-      const newPosition = this.position + '-' + index
-      if (path.position !== newPosition || deep) {
-        path.position = path.node.position = newPosition
-        path.rebuild(deep)
-      }
+      // const newPosition = this.position + '-' + index
+      // if (path.position !== newPosition || deep) {
+      //   path.position = path.node.position = newPosition
+      //   path.rebuild(deep)
+      // }
     })
   }
 }
@@ -469,13 +524,11 @@ export class Path {
  * @returns {Path}
  */
 export function createPath(node, parent = null, prevSibling = null, nextSibling = null, index = 0) {
-  const position = parent ? parent.position + '-' + index : '0'
-  node.position = position
   if (!node.formats) node.formats = {}
   const config = {
     node: node,
     parent: parent,
-    position: position,
+    index: index,
     prevSibling: prevSibling,
     nextSibling: nextSibling,
     children: [],

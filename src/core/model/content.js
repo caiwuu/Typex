@@ -120,6 +120,7 @@ export default class Content extends Component {
         if (startContainer.block.contentLength === 0) {
           // 块级内容被清空
           range.setStart(startContainer, 0).collapse()
+          startContainer.block.$path.parent.component.update()
         } else if (startContainer.length === 0) {
           // 块不为空 容器为空
           // 删除容器
