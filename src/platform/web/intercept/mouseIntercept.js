@@ -34,7 +34,7 @@ export default class MouseIntercept {
   }
   handMouseup (event) {
     // 有选区或者按了shift,更新选区（isCollapsed这里必须使用原生的，因为内核的选区此时还未更新）
-    if (!nativeSelection.collapsed || event.shiftKey) {
+    if (!nativeSelection.isCollapsed || event.shiftKey) {
       this.editor.selection.updateRangesFromNative(event.altKey)
     }
     this.editor.focus()
