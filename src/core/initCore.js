@@ -41,6 +41,7 @@ function initDispatcher(editor) {
   let ts = null
   let insertTextStep
 
+  // 鼠标事件处理
   editor.on('mouseEvents', (event) => {
     if (!event.shiftKey && event.button === 0) {
       const count = pluginContext.platform.nativeSelection.rangeCount
@@ -52,6 +53,7 @@ function initDispatcher(editor) {
     }
   })
 
+  // 键盘事件处理
   editor.on('keyboardEvents', (event) => {
     // 输入处理
     if (isInput(event)) {
@@ -64,7 +66,7 @@ function initDispatcher(editor) {
           const path = range.container
 
           if (type === 'input' || type === 'compositioning') {
-            insertTextStep = path.component.insert({ type: 'text', data, range, ts })
+            insertTextStep = path.component.onInsert({ type: 'text', data, range, ts })
           }
 
           if (type === 'input' || type === 'compositionend') {
@@ -97,12 +99,12 @@ function initDispatcher(editor) {
           nornaleventHandle.call(path.component, event, range)
         }
       })
-
+      // 与选取状态无关的操作 如撤销重做
       editor.emit(quickEventKey, event)
       editor.emit(nornaleventKey, event)
     }
   })
-
+  // 选区事件处理
   editor.on('selectionchange-origin', () => {
     const nativeSelection = pluginContext.platform.nativeSelection
     const { startContainer, startOffset, endContainer, endOffset } =

@@ -97,7 +97,7 @@ export default class Content extends Component {
    * @returns {*}  
    * @memberof Content
    */
-  insert({ data, type, range }) {
+  onInsert({ data, type, range }) {
     if (type === 'text') {
       const insertTextStep = new InsertText({ range, data })
       insertTextStep.apply()
@@ -203,13 +203,13 @@ export default class Content extends Component {
     if (direction === 'left') {
       const formPath = range.endContainer
       path = formPath.nextLeaf
-      if (!path) return {}
+      if (!path) return null
       const isSameBlock = formPath.block === path.block
       range.set(path, isSameBlock ? 1 : 0)
     } else {
       const formPath = range.startContainer
       path = formPath.prevLeaf
-      if (!path) return {}
+      if (!path) return null
       range.set(path, path.length)
     }
     return { path, range }
@@ -228,8 +228,8 @@ export default class Content extends Component {
     if (direction === 'left') {
       const path = range.startContainer
       let toPath = path.prevLeaf
-      if (!toPath) return {}
-      if (!path) return {}
+      if (!toPath) return null
+      if (!path) return null
       range.set(path, path.length)
 
       return toPath.component.enterPath(range, 'right')
@@ -237,7 +237,7 @@ export default class Content extends Component {
       const path = range.endContainer
       // 从尾部离开
       let toPath = path.nextLeaf
-      if (!toPath) return {}
+      if (!toPath) return null
       return toPath.component.enterPath(range, 'left')
     }
   }
@@ -425,11 +425,10 @@ export default class Content extends Component {
       let toPath = path.prevLeaf
       if (!toPath) return false
       // 细节处理:同块不同文本光标左移，两个path的交界处 取前一个path的右端点
-      const isSameBlock = path.block === toPath.block
       if (range.offset === 0) {
         return true
       } else {
-        return isSameBlock
+        return path.block === toPath.block
       }
     }
     return direction === 'right' && range.offset === path.length

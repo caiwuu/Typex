@@ -168,14 +168,6 @@ export default class Selection {
     const endPathOffset = this.amendPathOffset(endContainer, endOffset)
     nativeRange.setStart(startPathOffset.path.elm, startPathOffset.offset)
     nativeRange.setEnd(endPathOffset.path.elm, endPathOffset.offset)
-    // if (!startPath) {
-    //   let path = this.amendPathOffset(startContainer)
-    //   if (path) nativeRange.setStart(path.elm, startOffset)
-    // }
-    // if (!endPath) {
-    //   const path = this.amendPathOffset(endContainer)
-    //   nativeRange.setStart(path.elm, endOffset)
-    // }
     return nativeRange
   }
 
