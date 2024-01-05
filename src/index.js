@@ -10,101 +10,117 @@ import './modelTestDemo/index'
 // 编辑器demo
 import createEditor from './editor'
 import './style.styl'
-
+function setFormat(editor,callback){
+  editor.selection.ranges.forEach((range) => {
+    const path = range.container
+    path.component.setFormat(range, callback)
+  })
+}
 const toolBar = [
   {
     tooltip: '撤销',
-    command: 'undo',
+    commandName: 'undo',
     icon: '#icon-undo',
+    commandHandle:(editor)=>{
+      editor.history.undo()
+    }
   },
   {
     tooltip: '重做',
-    command: 'redo',
+    commandName: 'redo',
     icon: '#icon-todo',
+    commandHandle:(editor)=>{
+      editor.history.redo()
+    }
   },
   {
     tooltip: '标题',
-    command: 'header',
+    commandName: 'header',
     icon: '#icon-header',
   },
   {
     tooltip: '字体大小',
-    command: 'fontSize',
+    commandName: 'fontSize',
     icon: '#icon-font-size',
+    options:{}
   },
   {
     tooltip: '字体颜色',
-    command: 'fontColor',
+    commandName: 'fontColor',
     icon: '#icon-color',
+    options:{
+      componentName:'fontColor'
+    }
   },
   {
     tooltip: '加粗',
-    command: 'bold',
+    commandName: 'bold',
     icon: '#icon-bold',
-    commandHandle: (path) => (path.node.formats.bold = !path.node.formats.bold),
+    commandHandle: (editor) => setFormat(editor,path=>(path.node.formats.bold = !path.node.formats.bold)),
   },
   {
     tooltip: '下划线',
-    command: 'underline',
+    commandName: 'underline',
     icon: '#icon-underline',
-    commandHandle: (path) => (path.node.formats.underline = !path.node.formats.underline),
+    commandHandle: (editor) => setFormat(editor,path=>(path.node.formats.underline = !path.node.formats.underline)),
   },
   {
     tooltip: '删除线',
-    command: 'deleteline',
+    commandName: 'deleteline',
     icon: '#icon-del',
-    commandHandle: (path) => (path.node.formats.deleteline = !path.node.formats.deleteline),
+    commandHandle: (editor) => setFormat(editor,path=>(path.node.formats.deleteline = !path.node.formats.deleteline)),
   },
   {
     tooltip: '背景填充',
-    command: 'background',
+    commandName: 'background',
     icon: '#icon-fill',
+    options:{}
   },
   {
     tooltip: '左对齐',
-    command: 'leftAligned',
+    commandName: 'leftAligned',
     icon: '#icon-align-left',
   },
   {
     tooltip: '居中',
-    command: 'middleAligned',
+    commandName: 'middleAligned',
     icon: '#icon-align-middle',
   },
   {
     tooltip: '右对齐',
-    command: 'rightAligned',
+    commandName: 'rightAligned',
     icon: '#icon-align-right',
   },
   {
     tooltip: '超链接',
-    command: 'link',
+    commandName: 'link',
     icon: '#icon-link',
   },
   {
     tooltip: '图片',
-    command: 'img',
+    commandName: 'img',
     icon: '#icon-img',
   },
   {
     tooltip: '代码段',
-    command: 'code',
+    commandName: 'code',
     icon: '#icon-code',
   },
   {
     tooltip: 'markdown',
-    command: 'markdown',
+    commandName: 'markdown',
     icon: '#icon-markdown',
   },
   {
     tooltip: '视频',
-    command: 'radio',
+    commandName: 'radio',
     icon: '#icon-radio',
   },
   {
     tooltip: '清除样式',
-    command: 'clearStyle',
+    commandName: 'clearStyle',
     icon: '#icon-clear-style',
-    commandHandle: (path) => (path.node.formats = {}),
+    commandHandle: (editor) => setFormat(editor,path=>(path.node.formats = {})),
   },
 ]
 

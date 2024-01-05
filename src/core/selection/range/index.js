@@ -17,7 +17,11 @@ export default class Range {
     value: '',
     isComposing: false,
   }
-
+  
+  /**
+   * @description 标识range方向
+   * @memberof Range
+   */
   d = 0
   constructor(PathizationRange, editor) {
     const { startContainer, endContainer, startOffset, endOffset, d } = PathizationRange
@@ -66,7 +70,6 @@ export default class Range {
    * @type {number}
    * @instance
    */
-
   set offset(offset) {
     if (this.d === 1) {
       this.endOffset = offset
@@ -88,6 +91,12 @@ export default class Range {
       this.startContainer = container
     }
   }
+
+  /**
+   * @description range快照
+   * @readonly
+   * @memberof Range
+   */
   get snapshot() {
     return {
       endContainer: this.endContainer.position,

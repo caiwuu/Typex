@@ -1,6 +1,7 @@
 import { Component, createRef } from '@/core'
 import './iconfont'
 import './toolBar.styl'
+import { Dialog,Tooltip,DialogContent } from './compinents'
 // 工具栏
 export default class ToolBar extends Component {
   toolBarItems = []
@@ -36,102 +37,66 @@ export default class ToolBar extends Component {
       </div>
     )
   }
-  onCommand = (command, ...args) => {
-    this.props.onCommand(command, ...args)
+  onCommand = (commandName, ...args) => {
+    this.props.onCommand(commandName, ...args)
   }
 }
 // // 工具栏-元素
 class ToolBarItem extends Component {
   constructor(props) {
     super(props)
-    this.state = { value: false }
+    this.state = { active: false }
     this.props.toolBarItems.push(this)
     this.dialogRef = createRef()
   }
   onNotice(commonKeyValue) {
-    if (commonKeyValue[this.props.command] !== this.state.value) {
+    if (commonKeyValue[this.props.commandName] !== this.state.active) {
       this.setState({
-        value: commonKeyValue[this.props.command],
+        active: commonKeyValue[this.props.commandName],
       })
     }
   }
   render() {
     return (
       <span
-        onClick={this.click}
+        onClick={this.clickHandle}
         class='editor-tool-bar-item'
-        style={`color: ${!this.state.value ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
+        style={`color: ${!this.state.active ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
-        <Dialog ref={this.dialogRef}>
-          <span style='color:red'>dialog</span>
-        </Dialog>
+        {
+          this.props.options
+          ?
+            <Dialog ref={this.dialogRef}>
+              <DialogContent name={this.props.commandName} options={this.props.options}></DialogContent>
+            </Dialog>
+          :''
+        }
       </span>
     )
   }
-  click = (e) => {
+  emitComand = ()=>{
+    this.props.editor.command(this.props.commandName)
+  }
+  clickHandle = (e) => {
     e.stopPropagation()
-    this.dialogRef.current.toggle()
     this.setState({
-      value: !this.state.value,
+      active: !this.state.active,
     })
-    this.props.editor.command(this.props.command)
+    if(this.dialogRef.current){
+      this.dialogRef.current.toggle()
+    }else{
+      this.emitComand()
+    }
   }
 }
 
-export class Tooltip extends Component {
-  render() {
-    return (
-      <div class='editor-tooltip'>
-        {this.props.children.length ? this.props.children : ''}
-        <span
-          class='tooltiptext top'
-          style={`width:${this.props.width}px;margin-left:-${this.props.width / 2}px;`}
-        >
-          {this.props.content || 'content'}
-        </span>
-      </div>
-    )
-  }
-}
-export class Dialog extends Component {
-  constructor(props) {
-    super(props)
-    this.state = { visiable: false }
-    this.dialogRef = createRef()
-  }
-  render() {
-    return (
-      <div ref={this.dialogRef} onClick={(e) => e.stopPropagation()}>
-        {this.state.visiable ? (
-          <div style='background:#ddd;height:200px;position:absolute;top:35px;width:300px;z-index:1'>
-            {this.props.children.length ? this.props.children : 'dialog'}
-          </div>
-        ) : (
-          ''
-        )}
-      </div>
-    )
-  }
-  outClickHandle = (e) => {
-    this.setState({ visiable: false })
-    document.removeEventListener('click', this.outClickHandle)
-  }
-  toggle() {
-    if (!this.state.visiable) {
-      console.log('==toggle===')
-      document.addEventListener('click', this.outClickHandle)
-    }
-    this.setState({ visiable: !this.state.visiable })
-  }
-}
+
 function findCommonKeyValuePairs(lists) {
   if (lists.length === 0) return {}
-
   const commonPairs = {}
-
   for (const key in lists[0]) {
     const value = lists[0][key]
 

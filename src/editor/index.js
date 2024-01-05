@@ -30,20 +30,15 @@ class Editor extends Typex {
     this.toolBarOption = toolBarOption
     toolBarOption.forEach((toolItem) => {
       toolItem.editor = this
-      this.conamndHandles[toolItem.command] = toolItem.commandHandle
+      this.conamndHandles[toolItem.commandName] = toolItem.commandHandle
     })
     return this
   }
-  command(name) {
+  command(name,val) {
     const commandHandle = this.conamndHandles[name]
+    console.log(commandHandle);
     if (typeof commandHandle !== 'function') return
-    this.selection.ranges.forEach((range) => {
-      const path = range.container
-      path.component.setFormat(range, commandHandle)
-    })
-    Promise.resolve().then(() => {
-      this.selection.updateCaret()
-    })
+    commandHandle(this,val)
   }
 }
 export default function createEditor(options = {}) {
