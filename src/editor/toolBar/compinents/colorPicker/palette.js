@@ -5,9 +5,9 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-11 14:35:35
  */
-import { createRef, Component } from '@/core'
-import { throttle, isDef } from '../../core/utils.js'
+import { createRef, Component ,utils} from '@/core'
 import { rgbToCoordinates, coordinatesToRgb } from './utils'
+const {throttle, isDef} = utils
 function pauseEvent(e) {
   if (e.stopPropagation) e.stopPropagation()
   if (e.preventDefault) e.preventDefault()

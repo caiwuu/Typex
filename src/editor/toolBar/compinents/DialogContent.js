@@ -1,12 +1,10 @@
 import { Component, createRef } from '@/core'
+import ColorPicker from './colorPicker'
 
 const comMap = {
     fontColor:(h,self)=>(
         <div id="colorPicker">
-            <div id="colorDisplay"></div>
-            <input type="color" id="colorInput"/>
-            <label for="alphaInput">Alpha:</label>
-            <input type="range" id="alphaInput" min="0" max="1" step="0.01" value="1"/>
+            <ColorPicker color='#666600'></ColorPicker>
       </div>
     )
 }
