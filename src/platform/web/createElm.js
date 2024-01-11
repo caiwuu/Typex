@@ -49,13 +49,3 @@ export default function createElm(vnode) {
   }
   return elm
 }
-
-// if (element.vnodeType === 2) {
-//   element.type = new type(props)
-//   // 执行 onCreated 钩子
-//   if (typeof element.type.onCreated === 'function') element.type.onCreated()
-//   // 给ref赋值
-//   if (element.ref) element.ref.current = element.type
-//   element.type.$vnode = element
-//   console.log(element);
-// }

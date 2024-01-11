@@ -340,7 +340,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowLeft(event, range) {
+  onKeydownArrowLeft({event, range}) {
     horizontalMove('left', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -352,7 +352,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowRight(event, range) {
+  onKeydownArrowRight({event, range}) {
     horizontalMove('right', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -364,7 +364,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowUp(event, range) {
+  onKeydownArrowUp({event, range}) {
     verticalMove('up', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -376,7 +376,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownArrowDown(event, range) {
+  onKeydownArrowDown({event, range}) {
     verticalMove('down', range, event)
     this.$editor.selection.updateCaret()
   }
@@ -387,7 +387,7 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownBackspace(event, range) {
+  onKeydownBackspace({range}) {
     del(range, false)
   }
 
@@ -398,19 +398,9 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownEnter(event, range) {
+  onKeydownEnter({event, range}) {
     this.onLinefeed(event, range)
   }
-  // onKeydownz(event, range) {
-  //   if (event.ctrlKey) {
-  //     this.$editor.history.undo()
-  //   }
-  // }
-  // onKeydownZ(event, range) {
-  //   if (event.ctrlKey) {
-  //     this.$editor.history.redo()
-  //   }
-  // }
   /**
    * @description 检测光标是否要离开当前path
    * @param {Path} path - 路径
@@ -455,7 +445,7 @@ export default class Content extends Component {
    * @instance
    */
   setFormat(range, callback) {
-    const commonPath = this.$editor.queryCommonPath(range.startContainer, range.endContainer)
+    const commonPath = range.startContainer.queryCommonPath(range.endContainer)
     const selectedPath = this.$editor.selection.getSeletedPath()
     for (const path of selectedPath) {
       callback(path)

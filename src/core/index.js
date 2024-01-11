@@ -11,7 +11,6 @@ import core from './core'
 import Typex from './Typex'
 
 const createPath = core.createPath,
-  queryCommonPath = core.queryCommonPath,
   queryPath = core.queryPath,
   Formater = core.Formater,
   Content = core.Content,
@@ -33,7 +32,6 @@ const createPath = core.createPath,
 
 export {
   createPath,
-  queryCommonPath,
   queryPath,
   Formater,
   Content,

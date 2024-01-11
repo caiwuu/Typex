@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-08-31 17:13:41
  */
-import { createPath, queryCommonPath, queryPath, Formater, Content, Path } from './model'
+import { createPath, queryPath, Formater, Content, Path } from './model'
 import Selection from './selection'
 import { createRef, createVnode, patch, Component } from './view'
 import { SplitText } from './transform/step'
@@ -23,7 +23,6 @@ import {
 } from './mappings'
 const core = {
   createPath,
-  queryCommonPath,
   queryPath,
   Formater,
   Content,

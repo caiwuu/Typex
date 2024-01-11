@@ -49,7 +49,7 @@ export default class Transaction {
 export function setFormat(editor, format) {
   const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
-    const commonPath = editor.queryCommonPath(range.startContainer, range.endContainer)
+    const commonPath = range.startContainer.queryCommonPath(range.endContainer)
     const paths = getLeafPathInRange(range, editor, ts)
     for (const item of paths) {
       const setFormatStep = new SetFormats(item, 0, format)

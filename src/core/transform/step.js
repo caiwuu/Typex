@@ -75,14 +75,10 @@ export class InsertText extends Step {
     this.data = data
   }
   applyAction({ path, offset }) {
-    const oldData = path.node.data
     path.textInsert(offset, this.data)
-    // path.node.data = oldData.slice(0, offset) + this.data + oldData.slice(offset)
     this.editor.selection.updatePoints(path, offset, this.data.length)
   }
   invertAction({ path, offset }) {
-    // path.node.data =
-    //   path.node.data.slice(0, offset) + path.node.data.slice(offset + this.data.length)
     path.textDelete(offset + this.data.length, this.data.length)
     this.editor.selection.updatePoints(path, offset + this.data.length, -this.data.length)
   }

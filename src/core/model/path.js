@@ -78,9 +78,27 @@ export class Path {
     this.nextSibling = nextSibling
     this.children = children
   }
+  get rootPath() {
+    let root = this
+    while (root.parent) {
+      root = root.parent
+    }
+    return root
+  }
+  /**
+   * @description 判断是否是块路径
+   * @readonly
+   * @memberof Path
+   */
   get isBlock() {
     return this === this?.component.$path && this?.component.displayType === 'block'
   }
+
+  /**
+   * @description 获取编辑器对象
+   * @readonly
+   * @memberof Path
+   */
   get $editor() {
     return this._editor || this.parent.$editor
   }
@@ -218,6 +236,29 @@ export class Path {
     return (this.nextSibling || this.parent?.nextLeaf)?.firstLeaf
   }
 
+  /**
+   * @description 获取最近共同节点
+   * @param {*} path
+   * @returns {*}  
+   * @memberof Path
+   */
+  queryCommonPath(path) {
+    if (this === path) return this
+    if (this.position === '0') return this
+    if (path.position === '0') return path
+    const rootPath = this.rootPath
+    const posArr1 = this.position.split('-')
+    const posArr2 = path.position.split('-')
+    const minLen = Math.min(posArr1.length, posArr2.length)
+    let i
+    for (i = 0; i < minLen; i++) {
+      const element1 = posArr1[i]
+      const element2 = posArr2[i]
+      if (element1 !== element2) break
+    }
+    const commonPosition = posArr1.slice(0, i).join('-')
+    return queryPathByPosition(commonPosition, rootPath)
+  }
   /**
    * @description 文本插入
    * @param {String} pos 从偏移量,开始删除的位置
@@ -547,41 +588,6 @@ export function createPath(node, parent = null, prevSibling = null, nextSibling 
     }, null)
   }
   return path
-}
-
-/**
- * @description 查询根路径
- * @param {*} path
- * @returns {*}
- */
-function queryRootPath(path) {
-  while (path.parent) {
-    path = path.parent
-  }
-  return path
-}
-/**
- * @desc: 查找共同祖先path
- * @param {elm|vn|position} target
- * @param {path} path
- * @return {path}
- */
-export function queryCommonPath(path1, path2) {
-  if (path1 === path2) return path1
-  if (path1.position === '0') return path1
-  if (path2.position === '0') return path2
-  const rootPath = queryRootPath(path1)
-  const posArr1 = path1.position.split('-')
-  const posArr2 = path2.position.split('-')
-  const minLen = Math.min(posArr1.length, posArr2.length)
-  let i
-  for (i = 0; i < minLen; i++) {
-    const element1 = posArr1[i]
-    const element2 = posArr2[i]
-    if (element1 !== element2) break
-  }
-  const commonPosition = posArr1.slice(0, i).join('-')
-  return queryPathByPosition(commonPosition, rootPath)
 }
 /**
  * @desc: path查找

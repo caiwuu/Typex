@@ -16,7 +16,7 @@ export function del(range, force = false) {
   if (range.inputState.isComposing && !force) return
   const { endContainer, startContainer } = range
 
-  let commonPath = endContainer.component.$editor.queryCommonPath(startContainer, endContainer)
+  let commonPath = startContainer.queryCommonPath(endContainer)
   const component = commonPath.component
   component.onContentDelete(commonPath, range)
 }

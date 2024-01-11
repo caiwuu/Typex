@@ -56,9 +56,9 @@ function initDispatcher(editor) {
   // 键盘事件处理
   editor.on('keyboardEvents', (event) => {
     // 输入处理
+    if (!ts || ts.commited) ts = new Transaction(editor)
     if (isInput(event)) {
       if (event.data === null) return
-      if (!ts || ts.commited) ts = new Transaction(editor)
       input(event, ({ data, prevDataLength, type }) => {
         editor.selection.ranges.forEach((range) => {
           if (!range.collapsed) del(range, true)
@@ -66,7 +66,7 @@ function initDispatcher(editor) {
           const path = range.container
 
           if (type === 'input' || type === 'compositioning') {
-            insertTextStep = path.component.onInsert({ type: 'text', data, range, ts })
+            insertTextStep = path.component.onInsert({ type: 'text', data, range, ts,event })
           }
 
           if (type === 'input' || type === 'compositionend') {
@@ -74,11 +74,10 @@ function initDispatcher(editor) {
 
             const onInputHandle = path.component.onInput
             if (typeof onInputHandle === 'function') {
-              onInputHandle.call(path.component, event, range, ts)
+              onInputHandle.call(path.component, event, range, ts,event)
             }
           }
         })
-        ts.commit()
       })
     } else {
       // 其他键盘事件处理
@@ -92,17 +91,17 @@ function initDispatcher(editor) {
         const nornaleventHandle = path.component[`on${titleCase(nornaleventKey)}`]
 
         if (typeof quickEventHandle === 'function') {
-          quickEventHandle.call(path.component, event, range)
+          quickEventHandle.call(path.component, {event, range,ts})
         }
 
         if (typeof nornaleventHandle === 'function') {
-          nornaleventHandle.call(path.component, event, range)
+          nornaleventHandle.call(path.component, {event, range,ts})
         }
       })
-      // 与选取状态无关的操作 如撤销重做
       editor.emit(quickEventKey, event)
       editor.emit(nornaleventKey, event)
     }
+    ts.commit()
   })
   // 选区事件处理
   editor.on('selectionchange-origin', () => {
@@ -122,6 +121,8 @@ function initDispatcher(editor) {
     }
   })
 
+
+  // 与选取状态无关的操作 如撤销重做
   editor.on('keydownz', (event) => {
     if (event.ctrlKey) {
       editor.history.undo()
