@@ -1,31 +1,88 @@
-import { SplitText, SetFormats, DeleteText, InsertText } from './step'
+import { SplitText, SetFormats, TextDelete, TextInsert } from './step'
+
+
+/**
+ * @description 事务类
+ * @export
+ * @class Transaction
+ */
 export default class Transaction {
+
+  /**
+   * @description 步骤列表
+   * @memberof Transaction
+   */
   steps = []
+
+  /**
+   * @description 保存事务初始化时的选区快照
+   * @memberof Transaction
+   */
   startRanges = []
+
+  /**
+   * @description 事务提交之后的选区快照
+   * @memberof Transaction
+   */
   endRanges = []
+
+  /**
+   * @description 是否提交标志
+   * @memberof Transaction
+   */
   commited = false
+
   constructor(editor) {
     this.editor = editor
+    this.init()
+  }
+  
+  /**
+   * @description 初始化开始状态
+   * @memberof Transaction
+   */
+  init(){
     // 初始状态
     this.startRanges = this.editor.selection.rangesSnapshot
   }
-  get commitPath() {
-    return this.editor.queryPath(this.commitPathPosition)
-  }
+
+  /**
+   * @description 增加并且执行动作
+   * @param {*} step
+   * @returns {*}  
+   * @memberof Transaction
+   */
   addAndApplyStep(step) {
     this.steps.push(step)
     return step.apply(this.editor)
   }
+
+  /**
+   * @description 增加动作
+   * @param {*} step
+   * @memberof Transaction
+   */
   addStep(...step) {
     this.steps.push(...step)
   }
+
+  /**
+   * @description 提交事务
+   * @returns {*}  
+   * @memberof Transaction
+   */
   commit() {
-    if (this.steps.length === 0) return
+    if (this.steps.length === 0) return this
     // 结尾状态
     this.endRanges = this.editor.selection.rangesSnapshot
     this.editor.history.push(this)
     this.commited = true
   }
+
+  /**
+   * @description 执行事务
+   * @memberof Transaction
+   */
   apply() {
     for (let index = 0; index < this.steps.length; index++) {
       const step = this.steps[index]
@@ -35,6 +92,11 @@ export default class Transaction {
       this.editor.selection.recoverRangesFromSnapshot(this.endRanges)
     })
   }
+
+  /**
+   * @description 回滚事务
+   * @memberof Transaction
+   */
   rollback() {
     for (let index = this.steps.length; index > 0; index--) {
       const step = this.steps[index - 1]
@@ -62,7 +124,7 @@ export function setFormat(editor, format) {
 export function deleteText(editor, count) {
   const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
-    const deleteTextStep = new DeleteText(range.container, range.offset, count)
+    const deleteTextStep = new TextDelete(range.container, range.offset, count)
     ts.addAndApplyStep(deleteTextStep)
     ts.commit(range.container.parent)
     range.container.parent.component.update()
@@ -72,7 +134,7 @@ export function deleteText(editor, count) {
 export function insertText(editor, data) {
   const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
-    const deleteTextStep = new InsertText(range.container, range.offset, data)
+    const deleteTextStep = new TextInsert(range.container, range.offset, data)
     ts.addAndApplyStep(deleteTextStep)
     ts.commit(range.container.parent)
     range.container.parent.component.update()

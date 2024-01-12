@@ -55,14 +55,17 @@ function initDispatcher(editor) {
 
   // 键盘事件处理
   editor.on('keyboardEvents', (event) => {
-    // 输入处理
-    if (!ts || ts.commited) ts = new Transaction(editor)
+    // 创建事务
+    if (!ts) ts = new Transaction(editor)
+    // 复用未提交的事务 
+    else if(!ts.commited) ts.init() 
     if (isInput(event)) {
+      // 输入处理
       if (event.data === null) return
       input(event, ({ data, prevDataLength, type }) => {
         editor.selection.ranges.forEach((range) => {
-          if (!range.collapsed) del(range, true)
-          if (prevDataLength) times(prevDataLength, del, editor, range, true)
+          if (!range.collapsed) del({event,range,ts,force:true})
+          if (prevDataLength) times(prevDataLength, del, editor, {event,range,ts,force:true})
           const path = range.container
 
           if (type === 'input' || type === 'compositioning') {
@@ -74,7 +77,7 @@ function initDispatcher(editor) {
 
             const onInputHandle = path.component.onInput
             if (typeof onInputHandle === 'function') {
-              onInputHandle.call(path.component, event, range, ts,event)
+              onInputHandle.call(path.component, event, range, ts)
             }
           }
         })
@@ -85,11 +88,8 @@ function initDispatcher(editor) {
       const nornaleventKey = `${event.type}`
       editor.selection.ranges.forEach((range) => {
         const path = range.container
-        const quickEventHandle = quickEventKey
-          ? path.component[`on${titleCase(quickEventKey)}`]
-          : null // 支持简写handle
+        const quickEventHandle = quickEventKey? path.component[`on${titleCase(quickEventKey)}`]: null // 支持简写handle
         const nornaleventHandle = path.component[`on${titleCase(nornaleventKey)}`]
-
         if (typeof quickEventHandle === 'function') {
           quickEventHandle.call(path.component, {event, range,ts})
         }
@@ -101,7 +101,7 @@ function initDispatcher(editor) {
       editor.emit(quickEventKey, event)
       editor.emit(nornaleventKey, event)
     }
-    ts.commit()
+    ts = ts.commit()
   })
   // 选区事件处理
   editor.on('selectionchange-origin', () => {

@@ -12,11 +12,10 @@
  * @param {*} range
  * @param {boolean} [force=false]
  */
-export function del(range, force = false) {
+export function del({event, range,ts, force = false}) {
   if (range.inputState.isComposing && !force) return
   const { endContainer, startContainer } = range
-
   let commonPath = startContainer.queryCommonPath(endContainer)
   const component = commonPath.component
-  component.onContentDelete(commonPath, range)
+  component.onContentDelete({event, range,ts})
 }

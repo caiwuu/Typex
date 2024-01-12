@@ -8,7 +8,8 @@ import { computeLen, typeOf, positionCompare, isPrimitive, uuid } from '../utils
  */
 export class Path {
   /**
-   * @description 重建标记 0：无操作 ；1：删除
+   * @description 重建标记 
+   * - 0：无操作 ；1：删除
    * @protected
    * @memberof Path
    */
@@ -276,7 +277,9 @@ export class Path {
    * @memberof Path
    */
   textDelete(offset, count) {
+    const deleteText = this.node.data.slice(offset - count, offset)
     this.node.data = this.node.data.slice(0, offset - count) + this.node.data.slice(offset)
+    return deleteText
   }
 
   /**

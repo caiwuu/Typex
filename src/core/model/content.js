@@ -3,7 +3,7 @@ import { horizontalMove, verticalMove } from '../defaultActions/caretMove'
 import { del } from '../defaultActions/delete'
 import { createPath } from './path'
 import { uuid } from '../utils'
-import { InsertText } from '../transform/step'
+import { TextInsert,TextDelete } from '../transform/step'
 
 /**
  * @description 内容管理类
@@ -99,7 +99,7 @@ export default class Content extends Component {
    */
   onInsert({ data, type, range }) {
     if (type === 'text') {
-      const insertTextStep = new InsertText({ range, data })
+      const insertTextStep = new TextInsert({ range, data })
       insertTextStep.apply()
       this.update().then(() => {
         range.collapse(false)
@@ -108,15 +108,17 @@ export default class Content extends Component {
       return insertTextStep
     }
   }
-  onContentDelete(commonPath, range) {
-    console.log('删除')
+  onContentDelete({range,ts}) {
+    console.log('删除',ts)
     const { endContainer, endOffset, startContainer, startOffset, collapsed } = range
+    const commonPath = startContainer.queryCommonPath(endContainer)
     // 选区折叠
     if (collapsed) {
       const prevLeaf = startContainer.prevLeaf
       if (endOffset > 0) {
         // 执行删除
-        startContainer.textDelete(endOffset, 1)
+        const deleteTextStep = new TextDelete({range, count:1})
+        ts.addAndApplyStep(deleteTextStep)
         if (startContainer.block.contentLength === 0) {
           // 块级内容被清空
           range.setStart(startContainer, 0).collapse()
@@ -160,7 +162,7 @@ export default class Content extends Component {
           }
         } else {
           range.setStart(prevLeaf, prevLeaf.length).collapse()
-          this.onContentDelete(range.startContainer, range)
+          this.onContentDelete(range)
         }
       }
     } else if (startContainer === endContainer) {
@@ -284,7 +286,7 @@ export default class Content extends Component {
     if (range.inputState.isComposing) return
     event?.preventDefault?.()
     if (!range.collapsed) {
-      del(range)
+      del({range})
     }
     let cloneParent
     // 空行回车
@@ -387,8 +389,8 @@ export default class Content extends Component {
    * @memberof Content
    * @instance
    */
-  onKeydownBackspace({range}) {
-    del(range, false)
+  onKeydownBackspace({event, range,ts}) {
+    del({event, range,ts})
   }
 
   /**
