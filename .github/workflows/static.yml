@@ -17,7 +17,7 @@ jobs:
       # 步骤名
       - name: Checkout
         # 使用的actions脚本，这里是官方提供的获取源码脚本
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v4
         # 这个为使用 JamesIves/github-pages-deploy-action脚本所需要的配置
         with:
           persist-credentials: false
@@ -25,9 +25,10 @@ jobs:
       # 执行npm脚本打包项目
       - name: Install and Build
         run: |
-          npm install
+          npm install pnpm -g
+          pnpm install
+          npm run pack
           npm run deploy
-
       # 执行JamesIves/github-pages-deploy-action将项目发布到Github Pages
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1

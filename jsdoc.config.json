@@ -5,10 +5,14 @@
   },
   "sourceType": "module",
   "source": {
-    "include": ["./src"],
+    "include": ["./packages/"],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/|\\\\)_",
-    "exclude": []
+    "exclude": [
+      "./packages/@typex-core/node_modules/","./packages/@typex-core/dist/",
+      "./packages/@typex-platform/node_modules/","./packages/@typex-platform/dist/",
+      "./packages/editor/node_modules/","./packages/editor/dist/"
+    ]
   },
   "plugins": [],
   "opts": {

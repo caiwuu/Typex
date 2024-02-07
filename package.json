@@ -1,26 +1,34 @@
 {
-  "name": "editor-core",
-  "version": "2.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "monorepo-editor",
   "scripts": {
     "test": "jest --coverage",
     "build": "webpack --config config/webpack.config.prod.js",
     "dev": "webpack-dev-server  --config config/webpack.config.dev.js",
     "tree": "npx treer -d ./src -i modelTestDemo  -e tree.txt",
     "jsdoc": "npx jsdoc -r -c jsdoc.config.json -R README.md -d deploy",
-    "deploy": "npm run build && npm run jsdoc"
+    "deploy": "npm run build && npm run jsdoc",
+    "pack:core":"pnpm  --filter @typex/core run build",
+    "pack:platform":"pnpm  --filter @typex/platform run build",
+    "pack:editor":"pnpm  --filter editor run build",
+    "pack":"npm run pack:core && npm run pack:platform && npm run pack:editor"
   },
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=7"
+  },
+  "workspaces": {
+    "packages": ["packages/*"]
+  },
+  "private": true,
   "devDependencies": {
-    "@babel/core": "^7.17.2",
-    "@babel/plugin-syntax-jsx": "^7.16.7",
-    "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
-    "@babel/types": "^7.17.0",
-    "babel-jest": "^27.5.1",
+    "editor": "workspace:^",
     "babel-loader": "^8.2.3",
     "clean-jsdoc-theme": "^4.2.6",
     "css-loader": "^6.7.1",
@@ -36,8 +44,5 @@
     "webpack-dev-server": "^4.3.1",
     "webpack-merge": "^5.8.0",
     "webpackbar": "^5.0.0-3"
-  },
-  "dependencies": {
-    "mitt": "^3.0.0"
   }
 }

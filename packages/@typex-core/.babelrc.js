@@ -1,4 +1,4 @@
-// const editorJsx = require('./babel-plugin-transform-typex-jsx.js')
+const editorJsx = require('babel-plugin-transform-typex-jsx')
 module.exports = {
   presets: [
     [
@@ -9,5 +9,6 @@ module.exports = {
         },
       },
     ],
-  ]
+  ],
+  plugins: [editorJsx],
 }

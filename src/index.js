@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-08-26 15:22:44
  */
 // 编辑器demo
-import createEditor from './editor'
+import createEditor from 'editor'
 import './style.styl'
 function setFormat(editor,callback){
   editor.selection.ranges.forEach((range) => {

@@ -13,6 +13,7 @@ const devConfig = merge(baseConfig, {
     },
     client: {
       logging: 'error',
+      overlay: false,
     },
     hot: true,
     compress: true,

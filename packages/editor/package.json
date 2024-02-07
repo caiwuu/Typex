@@ -1,0 +1,19 @@
+{
+  "name": "editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack --config config/webpack.config.prod.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-plugin-transform-typex-jsx": "workspace:^"
+  },
+  "dependencies": {
+    "@typex/core": "workspace:^",
+    "@typex/platform": "workspace:^"
+  }
+}
