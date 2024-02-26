@@ -26,11 +26,6 @@ export default class Palette extends Component {
     this.state = { hue: 0, x: 228, y: 0, px: 1, py: 1 }
     this.containerRef = createRef()
   }
-  /**
-   * @description
-   * @returns {*}  
-   * @memberof Palette
-   */
   render() {
     return (
       <div
