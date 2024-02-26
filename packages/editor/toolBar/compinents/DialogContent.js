@@ -13,7 +13,7 @@ export class DialogContent extends Component {
       super(props)
     }
     render(h) {
-      return comMap[this.props.name]?.(h,this)
+      return comMap[this.props.options.componentName]?.(h,this)|| <span>404</span>
     }
   }
 

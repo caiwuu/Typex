@@ -31,7 +31,8 @@ export default function createVnode(type, config, children = []) {
 
 const _genChildren = (children, inherit) => {
   return children
-    .filter((ele) => !!ele)
+    // 排除一些内容为''的子元素
+    .filter((ele) => ele!=='')
     .map((ele) => {
       if (isPrimitive(ele) || isUndef(ele)) {
         return {

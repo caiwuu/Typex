@@ -22,8 +22,7 @@ class TEST extends Component {
   render() {
     return (
       <div style='font-size:20px'>
-        {this.props.children}
-        {this.props.color}
+        hue:{this.props.hue.toFixed(0)}
       </div>
     )
   }
@@ -34,6 +33,11 @@ export default class Palette extends Component {
     this.state = { hue: 0, x: 228, y: 0, px: 1, py: 1 }
     this.containerRef = createRef()
   }
+  /**
+   * @description
+   * @returns {*}  
+   * @memberof Palette
+   */
   render() {
     return (
       <div
@@ -43,9 +47,7 @@ export default class Palette extends Component {
         ref={this.containerRef}
       >
         <span style={`top:${this.state.y}px;left:${this.state.x}px;`} class='palette-picker'></span>
-        <TEST color={this.state.hue}>
-          <span>hue:</span>
-        </TEST>
+        <TEST hue={this.state.hue} />
       </div>
     )
   }
@@ -53,8 +55,8 @@ export default class Palette extends Component {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
     const y = typeof e.pageY === 'number' ? e.pageY : e.touches[0].pageY
-    const left = x - (this.containerRef.current.getBoundingClientRect().left + window.pageXOffset)
-    const top = y - (this.containerRef.current.getBoundingClientRect().top + window.pageYOffset)
+    const left = x - (this.containerRef.current.getBoundingClientRect().left + window.scrollX)
+    const top = y - (this.containerRef.current.getBoundingClientRect().top + window.scrollY)
     const px = (228 - left) / 228
     const py = (150 - top) / 150
     this.setState({
