@@ -1,10 +1,3 @@
-/*
- * @Author: caiwu
- * @Description:
- * @CreateDate:
- * @LastEditor:
- * @LastEditTime: 2022-08-11 14:35:35
- */
 import { createRef, Component ,utils} from '@typex/core'
 import { rgbToCoordinates, coordinatesToRgb } from './utils'
 const { throttle, isDef } = utils
