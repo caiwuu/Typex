@@ -7,7 +7,7 @@ export class Dialog extends Component {
     }
     render() {
       return (
-        <div ref={this.dialogRef} onClick={(e) => e.stopPropagation()}>
+        <div ref={this.dialogRef}>
           {this.state.visiable ? (
             <div style='background:#ddd;position:absolute;top:35px;z-index:1'>
               {this.props.children.length ? this.props.children : 'dialog'}
@@ -19,12 +19,12 @@ export class Dialog extends Component {
       )
     }
     outClickHandle = (e) => {
+      if(this.props.barItemRef.current.contains(e.target)) return
       this.setState({ visiable: false })
       document.removeEventListener('click', this.outClickHandle)
     }
-    toggle() {
+    toggle(e) {
       if (!this.state.visiable) {
-        console.log('==toggle===')
         document.addEventListener('click', this.outClickHandle)
       }
       this.setState({ visiable: !this.state.visiable })

@@ -48,6 +48,7 @@ class ToolBarItem extends Component {
     this.state = { active: false }
     this.props.toolBarItems.push(this)
     this.dialogRef = createRef()
+    this.barItemRef = createRef()
   }
   onNotice(commonKeyValue) {
     if (commonKeyValue[this.props.commandName] !== this.state.active) {
@@ -59,17 +60,17 @@ class ToolBarItem extends Component {
   render() {
     return (
       <span
-        onClick={this.clickHandle}
         class='editor-tool-bar-item'
+        ref = {this.barItemRef}
         style={`color: ${!this.state.active ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
-        <svg class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
+        <svg onClick={this.clickHandle} class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
         {
           this.props.options
           ?
-            <Dialog ref={this.dialogRef}>
+            <Dialog ref={this.dialogRef} barItemRef = {this.barItemRef}>
               <DialogContent name={this.props.commandName} options={this.props.options}></DialogContent>
             </Dialog>
           :''
@@ -81,12 +82,8 @@ class ToolBarItem extends Component {
     this.props.editor.command(this.props.commandName)
   }
   clickHandle = (e) => {
-    e.stopPropagation()
-    this.setState({
-      active: !this.state.active,
-    })
     if(this.dialogRef.current){
-      this.dialogRef.current.toggle()
+      this.dialogRef.current.toggle(e)
     }else{
       this.emitComand()
     }

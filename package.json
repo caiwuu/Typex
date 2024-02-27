@@ -27,6 +27,7 @@
   },
   "private": true,
   "devDependencies": {
+    "babel-plugin-transform-typex-jsx": "workspace:^",
     "@babel/preset-env": "^7.16.11",
     "editor": "workspace:^",
     "babel-loader": "^8.2.3",

@@ -10,7 +10,7 @@
       ]
     ],
     "plugins": [
-        "./babel-plugin-transform-typex-jsx.js"
+        "babel-plugin-transform-typex-jsx"
     ],
     "ignore": ["node_modules"],
     "exclude": ["/node_modules/"]
