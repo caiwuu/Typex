@@ -71,7 +71,7 @@ export default class Hue extends Component {
   handleHueChange = throttle((e) => {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
-    let left = x - (this.hueContainer.current.getBoundingClientRect().left + window.pageXOffset)
+    let left = x - (this.hueContainer.current.getBoundingClientRect().left + window.scrollX)
     left = left >= 200 ? 200 : left <= 0 ? 0 : left
     const hue = (1 - left / 200) * 360
     const [R, G, B] = coordinatesToRgb(
@@ -79,6 +79,7 @@ export default class Hue extends Component {
       this.props.paletteRef.current.state.px,
       this.props.paletteRef.current.state.py
     )
+    console.log(this.props.paletteRef.current.state);
     this.color = `rgba(${R},${G},${B},${this.state.A})`
     this.setState({ x: left <= 6 ? 6 : left, R, G, B })
     this.props.paletteRef.current.setPalette(hue)
@@ -95,7 +96,7 @@ export default class Hue extends Component {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
     let left =
-      x - (this.transparencyContainer.current.getBoundingClientRect().left + window.pageXOffset)
+      x - (this.transparencyContainer.current.getBoundingClientRect().left + window.scrollX)
     left = left >= 200 ? 200 : left <= 0 ? 0 : left
     const A = left / 200
     this.color = `rgba(${this.state.R},${this.state.G},${this.state.B},${A})`
