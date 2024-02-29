@@ -2,38 +2,47 @@ import coreContext from '../coreContext'
 import updateProps from './updateProps'
 export default function createElm(vnode) {
   // vnodeType 1 函数组件 2 类组件 3 文本节点 4 dom节点
+  const { createVnode, setVdomOrIns, setVnodeOrIns, setVdomOrElm,vnodeType:{
+    VFUNCTION,
+    VCOMPONENT, 
+    VTEXT
+  }  } = coreContext.core
   let elm
-  if (vnode.vnodeType === 1) {
-    const vdom = vnode.type(coreContext.core.createVnode, vnode.props)
+  if (vnode.vnodeType === VFUNCTION) {
+    const vdom = vnode.type(createVnode, vnode.props)
     elm = createElm(vdom)
     if (vnode.ref) vnode.ref.current = elm
-    coreContext.core.setVdomOrIns(vdom, vnode)
-    coreContext.core.setVdomOrElm(elm, vdom)
+    setVdomOrIns(vdom, vnode)
+    setVdomOrElm(elm, vdom)
     updateProps(vdom)
-  } else if (vnode.vnodeType === 2) {
+  } else if (vnode.vnodeType === VCOMPONENT) {
     const ins = new vnode.type(vnode.props)
-    const vdom = ins.generateVdom(coreContext.core.createVnode)
-    elm = createElm(vdom)
-
-    // 执行 onCreated 钩子
-    if (typeof ins.onCreated === 'function') ins.onCreated()
     // 给ref赋值
     if (vnode.ref) vnode.ref.current = ins
+    // 执行 onCreated 钩子
+    if (typeof ins.onCreated === 'function') ins.onCreated()
 
-    coreContext.core.setVdomOrIns(vdom, ins)
-    coreContext.core.setVnodeOrIns(ins, vnode)
-    coreContext.core.setVdomOrElm(elm, vdom)
+    // 执行render创建虚拟dom
+    const vdom = ins.generateVdom(createVnode)
+    elm = createElm(vdom)
+    
+    // 创建 ins vnode vdom elm 关系映射
+    setVdomOrIns(vdom, ins)
+    setVnodeOrIns(ins, vnode)
+    setVdomOrElm(elm, vdom)
+    
+    // 把vdom上面的属性添加到真实dom
     updateProps(vdom)
-  } else if (vnode.vnodeType === 3) {
+  } else if (vnode.vnodeType === VTEXT) {
     elm = document.createTextNode(vnode.children)
-    coreContext.core.setVdomOrElm(elm, vnode)
+    setVdomOrElm(elm, vnode)
     return elm
   } else {
     elm = vnode.ns
       ? document.createElementNS(vnode.ns, vnode.type)
       : document.createElement(vnode.type)
     if (vnode.ref) vnode.ref.current = elm
-    coreContext.core.setVdomOrElm(elm, vnode)
+    setVdomOrElm(elm, vnode)
     updateProps(vnode)
   }
 

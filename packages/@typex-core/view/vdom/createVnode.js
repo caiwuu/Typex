@@ -1,7 +1,8 @@
 import { isPrimitive, isUndef, styleToObj, uuid, mergeObj, isClass, isFunction } from '../../utils'
+import { vnodeType } from '../../constDefine'
 const BUILTINPROPSKEY = ['ref', 'key', 'ns'] //不包含在props中的属性
 const INHERITPROPSKEY = ['ns'] // 需要继承的属性
-
+const { VFUNCTION, VCOMPONENT,VTEXT, VDOM} =  vnodeType
 /**
  * @description 创建虚拟dom
  * @export
@@ -38,7 +39,7 @@ const _genChildren = (children, inherit) => {
         return {
           _uuid: uuid(),
           type: 'text',
-          vnodeType: 3,
+          vnodeType: VTEXT,
           children: ele,
         }
       } else {
@@ -48,27 +49,19 @@ const _genChildren = (children, inherit) => {
     })
 }
 
-/**
- * @description 虚拟节点工厂函数
- * @param {*} type
- * @param {*} builtinProps
- * @param {*} props
- * @param {*} children
- * @returns {*}
- */
 function Element(type, builtinProps, props, children) {
   let element
   if (type === 'text') {
     element = {
       _uuid: uuid(),
-      vnodeType: 3,
+      vnodeType: VTEXT,
       type: 'text',
       children: children.join(''),
     }
   } else {
     element = {
       _uuid: uuid(),
-      vnodeType: isClass(type) ? 2 : isFunction(type) ? 1 : 4,
+      vnodeType: isClass(type) ? VCOMPONENT : isFunction(type) ? VFUNCTION : VDOM,
       type,
       ...builtinProps,
       props,
@@ -78,7 +71,7 @@ function Element(type, builtinProps, props, children) {
     for (let propName of INHERITPROPSKEY) {
       inherit[propName] = element[propName]
     }
-    if (element.vnodeType === 1 || element.vnodeType === 2) {
+    if (element.vnodeType === VFUNCTION || element.vnodeType === VCOMPONENT) {
       element.props.children = _genChildren(children, inherit)
     } else {
       element.children = _genChildren(children, inherit)

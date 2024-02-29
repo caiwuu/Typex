@@ -16,6 +16,8 @@ import {
   setVdomOrIns,
 } from '../../mappings'
 import { isUndef, isDef } from '../../utils'
+import { vnodeType } from '../../constDefine'
+const { VFUNCTION, VCOMPONENT, VTEXT} =  vnodeType
 
 /**
  * @description 判断是否相同节点
@@ -241,7 +243,7 @@ function updateChildren(parentElm, newCh, oldCh) {
   }
 }
 function getVdomByComponentVnode(componentVnode) {
-  return componentVnode.vnodeType === 1
+  return componentVnode.vnodeType === VFUNCTION
     ? getVdomOrIns(componentVnode)
     : getVdomOrIns(getVnodeOrIns(componentVnode))
 }
@@ -252,13 +254,13 @@ function getVdomByComponentVnode(componentVnode) {
  */
 function patchVnode(vnode, oldVnode) {
   if (oldVnode === vnode) return
-  if (vnode.vnodeType === 1) {
+  if (vnode.vnodeType === VFUNCTION) {
     // 函数组件
     const oldVdom = getVdomByComponentVnode(oldVnode)
     const newVdom = vnode.type(h, vnode.props)
     setVdomOrIns(newVdom, vnode)
     patchVnode(newVdom, oldVdom)
-  } else if (vnode.vnodeType === 2) {
+  } else if (vnode.vnodeType === VCOMPONENT) {
     // 常规组件
     const oldVdom = getVdomByComponentVnode(oldVnode)
     const ins = getVnodeOrIns(oldVnode)
@@ -268,7 +270,7 @@ function patchVnode(vnode, oldVnode) {
     setVdomOrIns(ins, newVdom)
     setVnodeOrIns(ins, vnode)
     patchVnode(newVdom, oldVdom)
-  } else if (vnode.vnodeType === 3) {
+  } else if (vnode.vnodeType === VTEXT) {
     const elm = getVdomOrElm(oldVnode)
     setVdomOrElm(elm, vnode)
     pluginContext.platform.updateProps(vnode, oldVnode)

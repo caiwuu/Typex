@@ -11,6 +11,7 @@ import { createRef, createVnode, patch, Component } from './view'
 import { SplitText } from './transform/step'
 import { setFormat, deleteText } from './transform/transaction'
 import * as utils from './utils.js'
+import { vnodeType } from './constDefine'
 import {
   setVdomOrElm,
   setVnodeOrIns,
@@ -42,6 +43,7 @@ const core = {
   setVdomOrIns,
   getVdomOrIns,
   SplitText,
+  vnodeType
 }
 
 export default core
