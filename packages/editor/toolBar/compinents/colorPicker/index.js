@@ -7,7 +7,7 @@ export default class ColorPicker extends Component {
     this.paletteRef = createRef()
     this.hueRef = createRef()
   }
-  render() {
+  render () {
     return (
       <div style='font-size:0;width:228px;'>
         <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
@@ -15,7 +15,10 @@ export default class ColorPicker extends Component {
       </div>
     )
   }
-  onMounted() {
+  onMounted () {
     console.log('ColorPicker')
+  }
+  onCreated () {
+    console.log('-==-');
   }
 }

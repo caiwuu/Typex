@@ -53,8 +53,17 @@ export default function createElm(vnode) {
     for (let index = 0; index < vnode.children.length; index++) {
       const ch = vnode.children[index]
       fragment.appendChild(createElm(ch))
+      execHook(ch,'onMounted')
     }
     elm.appendChild(fragment)
   }
   return elm
+}
+
+function execHook(vnode, hookName) {
+  if(vnode.vnodeType !== coreContext.core.vnodeType.VCOMPONENT) return
+  const ins = coreContext.core.getVnodeOrIns(vnode)
+  if (!ins) return
+  if (typeof ins[hookName] !== 'function') return
+  ins[hookName]()
 }
