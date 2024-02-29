@@ -19,7 +19,7 @@ import {
 } from '../../mappings'
 import { isUndef, isDef } from '../../utils'
 import { vnodeType } from '../../constDefine'
-const { VFUNCTION, VCOMPONENT, VTEXT} =  vnodeType
+const { VFUNCTION, VCOMPONENT, VTEXT } = vnodeType
 
 /**
  * @description 判断是否相同节点
@@ -27,7 +27,7 @@ const { VFUNCTION, VCOMPONENT, VTEXT} =  vnodeType
  * @param {*} oldVnode
  * @returns {*}
  */
-function sameVnode(vnode, oldVnode) {
+function sameVnode (vnode, oldVnode) {
   return vnode?.key === oldVnode?.key &amp;&amp; vnode?.type === oldVnode?.type
 }
 
@@ -39,7 +39,7 @@ function sameVnode(vnode, oldVnode) {
  * @param {*} end
  * @returns {*}
  */
-function findIdxInOld(node, oldCh, start, end) {
+function findIdxInOld (node, oldCh, start, end) {
   for (let i = start; i &lt; end; i++) {
     const c = oldCh[i]
     if (isDef(c) &amp;&amp; sameVnode(node, c)) return i
@@ -53,7 +53,7 @@ function findIdxInOld(node, oldCh, start, end) {
  * @param {*} endIdx
  * @returns {*}
  */
-function createKeyToOldIdx(children, beginIdx, endIdx) {
+function createKeyToOldIdx (children, beginIdx, endIdx) {
   const map = {}
   for (let i = beginIdx; i &lt;= endIdx; ++i) {
     const key = children[i]?.key
@@ -72,7 +72,7 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
  * @param {*} startIdx
  * @param {*} endIdx
  */
-function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
+function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
   for (; startIdx &lt;= endIdx; ++startIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
@@ -90,7 +90,7 @@ function addVnodes(parentElm, before = null, vnodes, startIdx, endIdx) {
  * @param {*} vnode
  * @param {*} destoryQueue
  */
-function invokeDestroyHook(vnode, destoryQueue) {
+function invokeDestroyHook (vnode, destoryQueue) {
   if (![1, 2].includes(vnode.vnodeType)) return
   const ins = getVnodeOrIns(vnode)
   const oldVdom = getVdomOrIns(ins)
@@ -116,18 +116,13 @@ function invokeDestroyHook(vnode, destoryQueue) {
  * @param {*} startIdx
  * @param {*} endIdx
  */
-function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
+function removeVnodes (parentElm, oldCh, startIdx, endIdx) {
   for (; startIdx &lt;= endIdx; ++startIdx) {
     const vnode = oldCh[startIdx]
     if (vnode != null) {
       let destoryQueue = []
-      let dom
+      let dom = getElmByVnode(vnode)
       const isComponentVnode = [1, 2].includes(vnode.vnodeType)
-      if (isComponentVnode) {
-        dom = getVdomOrElm(getVdomByComponentVnode(vnode))
-      } else {
-        dom = getVdomOrElm(vnode)
-      }
       dom &amp;&amp; pluginContext.platform.removeChild(parentElm, dom)
       isComponentVnode &amp;&amp; invokeDestroyHook(vnode, destoryQueue)
       destoryQueue.forEach((ins) => {
@@ -144,7 +139,7 @@ function removeVnodes(parentElm, oldCh, startIdx, endIdx) {
  * @param {*} newCh
  * @param {*} oldCh
  */
-function updateChildren(parentElm, newCh, oldCh) {
+function updateChildren (parentElm, newCh, oldCh) {
   let oldStartIdx = 0
   let newStartIdx = 0
   let oldEndIdx = oldCh.length - 1
@@ -182,8 +177,8 @@ function updateChildren(parentElm, newCh, oldCh) {
       patchVnode(newEndVnode, oldStartVnode)
       pluginContext.platform.insertBefore(
         parentElm,
-        getVdomOrElm(oldStartVnode),
-        getVdomOrElm(oldEndVnode).nextSibling
+        getElmByVnode(oldStartVnode),
+        getElmByVnode(oldEndVnode).nextSibling
       )
       oldStartVnode = oldCh[++oldStartIdx]
       newEndVnode = newCh[--newEndIdx]
@@ -193,8 +188,8 @@ function updateChildren(parentElm, newCh, oldCh) {
       patchVnode(newStartVnode, oldEndVnode)
       pluginContext.platform.insertBefore(
         parentElm,
-        getVdomOrElm(oldEndVnode),
-        getVdomOrElm(oldStartVnode)
+        getElmByVnode(oldEndVnode),
+        getElmByVnode(oldStartVnode)
       )
       oldEndVnode = oldCh[--oldEndIdx]
       newStartVnode = newCh[++newStartIdx]
@@ -210,7 +205,7 @@ function updateChildren(parentElm, newCh, oldCh) {
         pluginContext.platform.insertBefore(
           parentElm,
           pluginContext.platform.createElm(newStartVnode),
-          getVdomOrElm(oldStartVnode)
+          getElmByVnode(oldStartVnode)
         )
         execHook(newStartVnode, 'onMounted')
       } else {
@@ -219,7 +214,7 @@ function updateChildren(parentElm, newCh, oldCh) {
           pluginContext.platform.insertBefore(
             parentElm,
             pluginContext.platform.createElm(newStartVnode),
-            getVdomOrElm(oldStartVnode)
+            getElmByVnode(oldStartVnode)
           )
           execHook(newStartVnode, 'onMounted')
         } else {
@@ -227,8 +222,8 @@ function updateChildren(parentElm, newCh, oldCh) {
           oldCh[idxInOld] = undefined
           pluginContext.platform.insertBefore(
             parentElm,
-            getVdomOrElm(elmToMove),
-            getVdomOrElm(oldStartVnode)
+            getElmByVnode(elmToMove),
+            getElmByVnode(oldStartVnode)
           )
         }
       }
@@ -244,38 +239,47 @@ function updateChildren(parentElm, newCh, oldCh) {
     removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx)
   }
 }
-function getVdomByComponentVnode(componentVnode) {
-  return componentVnode.vnodeType === VFUNCTION
-    ? getVdomOrIns(componentVnode)
-    : getVdomOrIns(getVnodeOrIns(componentVnode))
+function getVdomByVnode (vnode) {
+  switch (vnode.vnodeType) {
+    case VFUNCTION:
+      return getVdomOrIns(vnode)
+    case VCOMPONENT:
+      return getVdomOrIns(getVnodeOrIns(vnode))
+    default:
+      return vnode
+  }
+}
+function getElmByVnode (vnode) {
+  return getVdomOrElm(getVdomByVnode(vnode))
 }
 /**
  * @description 节点比对
  * @param {*} vnode
  * @param {*} oldVnode
  */
-function patchVnode(vnode, oldVnode) {
+function patchVnode (vnode, oldVnode) {
   if (oldVnode === vnode) return
   if (vnode.vnodeType === VFUNCTION) {
     // 函数组件
-    const oldVdom = getVdomByComponentVnode(oldVnode)
+    const oldVdom = getVdomByVnode(oldVnode)
     const newVdom = vnode.type(h, vnode.props)
     setVdomOrIns(newVdom, vnode)
-    patchVnode(newVdom, oldVdom)
+    return patchVnode(newVdom, oldVdom)
   } else if (vnode.vnodeType === VCOMPONENT) {
     // 常规组件
-    const oldVdom = getVdomByComponentVnode(oldVnode)
+    const oldVdom = getVdomByVnode(oldVnode)
     const ins = getVnodeOrIns(oldVnode)
     setVnodeOrIns(vnode, ins)
     ins.props = Object.freeze({ ...vnode.props })
     const newVdom = ins.generateVdom(h)
     setVdomOrIns(ins, newVdom)
     setVnodeOrIns(ins, vnode)
-    patchVnode(newVdom, oldVdom)
+    return patchVnode(newVdom, oldVdom)
   } else if (vnode.vnodeType === VTEXT) {
     const elm = getVdomOrElm(oldVnode)
     setVdomOrElm(elm, vnode)
     pluginContext.platform.updateProps(vnode, oldVnode)
+    return elm
   } else {
     // 重新映射elm和vn
     const elm = getVdomOrElm(oldVnode)
@@ -289,6 +293,7 @@ function patchVnode(vnode, oldVnode) {
     pluginContext.platform.updateProps(vnode, oldVnode)
     if (oldCh !== ch) updateChildren(elm, ch, oldCh)
     // ins &amp;&amp; execHook(ins, 'onUpdated')
+    return elm
   }
 }
 
@@ -299,7 +304,7 @@ function patchVnode(vnode, oldVnode) {
  * @param {*} oldVnode
  * @returns {*}
  */
-export default function patch(vnode, oldVnode) {
+export default function patch (vnode, oldVnode) {
   if (oldVnode === vnode) return
   if (!vnode) {
     const ins = getVnodeOrIns(oldVnode)
@@ -325,21 +330,29 @@ export default function patch(vnode, oldVnode) {
   if (sameVnode(vnode, oldVnode)) {
     patchVnode(vnode, oldVnode)
   } else {
-    let oldElm = getVdomOrElm(
-      [1, 2].includes(oldVnode.vnodeType) ? getVdomByComponentVnode(oldVnode) : oldVnode
-    )
+    let oldElm = getElmByVnode(oldVnode)
     const newElm = pluginContext.platform.createElm(vnode)
-    execHook(oldVnode, 'onUnmounted')
     pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
+    execHook(oldVnode, 'onUnmounted')
     execHook(vnode, 'onMounted')
   }
-  return getVdomOrElm([1, 2].includes(vnode.vnodeType) ? getVdomByComponentVnode(vnode) : vnode)
+  return getElmByVnode(vnode)
 }
 
-function execHook(vnodeOrIns, hookName) {
-  const ins = vnodeOrIns.vnodeType ? getVnodeOrIns(vnodeOrIns) : vnodeOrIns
+function execHook (vnode, hookName) {
+  if (vnode.vnodeType !== VCOMPONENT) return
+  const ins = getVnodeOrIns(vnode)
   if (!ins) return
   if (typeof ins[hookName] !== 'function') return
   ins[hookName]()
+}
+function replaceVnode (vnode, oldVnode) {
+  let oldElm = getVdomOrElm(
+    [VFUNCTION, VCOMPONENT].includes(oldVnode.vnodeType) ? getVdomByVnode(oldVnode) : oldVnode
+  )
+  const newElm = pluginContext.platform.createElm(vnode)
+  pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
+  execHook(oldVnode, 'onUnmounted')
+  execHook(vnode, 'onMounted')
 }
 </code></pre></article></section><footer class="footer" id="PeOAagUepe"><div class="wrapper"><div style="font-size:16px;color:#ff6c6c;text-align:center">Typex 欢迎各位对编辑器感兴趣的同学加入 QQ群:616405713</div></div></footer></div></div></div><div class="search-container" id="PkfLWpAbet" style="display:none"><div class="wrapper" id="iCxFxjkHbP"><button class="icon-button search-close-button" id="VjLlGakifb" aria-label="close search"><svg><use xlink:href="#close-icon"></use></svg></button><div class="search-box-c"><svg><use xlink:href="#search-icon"></use></svg> <input type="text" id="vpcKVYIppa" class="search-input" placeholder="Search..." autofocus></div><div class="search-result-c" id="fWwVHRuDuN"><span class="search-result-c-text">Type anything to view search result</span></div></div></div><div class="mobile-menu-icon-container"><button class="icon-button" id="mobile-menu" data-isopen="false" aria-label="menu"><svg><use xlink:href="#menu-icon"></use></svg></button></div><div id="mobile-sidebar" class="mobile-sidebar-container"><div class="mobile-sidebar-wrapper"><a style="font:bold 30px/30px 黑体;color:#999;text-align:center;text-decoration:none" href="./index.html">Typex-Document</a><div class="mobile-nav-links"><div class="home-class navbar-item"><a id="home-id-mobile" href="./index.html" target="">Home</a></div><div class="github-class navbar-item"><a id="github-id-mobile" href="https://github.com/caiwuu/Typex" target="_blank">Github</a></div></div><div class="mobile-sidebar-items-c"><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-classes"><div>Classes</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="Caret.html">Caret</a></div><div class="sidebar-section-children"><a href="Component.html">Component</a></div><div class="sidebar-section-children"><a href="Content.html">Content</a></div><div class="sidebar-section-children"><a href="Formater.html">Formater</a></div><div class="sidebar-section-children"><a href="Measure.html">Measure</a></div><div class="sidebar-section-children"><a href="Path.html">Path</a></div><div class="sidebar-section-children"><a href="Path_Path.html">Path</a></div><div class="sidebar-section-children"><a href="Range.html">Range</a></div><div class="sidebar-section-children"><a href="Selection.html">Selection</a></div><div class="sidebar-section-children"><a href="SetFormats.html">SetFormats</a></div><div class="sidebar-section-children"><a href="SplitText.html">SplitText</a></div><div class="sidebar-section-children"><a href="Step.html">Step</a></div><div class="sidebar-section-children"><a href="TextDelete.html">TextDelete</a></div><div class="sidebar-section-children"><a href="TextInsert.html">TextInsert</a></div><div class="sidebar-section-children"><a href="Transaction.html">Transaction</a></div></div><div class="sidebar-section-title with-arrow" data-isopen="false" id="sidebar-global"><div>Global</div><svg><use xlink:href="#down-icon"></use></svg></div><div class="sidebar-section-children-container"><div class="sidebar-section-children"><a href="global.html#addVnodes">addVnodes</a></div><div class="sidebar-section-children"><a href="global.html#computeOffset">computeOffset</a></div><div class="sidebar-section-children"><a href="global.html#computeScroll">computeScroll</a></div><div class="sidebar-section-children"><a href="global.html#createKeyToOldIdx">createKeyToOldIdx</a></div><div class="sidebar-section-children"><a href="global.html#createPath">createPath</a></div><div class="sidebar-section-children"><a href="global.html#defer">defer</a></div><div class="sidebar-section-children"><a href="global.html#del">del</a></div><div class="sidebar-section-children"><a href="global.html#findIdxInOld">findIdxInOld</a></div><div class="sidebar-section-children"><a href="global.html#flush">flush</a></div><div class="sidebar-section-children"><a href="global.html#getRect">getRect</a></div><div class="sidebar-section-children"><a href="global.html#horizontalMove">horizontalMove</a></div><div class="sidebar-section-children"><a href="global.html#initDispatcher">initDispatcher</a></div><div class="sidebar-section-children"><a href="global.html#invokeDestroyHook">invokeDestroyHook</a></div><div class="sidebar-section-children"><a href="global.html#isSameLine">isSameLine</a></div><div class="sidebar-section-children"><a href="global.html#loop">loop</a></div><div class="sidebar-section-children"><a href="global.html#patchVnode">patchVnode</a></div><div class="sidebar-section-children"><a href="global.html#positionCompare">positionCompare</a></div><div class="sidebar-section-children"><a href="global.html#queryPath">queryPath</a></div><div class="sidebar-section-children"><a href="global.html#queryPathByElm">queryPathByElm</a></div><div class="sidebar-section-children"><a href="global.html#queryPathByPosition">queryPathByPosition</a></div><div class="sidebar-section-children"><a href="global.html#queryPathByVn">queryPathByVn</a></div><div class="sidebar-section-children"><a href="global.html#removeVnodes">removeVnodes</a></div><div class="sidebar-section-children"><a href="global.html#renderRoot">renderRoot</a></div><div class="sidebar-section-children"><a href="global.html#sameVnode">sameVnode</a></div><div class="sidebar-section-children"><a href="global.html#setStyle">setStyle</a></div><div class="sidebar-section-children"><a href="global.html#updateChildren">updateChildren</a></div><div class="sidebar-section-children"><a href="global.html#verticalMove">verticalMove</a></div></div></div><div class="mobile-navbar-actions"><div class="navbar-right-item"><button class="icon-button search-button" aria-label="open-search"><svg><use xlink:href="#search-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button theme-toggle" aria-label="toggle-theme"><svg><use class="theme-svg-use" xlink:href="#dark-theme-icon"></use></svg></button></div><div class="navbar-right-item"><button class="icon-button font-size" aria-label="change-font-size"><svg><use xlink:href="#font-size-icon"></use></svg></button></div></div></div></div><script type="text/javascript" src="scripts/core.min.js"></script><script src="scripts/search.min.js" defer="defer"></script><script src="scripts/third-party/fuse.js" defer="defer"></script><script type="text/javascript">function foo(){console.log("foo")}</script><script type="text/javascript">var tocbotInstance=tocbot.init({tocSelector:"#eed4d2a0bfd64539bb9df78095dec881",contentSelector:".main-content",headingSelector:"h1, h2, h3",hasInnerContainers:!0,scrollContainer:".main-content",headingsOffset:130,onClick:bringLinkToView})</script></body></html>
