@@ -8,7 +8,7 @@
 import { createRef, Component, utils } from '@typex/core'
 import { toRGBArray, HSLToRGB, RGBToHSL, coordinatesToRgb } from './utils'
 const { throttle, isDef } = utils
-function pauseEvent(e) {
+function pauseEvent (e) {
   if (e.stopPropagation) e.stopPropagation()
   if (e.preventDefault) e.preventDefault()
   e.cancelBubble = true
@@ -24,7 +24,7 @@ export default class Hue extends Component {
     this.hueContainer = createRef()
     this.transparencyContainer = createRef()
   }
-  render() {
+  render () {
     return (
       <div class='picker'>
         <div class='left'>
@@ -52,20 +52,24 @@ export default class Hue extends Component {
       </div>
     )
   }
-  onMounted() {
-    let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
-    const [hue] = RGBToHSL(R, G, B)
-    A = isDef(A) ? A : 1
-    this.props.paletteRef.current.setPalette(hue, R, G, B)
-    const x = 200 - (hue * 5) / 9
-    this.setState({
-      A,
-      x2: A * 200 <= 6 ? 6 : A * 200,
-      x: x <= 6 ? 6 : x,
-      R,
-      G,
-      B,
+  onMounted () {
+    this.$nextTick(() => {
+      console.log(getComputedStyle(this.colorBlock.current).backgroundColor);
+      let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
+      const [hue] = RGBToHSL(R, G, B)
+      A = isDef(A) ? A : 1
+      this.props.paletteRef.current.setPalette(hue, R, G, B)
+      const x = 200 - (hue * 5) / 9
+      this.setState({
+        A,
+        x2: A * 200 <= 6 ? 6 : A * 200,
+        x: x <= 6 ? 6 : x,
+        R,
+        G,
+        B,
+      })
     })
+
   }
   // hue
   handleHueChange = throttle((e) => {
@@ -115,7 +119,7 @@ export default class Hue extends Component {
     this.unbindEventListeners()
   }
 
-  unbindEventListeners() {
+  unbindEventListeners () {
     window.removeEventListener('mousemove', this.handleHueChange)
     window.removeEventListener('mousemove', this.handleTransparencyChange)
     window.removeEventListener('mouseup', this.handleMouseUp)
