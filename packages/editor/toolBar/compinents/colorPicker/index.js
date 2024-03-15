@@ -1,24 +1,32 @@
 import Palette from './palette'
 import Hue from './hue'
 import { createRef, Component } from '@typex/core'
-const colorList = [
-  "#FF0000",
-  "#00FF00",
-  "#0000FF",
-  "#FFFF00",
-  "#FFC0CB",
-  "#FFA500",
-  "#00FFFF",
-  "#800080",
-  "#FF6347",
-  "#8A2BE2",
-  "#7FFF00",
-  "#8B008B",
-  "#A52A2A",
-  "#4169E1",
-  "#228B22",
-  "#FF4500"
-]
+const colors = [
+  ["#FFFFFF", // 白色
+    "#CCCCCC", // 非常浅的灰色
+    "#999999", // 浅灰色
+    "#666666", // 中灰色
+    "#333333", // 深灰色
+    "#000000", // 黑色
+    "#FF0000", // 红色
+    "#FF4500", // 橙红色
+    "#FFA500", // 橙色
+    "#FFFF00", // 黄色
+  ],
+  [
+    "#00FF00", // 青绿色
+    "#00FFFF", // 青色
+    "#0000FF", // 蓝色
+    "#FF00FF", // 品红
+    "#800080", // 紫色
+    "#8A2BE2", // 紫罗兰色
+    "#FF1493", // 深粉色
+    "#FF69B4", // 粉红
+    "#FFC0CB", // 粉红
+    "#FFD700", // 金色
+  ]
+];
+const isSelected = true
 export default class ColorPicker extends Component {
   constructor(props) {
     super(props)
@@ -27,11 +35,19 @@ export default class ColorPicker extends Component {
   }
   render () {
     return (
-      <div style="background:#fff">
-        <div style="display:flex;width:228px;flex-wrap: wrap;justify-content:space-between;padding:10px;box-sizing:border-box">
-          {colorList.map(ele => <div style={`background:${ele};height:16px;width:50px;margin:4px 0;border-radius:4px`}></div>)}
+      <div style="background:#eee;padding:10px">
+        <div >
+          {colors.map(row => <div style="display:flex;width:228px;flex-wrap: wrap;justify-content:space-between;box-sizing:border-box;margin:4px 0">
+            {row.map(ele =>
+              <div style={`position: relative;${isSelected ? 'width: 16px; height: 16px' : 'width: 18px; height: 18px'}; margin: 1px;`}>
+                <div style={`background:${ele}; width: 100%; height: 100%; border-radius: 20%;`}></div>
+                {isSelected && <div style={`position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border: 1px solid orange; border-radius: 20%; pointer-events: none;`}></div>}
+              </div>
+            )}
+          </div>)}
         </div>
-        <div style='font-size:0;width:228px;'>
+        <div class="divider divider-height-1 divider-dashed divider-color-gray"></div>
+        <div style='font-size:0;'>
           <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
           <Hue ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></Hue>
         </div>

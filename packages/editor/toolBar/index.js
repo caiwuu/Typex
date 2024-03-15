@@ -1,7 +1,6 @@
 import { Component, createRef } from '@typex/core'
 import './iconfont'
-import './toolBar.styl'
-import { Dialog,Tooltip,DialogContent } from './compinents'
+import { Dialog, Tooltip, DialogContent } from './compinents'
 // 工具栏
 export default class ToolBar extends Component {
   toolBarItems = []
@@ -20,10 +19,10 @@ export default class ToolBar extends Component {
       this.notice(commonKeyValue)
     })
   }
-  notice(commonKeyValue) {
+  notice (commonKeyValue) {
     this.toolBarItems.forEach((item) => item.onNotice(commonKeyValue))
   }
-  render() {
+  render () {
     const { tools } = this.props
     return (
       <div class='editor-tool-bar'>
@@ -50,18 +49,18 @@ class ToolBarItem extends Component {
     this.dialogRef = createRef()
     this.barItemRef = createRef()
   }
-  onNotice(commonKeyValue) {
+  onNotice (commonKeyValue) {
     if (commonKeyValue[this.props.commandName] !== this.state.active) {
       this.setState({
         active: commonKeyValue[this.props.commandName],
       })
     }
   }
-  render() {
+  render () {
     return (
       <span
         class='editor-tool-bar-item'
-        ref = {this.barItemRef}
+        ref={this.barItemRef}
         style={`color: ${!this.state.active ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
       >
         <svg onClick={this.clickHandle} class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
@@ -69,29 +68,29 @@ class ToolBarItem extends Component {
         </svg>
         {
           this.props.options
-          ?
-            <Dialog ref={this.dialogRef} barItemRef = {this.barItemRef}>
+            ?
+            <Dialog ref={this.dialogRef} barItemRef={this.barItemRef}>
               <DialogContent name={this.props.commandName} options={this.props.options}></DialogContent>
             </Dialog>
-          :''
+            : ''
         }
       </span>
     )
   }
-  emitComand = ()=>{
+  emitComand = () => {
     this.props.editor.command(this.props.commandName)
   }
   clickHandle = (e) => {
-    if(this.dialogRef.current){
+    if (this.dialogRef.current) {
       this.dialogRef.current.toggle(e)
-    }else{
+    } else {
       this.emitComand()
     }
   }
 }
 
 
-function findCommonKeyValuePairs(lists) {
+function findCommonKeyValuePairs (lists) {
   if (lists.length === 0) return {}
   const commonPairs = {}
   for (const key in lists[0]) {
