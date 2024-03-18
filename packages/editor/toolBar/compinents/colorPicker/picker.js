@@ -28,20 +28,20 @@ export default class Hue extends Component {
     return (
       <div class='picker'>
         <div class='left'>
-          <div ref={this.hueContainer} onMousedown={this.handleHueMouseDown} class='hue'>
-            <div style={`left:${this.state.x}px`} class='hue-picker'></div>
+          <div ref={this.hueContainer} onMousedown={this.handleHueMouseDown} class='hue-picker slider-bar'>
+            <div style={`left:${this.state.x}px`} class='cursor'></div>
           </div>
           <div
             onMousedown={this.handleTransparencyMouseDown}
-            class='transparency'
+            class='transparency-picker slider-bar'
             style='margin-top:4px'
           >
             <div
-              class='transparency-picker-bg'
+              class='transparency-gradient'
+              ref={this.transparencyContainer}
               style={`background: linear-gradient(to right, rgba(${this.state.R},${this.state.G},${this.state.B},0) 0%, rgba(${this.state.R},${this.state.G},${this.state.B},1)`}
-            ></div>
-            <div ref={this.transparencyContainer} style='position:absolute;top:0'>
-              <div style={`left:${this.state.x2}px;`} class='transparency-picker'></div>
+            >
+              <div style={`left:${this.state.x2}px;`} class='cursor'></div>
             </div>
           </div>
         </div>

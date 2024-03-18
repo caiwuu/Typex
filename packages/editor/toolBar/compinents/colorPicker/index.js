@@ -1,5 +1,5 @@
 import Palette from './palette'
-import Hue from './hue'
+import Hue from './picker'
 import { createRef, Component } from '@typex/core'
 const colors = [
   ["#FFFFFF", // 白色
@@ -35,9 +35,9 @@ export default class ColorPicker extends Component {
   }
   render () {
     return (
-      <div style="background:#eee;padding:10px">
-        <div >
-          {colors.map(row => <div style="display:flex;width:228px;flex-wrap: wrap;justify-content:space-between;box-sizing:border-box;margin:4px 0">
+      <div class="color-picker-block">
+        <div class="colors-block">
+          {colors.map(row => <div style="display:flex;flex-wrap: wrap;justify-content:space-between;box-sizing:border-box;margin:4px 0">
             {row.map(ele =>
               <div style={`position: relative;${isSelected ? 'width: 16px; height: 16px' : 'width: 18px; height: 18px'}; margin: 1px;`}>
                 <div style={`background:${ele}; width: 100%; height: 100%; border-radius: 20%;`}></div>
@@ -47,7 +47,7 @@ export default class ColorPicker extends Component {
           </div>)}
         </div>
         <div class="divider divider-height-1 divider-dashed divider-color-gray"></div>
-        <div style='font-size:0;'>
+        <div class="picker-block" style='font-size:0;'>
           <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
           <Hue ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></Hue>
         </div>
