@@ -1,5 +1,5 @@
 import Palette from './palette'
-import Hue from './picker'
+import ControlPanel from './controlPanel'
 import { createRef, Component } from '@typex/core'
 const colors = [
   ["#FFFFFF", // 白色
@@ -49,7 +49,7 @@ export default class ColorPicker extends Component {
         <div class="divider divider-height-1 divider-dashed divider-color-gray"></div>
         <div class="picker-block" style='font-size:0;'>
           <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
-          <Hue ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></Hue>
+          <ControlPanel ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></ControlPanel>
         </div>
       </div>
     )

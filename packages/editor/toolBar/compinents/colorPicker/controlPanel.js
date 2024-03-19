@@ -15,7 +15,7 @@ function pauseEvent (e) {
   e.returnValue = false
   return false
 }
-export default class Hue extends Component {
+export default class ControlPanel extends Component {
   constructor(props) {
     super(props)
     this.color = this.props.color
@@ -26,14 +26,14 @@ export default class Hue extends Component {
   }
   render () {
     return (
-      <div class='picker'>
+      <div class='control-panel'>
         <div class='left'>
-          <div ref={this.hueContainer} onMousedown={this.handleHueMouseDown} class='hue-picker slider-bar'>
+          <div ref={this.hueContainer} onMousedown={this.handleHueMouseDown} class='hue-slider slider-bar'>
             <div style={`left:${this.state.x}px`} class='cursor'></div>
           </div>
           <div
             onMousedown={this.handleTransparencyMouseDown}
-            class='transparency-picker slider-bar'
+            class='transparency-slider slider-bar'
             style='margin-top:4px'
           >
             <div

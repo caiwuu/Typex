@@ -63,7 +63,7 @@
 .color-picker-block
     background:#eee
     padding:10px
-    .picker
+    .control-panel
         display flex
         justify-content space-between
         margin-top 4px
@@ -80,13 +80,12 @@
                 font-size 0
                 height 10px
                 width 200px
-            .hue-picker
+            .hue-slider
                 background linear-gradient(to left, red, #ff0, lime, cyan, blue, #f0f, red)
-            .transparency-picker
+            .transparency-slider
                 position relative
                 background url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAADFJREFUOE9jZGBgEGHAD97gk2YcNYBhmIQBgWSAP52AwoAQwJvQRg1gACckQoC2gQgAIF8IscwEtKYAAAAASUVORK5CYII=') left center
                 .transparency-gradient
-                    // position:absolute;top:0
                     height 100%
         .right
             position relative
@@ -105,7 +104,7 @@
         height 150px
         overflow hidden
         border #eeeeee solid 1px
-        .palette-picker
+        .cursor
             pointer-events none
             display inline-block
             position relative

@@ -1,7 +1,7 @@
-import { createRef, Component ,utils} from '@typex/core'
+import { createRef, Component, utils } from '@typex/core'
 import { rgbToCoordinates, coordinatesToRgb } from './utils'
 const { throttle, isDef } = utils
-function pauseEvent(e) {
+function pauseEvent (e) {
   if (e.stopPropagation) e.stopPropagation()
   if (e.preventDefault) e.preventDefault()
   e.cancelBubble = true
@@ -12,7 +12,7 @@ class TEST extends Component {
   constructor(props) {
     super(props)
   }
-  render() {
+  render () {
     return (
       <div style='font-size:20px'>
         hue:{this.props.hue.toFixed(0)}
@@ -26,7 +26,7 @@ export default class Palette extends Component {
     this.state = { hue: 0, x: 228, y: 0, px: 1, py: 1 }
     this.containerRef = createRef()
   }
-  render() {
+  render () {
     return (
       <div
         style={`background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent), linear-gradient(to left, hsla(${this.state.hue}, 100%, 50%, 1), rgba(255, 255, 255, 1))`}
@@ -34,7 +34,7 @@ export default class Palette extends Component {
         class='palette'
         ref={this.containerRef}
       >
-        <span style={`top:${this.state.y}px;left:${this.state.x}px;`} class='palette-picker'></span>
+        <span style={`top:${this.state.y}px;left:${this.state.x}px;`} class='cursor'></span>
         <TEST hue={this.state.hue} />
       </div>
     )
@@ -74,7 +74,7 @@ export default class Palette extends Component {
     window.removeEventListener('mousemove', this.handleChange)
     window.removeEventListener('mouseup', this.handleMouseUp)
   }
-  setPalette(H, R, G, B) {
+  setPalette (H, R, G, B) {
     if (isDef(B)) {
       const [x, y] = rgbToCoordinates(H, R, G, B)
       this.setState({ x: (1 - x) * 228, y: (1 - y) * 150, px: x, py: y })
