@@ -29,7 +29,7 @@ export default class Component {
    * @memberof Component
    * @instance
    */
-  get isComponent() {
+  get isComponent () {
     return true
   }
 
@@ -59,7 +59,7 @@ export default class Component {
    * @memberof Component
    * @instance
    */
-  render(h) {
+  render (h) {
     throw Error('Component does not implement a required interface "render"')
   }
 
@@ -71,7 +71,7 @@ export default class Component {
    * @private
    * @memberof Component
    */
-  generateVdom(h) {
+  _generateVdom_ (h) {
     typeof this.onBeforeRender === 'function' && this.onBeforeRender()
     return this.render(h)
   }
@@ -82,7 +82,7 @@ export default class Component {
    * @memberof Component
    * @instance
    */
-  setState(partialState = {}) {
+  setState (partialState = {}) {
     return enqueueSetState(partialState, this)
   }
 
@@ -92,7 +92,7 @@ export default class Component {
    * @instance
    * @private
    */
-  syncUpdate() {
+  _syncUpdate_ () {
     const oldVndoe = getVnodeOrIns(this)
     patch(null, oldVndoe)
   }
@@ -103,7 +103,7 @@ export default class Component {
    * @instance
    * @memberof Component
    */
-  shouldComponentUpdate() {
+  shouldComponentUpdate () {
     return true
   }
 }

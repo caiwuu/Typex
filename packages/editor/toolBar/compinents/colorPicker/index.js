@@ -31,7 +31,7 @@ export default class ColorPicker extends Component {
   constructor(props) {
     super(props)
     this.paletteRef = createRef()
-    this.hueRef = createRef()
+    this.controlPanelRef = createRef()
   }
   render () {
     return (
@@ -48,8 +48,8 @@ export default class ColorPicker extends Component {
         </div>
         <div class="divider divider-height-1 divider-dashed divider-color-gray"></div>
         <div class="picker-block" style='font-size:0;'>
-          <Palette ref={this.paletteRef} hue={this.hueRef}></Palette>
-          <ControlPanel ref={this.hueRef} color={this.props.color} paletteRef={this.paletteRef}></ControlPanel>
+          <Palette ref={this.paletteRef} controlPanel={this.controlPanelRef}></Palette>
+          <ControlPanel ref={this.controlPanelRef} color={this.props.color} paletteRef={this.paletteRef}></ControlPanel>
         </div>
       </div>
     )

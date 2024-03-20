@@ -71,6 +71,10 @@ export default class ControlPanel extends Component {
     })
 
   }
+  update = ({ R, G, B }) => {
+    this.color = `rgba(${R},${G},${B},${this.state.A})`
+    this.setState({ R, G, B })
+  }
   // hue
   handleHueChange = throttle((e) => {
     pauseEvent(e)
@@ -83,7 +87,7 @@ export default class ControlPanel extends Component {
       this.props.paletteRef.current.state.px,
       this.props.paletteRef.current.state.py
     )
-    console.log(this.props.paletteRef.current.state);
+    // console.log(this.props.paletteRef.current.state);
     this.color = `rgba(${R},${G},${B},${this.state.A})`
     this.setState({ x: left <= 6 ? 6 : left, R, G, B })
     this.props.paletteRef.current.setPalette(hue)

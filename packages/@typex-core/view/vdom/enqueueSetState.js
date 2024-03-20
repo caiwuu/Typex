@@ -8,7 +8,7 @@ const componentQueue = []
  * @param {*} component
  * @returns {*}
  */
-export default function enqueueSetState(partialState, component) {
+export default function enqueueSetState (partialState, component) {
   let deferPromise = null
   if (queue.length === 0) {
     deferPromise = defer(flush)
@@ -26,7 +26,7 @@ export default function enqueueSetState(partialState, component) {
 /**
  * @description 调度执行
  */
-function flush() {
+function flush () {
   let item, component
   while ((item = queue.shift())) {
     const { partialState, component } = item
@@ -48,7 +48,7 @@ function flush() {
   }
 
   while ((component = componentQueue.shift())) {
-    component.shouldComponentUpdate() && component.syncUpdate()
+    component.shouldComponentUpdate() && component._syncUpdate_()
   }
 }
 
@@ -57,6 +57,6 @@ function flush() {
  * @param {function} fn
  * @returns {*}
  */
-function defer(fn) {
+function defer (fn) {
   return Promise.resolve().then(fn)
 }

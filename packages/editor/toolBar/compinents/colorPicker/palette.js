@@ -8,18 +8,7 @@ function pauseEvent (e) {
   e.returnValue = false
   return false
 }
-class TEST extends Component {
-  constructor(props) {
-    super(props)
-  }
-  render () {
-    return (
-      <div style='font-size:20px'>
-        hue:{this.props.hue.toFixed(0)}
-      </div>
-    )
-  }
-}
+
 export default class Palette extends Component {
   constructor(props) {
     super(props)
@@ -35,7 +24,6 @@ export default class Palette extends Component {
         ref={this.containerRef}
       >
         <span style={`top:${this.state.y}px;left:${this.state.x}px;`} class='cursor'></span>
-        <TEST hue={this.state.hue} />
       </div>
     )
   }
@@ -54,8 +42,7 @@ export default class Palette extends Component {
       py,
     })
     const [R, G, B] = coordinatesToRgb(this.state.hue, px, py)
-    this.props.hue.current.color = `rgba(${R},${G},${B},${this.props.hue.current.state.A})`
-    this.props.hue.current.setState({ R, G, B })
+    this.props.controlPanel.current.update({ R, G, B })
   }, 32)
 
   handleMouseDown = (e) => {

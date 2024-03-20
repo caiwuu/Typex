@@ -1,12 +1,12 @@
 import coreContext from '../coreContext'
 import updateProps from './updateProps'
-export default function createElm(vnode) {
+export default function createElm (vnode) {
   // vnodeType 1 函数组件 2 类组件 3 文本节点 4 dom节点
-  const { createVnode, setVdomOrIns, setVnodeOrIns, setVdomOrElm,vnodeType:{
+  const { createVnode, setVdomOrIns, setVnodeOrIns, setVdomOrElm, vnodeType: {
     VFUNCTION,
-    VCOMPONENT, 
+    VCOMPONENT,
     VTEXT
-  }  } = coreContext.core
+  } } = coreContext.core
   let elm
   if (vnode.vnodeType === VFUNCTION) {
     const vdom = vnode.type(createVnode, vnode.props)
@@ -23,14 +23,14 @@ export default function createElm(vnode) {
     if (typeof ins.onCreated === 'function') ins.onCreated()
 
     // 执行render创建虚拟dom
-    const vdom = ins.generateVdom(createVnode)
+    const vdom = ins._generateVdom_(createVnode)
     elm = createElm(vdom)
-    
+
     // 创建 ins vnode vdom elm 关系映射
     setVdomOrIns(vdom, ins)
     setVnodeOrIns(ins, vnode)
     setVdomOrElm(elm, vdom)
-    
+
     // 把vdom上面的属性添加到真实dom
     updateProps(vdom)
   } else if (vnode.vnodeType === VTEXT) {
@@ -53,15 +53,15 @@ export default function createElm(vnode) {
     for (let index = 0; index < vnode.children.length; index++) {
       const ch = vnode.children[index]
       fragment.appendChild(createElm(ch))
-      execHook(ch,'onMounted')
+      execHook(ch, 'onMounted')
     }
     elm.appendChild(fragment)
   }
   return elm
 }
 
-function execHook(vnode, hookName) {
-  if(vnode.vnodeType !== coreContext.core.vnodeType.VCOMPONENT) return
+function execHook (vnode, hookName) {
+  if (vnode.vnodeType !== coreContext.core.vnodeType.VCOMPONENT) return
   const ins = coreContext.core.getVnodeOrIns(vnode)
   if (!ins) return
   if (typeof ins[hookName] !== 'function') return

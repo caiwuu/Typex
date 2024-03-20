@@ -269,7 +269,7 @@ function patchVnode (vnode, oldVnode) {
     const ins = getVnodeOrIns(oldVnode)
     setVnodeOrIns(vnode, ins)
     ins.props = Object.freeze({ ...vnode.props })
-    const newVdom = ins.generateVdom(h)
+    const newVdom = ins._generateVdom_(h)
     setVdomOrIns(ins, newVdom)
     setVnodeOrIns(ins, vnode)
     return patchVnode(newVdom, oldVdom)
@@ -307,7 +307,7 @@ export default function patch (vnode, oldVnode) {
   if (!vnode) {
     const ins = getVnodeOrIns(oldVnode)
     const oldVdom = getVdomOrIns(ins)
-    const newVdom = ins.generateVdom(h)
+    const newVdom = ins._generateVdom_(h)
     setVdomOrIns(ins, newVdom)
     patchVnode(newVdom, oldVdom)
     return getVdomOrElm(newVdom)
