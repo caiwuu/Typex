@@ -1,4 +1,4 @@
-export function HSLToRGB(h, s, l) {
+export function HSLToRGB (h, s, l) {
   s /= 100
   l /= 100
   const k = (n) => (n + h / 30) % 12
@@ -6,11 +6,11 @@ export function HSLToRGB(h, s, l) {
   const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)))
   return [255 * f(0), 255 * f(8), 255 * f(4)].map((ele) => round(ele))
 }
-export function round(n, decimals = 0) {
+export function round (n, decimals = 0) {
   return Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`)
 }
 
-export function RGBToHSL(r, g, b) {
+export function RGBToHSL (r, g, b) {
   r /= 255
   g /= 255
   b /= 255
@@ -23,14 +23,14 @@ export function RGBToHSL(r, g, b) {
     (100 * (2 * l - s)) / 2,
   ].map((ele) => round(ele))
 }
-export function rgbToCoordinates(H, R, G, B) {
+export function rgbToCoordinates (H, R, G, B) {
   const rgbMap = { R, G, B }
   const [PR, PG, PB] = HSLToRGB(H, 100, 50)
   let low, high, x, y
-  ;[PR, PG, PB].forEach((i, index) => {
-    if (i === 255) high = ['R', 'G', 'B'][index]
-    if (i === 0) low = ['R', 'G', 'B'][index]
-  })
+    ;[PR, PG, PB].forEach((i, index) => {
+      if (i === 255) high = ['R', 'G', 'B'][index]
+      if (i === 0) low = ['R', 'G', 'B'][index]
+    })
   y = rgbMap[high] / 255
   if (rgbMap[low] === 0) {
     x = 0
@@ -39,7 +39,7 @@ export function rgbToCoordinates(H, R, G, B) {
   }
   return [round(x, 2), round(y, 2)]
 }
-export function coordinatesToRgb(H, px, py) {
+export function coordinatesToRgb (H, px, py) {
   const [PR, PG, PB] = HSLToRGB(H, 100, 50)
   const R = ((255 - PR) * px + PR) * py
   const G = ((255 - PG) * px + PG) * py
@@ -47,16 +47,16 @@ export function coordinatesToRgb(H, px, py) {
   return [round(R), round(G), round(B)]
 }
 
-export function hexToRgba(hexColor) {
+export function hexToRgba (hexColor) {
   hexColor = hexColor.replace(/^#/, '');
   const bigint = parseInt(hexColor, 16);
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
-  return [r, g, b, 255];  // 默认 alpha 值为 255
+  return [r, g, b, 1];  // 默认 alpha 值为 255
 }
 
-export function rgbaToHex(rgbaColor) {
+export function rgbaToHex (rgbaColor) {
   const [r, g, b] = rgbaColor;
   const hex = ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
   return `#${hex}`;

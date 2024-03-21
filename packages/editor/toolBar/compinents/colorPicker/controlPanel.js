@@ -6,7 +6,7 @@
  * @LastEditTime: 2022-08-11 11:09:26
  */
 import { createRef, Component, utils } from '@typex/core'
-import { toRGBArray, HSLToRGB, RGBToHSL, coordinatesToRgb } from './utils'
+import { toRGBArray, RGBToHSL, coordinatesToRgb } from './utils'
 const { throttle, isDef } = utils
 function pauseEvent (e) {
   if (e.stopPropagation) e.stopPropagation()
@@ -24,6 +24,7 @@ export default class ControlPanel extends Component {
     this.hueContainer = createRef()
     this.transparencyContainer = createRef()
   }
+
   render () {
     return (
       <div class='control-panel'>
@@ -52,9 +53,9 @@ export default class ControlPanel extends Component {
       </div>
     )
   }
+
   onMounted () {
     this.$nextTick(() => {
-      console.log(getComputedStyle(this.colorBlock.current).backgroundColor);
       let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
       const [hue] = RGBToHSL(R, G, B)
       A = isDef(A) ? A : 1
@@ -69,12 +70,15 @@ export default class ControlPanel extends Component {
         B,
       })
     })
+  }
 
+  update = (state) => {
+    const { R, G, B, A } = state
+    this.color = `rgba(${R},${G},${B},${A || this.state.A})`
+    this.setState(state)
+    this.props.onChange?.({ R, G, B, A: A || this.state.A })
   }
-  update = ({ R, G, B }) => {
-    this.color = `rgba(${R},${G},${B},${this.state.A})`
-    this.setState({ R, G, B })
-  }
+
   // hue
   handleHueChange = throttle((e) => {
     pauseEvent(e)
@@ -87,11 +91,21 @@ export default class ControlPanel extends Component {
       this.props.paletteRef.current.state.px,
       this.props.paletteRef.current.state.py
     )
-    // console.log(this.props.paletteRef.current.state);
-    this.color = `rgba(${R},${G},${B},${this.state.A})`
-    this.setState({ x: left <= 6 ? 6 : left, R, G, B })
+    this.update({ x: left <= 6 ? 6 : left, R, G, B })
     this.props.paletteRef.current.setPalette(hue)
   }, 32)
+
+  // Transparency
+  handleTransparencyChange = throttle((e) => {
+    pauseEvent(e)
+    const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
+    let left = x - (this.transparencyContainer.current.getBoundingClientRect().left + window.scrollX)
+    left = left >= 200 ? 200 : left <= 0 ? 0 : left
+    const A = left / 200
+    const { R, G, B } = this.state
+    this.update({ x2: left <= 6 ? 6 : left, A, R, G, B })
+  }, 32)
+
   handleHueMouseDown = (e) => {
     pauseEvent(e)
     this.handleHueChange(e)
@@ -99,17 +113,6 @@ export default class ControlPanel extends Component {
     window.addEventListener('mouseup', this.handleMouseUp)
   }
 
-  // Transparency
-  handleTransparencyChange = throttle((e) => {
-    pauseEvent(e)
-    const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
-    let left =
-      x - (this.transparencyContainer.current.getBoundingClientRect().left + window.scrollX)
-    left = left >= 200 ? 200 : left <= 0 ? 0 : left
-    const A = left / 200
-    this.color = `rgba(${this.state.R},${this.state.G},${this.state.B},${A})`
-    this.setState({ x2: left <= 6 ? 6 : left, A })
-  }, 32)
 
   handleTransparencyMouseDown = (e) => {
     pauseEvent(e)
@@ -117,7 +120,7 @@ export default class ControlPanel extends Component {
     window.addEventListener('mousemove', this.handleTransparencyChange)
     window.addEventListener('mouseup', this.handleMouseUp)
   }
-  // pub
+
   handleMouseUp = (e) => {
     pauseEvent(e)
     this.unbindEventListeners()
