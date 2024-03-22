@@ -55,6 +55,7 @@ export default class ControlPanel extends Component {
   }
 
   onMounted () {
+    console.log('onMountedonMounted');
     this.$nextTick(() => {
       let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
       const [hue] = RGBToHSL(R, G, B)
@@ -75,7 +76,17 @@ export default class ControlPanel extends Component {
   update = (state) => {
     const { R, G, B, A } = state
     this.color = `rgba(${R},${G},${B},${A || this.state.A})`
-    this.setState(state)
+    const [hue] = RGBToHSL(R, G, B)
+    const x = 200 - (hue * 5) / 9
+    this.props.paletteRef.current.setPalette(hue, R, G, B)
+    this.setState({
+      A,
+      x2: A * 200 <= 6 ? 6 : A * 200,
+      x: x <= 6 ? 6 : x,
+      R,
+      G,
+      B,
+    })
     this.props.onChange?.({ R, G, B, A: A || this.state.A })
   }
 

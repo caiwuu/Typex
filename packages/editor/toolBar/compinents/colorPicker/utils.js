@@ -7,7 +7,8 @@ export function HSLToRGB (h, s, l) {
   return [255 * f(0), 255 * f(8), 255 * f(4)].map((ele) => round(ele))
 }
 export function round (n, decimals = 0) {
-  return Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`)
+  // return Number(`${Math.round(`${n}e${decimals}`)}e-${decimals}`)
+  return n
 }
 
 export function RGBToHSL (r, g, b) {

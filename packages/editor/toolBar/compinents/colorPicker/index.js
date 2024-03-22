@@ -48,7 +48,7 @@ export default class ColorPicker extends Component {
               const isSelected = this.isSelected(ele)
               return <div onClick={() => this.colorsClick(ele)} style={`position: relative;${isSelected ? 'width: 16px; height: 16px;padding:1px' : 'width: 18px; height: 18px'}; margin: 1px;`}>
                 <div style={`background:${ele}; width: 100%; height: 100%; border-radius: 20%;`}></div>
-                {isSelected && <div style={`position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border: 1px solid orange; border-radius: 20%; pointer-events: none;`}></div>}
+                {isSelected ? <div style={`position: absolute; inset: -2px; border: 1px solid orange; border-radius: 20%; pointer-events: none;`}></div> : ''}
               </div>
             }
             )}
