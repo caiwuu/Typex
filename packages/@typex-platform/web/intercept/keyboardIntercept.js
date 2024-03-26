@@ -7,18 +7,18 @@ export default class KeyboardIntercept {
     this._initInput()
     this._initEvent()
   }
-  _initIframe() {
+  _initIframe () {
     this.iframe = document.createElement('iframe')
     this.iframe.classList.add('custom-input-iframe')
     this.editor.contentRef.current.appendChild(this.iframe)
   }
-  _initInput() {
+  _initInput () {
     const iframedocument = this.iframe.contentDocument
     this.input = iframedocument.createElement('input')
     this.input.classList.add('custom-input')
     iframedocument.body.appendChild(this.input)
   }
-  focus(range) {
+  focus (range) {
     range = range || this.editor.selection.getRangeAt(0)
     if (!range) return
     let elm = range.startContainer.elm
@@ -35,24 +35,24 @@ export default class KeyboardIntercept {
     setStyle(this.iframe, style)
     this.input.focus()
   }
-  destroy() {
+  destroy () {
     this.input.removeEventListener('compositionstart', this._inputEvent.bind(this))
     this.input.removeEventListener('compositionend', this._inputEvent.bind(this))
     this.input.removeEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.removeEventListener('keydown', this._handGolobalKeydown.bind(this))
     this.iframe.contentDocument.removeEventListener('keyup', this._handGolobalKeydown.bind(this))
   }
-  _initEvent() {
+  _initEvent () {
     this.input.addEventListener('compositionstart', this._inputEvent.bind(this))
     this.input.addEventListener('compositionend', this._inputEvent.bind(this))
     this.input.addEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
     this.iframe.contentDocument.addEventListener('keyup', this._handGolobalKeydown.bind(this))
   }
-  _handGolobalKeydown(event) {
+  _handGolobalKeydown (event) {
     this.editor.emit('keyboardEvents', event)
   }
-  _inputEvent(event) {
+  _inputEvent (event) {
     this.editor.emit('keyboardEvents', event)
   }
 }

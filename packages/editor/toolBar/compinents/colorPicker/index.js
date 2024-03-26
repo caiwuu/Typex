@@ -67,8 +67,8 @@ export default class ColorPicker extends Component {
     this.setState({
       hexColor: ele
     })
-    const [R, G, B, A] = hexToRgba(ele)
-    this.controlPanelRef.current.update({ R, G, B, A })
+    // const [R, G, B, A] = hexToRgba(ele)
+    // this.controlPanelRef.current.update({ R, G, B, A })
   }
 
   isSelected = (hc) => {

@@ -17,7 +17,7 @@ export default class Range {
     value: '',
     isComposing: false,
   }
-  
+
   /**
    * @description 标识range方向
    * @memberof Range
@@ -40,7 +40,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  get collapsed() {
+  get collapsed () {
     return this.endContainer === this.startContainer && this.endOffset === this.startOffset
   }
 
@@ -50,7 +50,7 @@ export default class Range {
    * @instance
    * @name Range#get:offset
    */
-  get offset() {
+  get offset () {
     return this.d === 1 ? this.endOffset : this.startOffset
   }
 
@@ -59,7 +59,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  get container() {
+  get container () {
     return this.d === 1 ? this.endContainer : this.startContainer
   }
 
@@ -70,7 +70,7 @@ export default class Range {
    * @type {number}
    * @instance
    */
-  set offset(offset) {
+  set offset (offset) {
     if (this.d === 1) {
       this.endOffset = offset
     } else {
@@ -84,7 +84,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  set container(container) {
+  set container (container) {
     if (this.d === 1) {
       this.endContainer = container
     } else {
@@ -97,7 +97,7 @@ export default class Range {
    * @readonly
    * @memberof Range
    */
-  get snapshot() {
+  get snapshot () {
     return {
       endContainer: this.endContainer.position,
       startContainer: this.startContainer.position,
@@ -114,7 +114,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  set(container, offset) {
+  set (container, offset) {
     this.container = container
     this.offset = offset
     if (this.collapsed) this.d = 0
@@ -128,7 +128,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  setEnd(endContainer, endOffset) {
+  setEnd (endContainer, endOffset) {
     this.endContainer = endContainer
     this.endOffset = endOffset
     if (this.collapsed) this.d = 0
@@ -142,7 +142,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  setStart(startContainer, startOffset) {
+  setStart (startContainer, startOffset) {
     this.startContainer = startContainer
     this.startOffset = startOffset
     if (this.collapsed) this.d = 0
@@ -155,7 +155,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  collapse(toStart = true) {
+  collapse (toStart = true) {
     if (toStart) {
       this.endContainer = this.startContainer
       this.endOffset = this.startOffset
@@ -173,9 +173,12 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  updateCaret(drawCaret = true) {
+  updateCaret (drawCaret = true) {
     this.caret.update(drawCaret)
-    this.editor.focus()
+    // 点击鼠标 输入框消失
+    setTimeout(() => {
+      this.editor.focus()
+    }, 200)
   }
 
   /**
@@ -183,7 +186,7 @@ export default class Range {
    * @memberof Range
    * @instance
    */
-  remove() {
+  remove () {
     const index = this.editor.selection.ranges.findIndex((i) => i === this)
     this.caret.remove()
     this.editor.selection.ranges.splice(index, 1)

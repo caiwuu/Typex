@@ -35,6 +35,7 @@ export default class Palette extends Component {
     const top = y - (this.containerRef.current.getBoundingClientRect().top + window.scrollY)
     const px = (228 - left) / 228
     const py = (150 - top) / 150
+    console.log(left, top);
     this.setState({
       x: left >= 228 ? 228 : left <= 0 ? 0 : left,
       y: top >= 150 ? 150 : top <= 0 ? 0 : top,

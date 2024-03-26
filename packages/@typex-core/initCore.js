@@ -16,7 +16,7 @@ const inputState = {
  * @export
  * @param {*} ops
  */
-export default function initCore({ editor, formats, plugins }) {
+export default function initCore ({ editor, formats, plugins }) {
   const fmtIns = new Formater()
   fmtIns.register(formats)
   editor.$eventBus = emit()
@@ -37,7 +37,7 @@ export default function initCore({ editor, formats, plugins }) {
  * @description 事件拦截到对应的组件
  * @param {*} editor
  */
-function initDispatcher(editor) {
+function initDispatcher (editor) {
   let ts = null
   let insertTextStep
 
@@ -58,44 +58,41 @@ function initDispatcher(editor) {
     // 创建事务
     if (!ts) ts = new Transaction(editor)
     // 复用未提交的事务 
-    else if(!ts.commited) ts.init() 
+    else if (!ts.commited) ts.init()
     if (isInput(event)) {
       // 输入处理
       if (event.data === null) return
       input(event, ({ data, prevDataLength, type }) => {
         editor.selection.ranges.forEach((range) => {
-          if (!range.collapsed) del({event,range,ts,force:true})
-          if (prevDataLength) times(prevDataLength, del, editor, {event,range,ts,force:true})
+          if (!range.collapsed) del({ event, range, ts, force: true })
+          if (prevDataLength) times(prevDataLength, del, editor, { event, range, ts, force: true })
           const path = range.container
 
           if (type === 'input' || type === 'compositioning') {
-            insertTextStep = path.component.onInsert({ type: 'text', data, range, ts,event })
+            insertTextStep = path.component.onInsert({ type: 'text', data, range, ts, event })
+            ts.addStep(insertTextStep)
           }
 
           if (type === 'input' || type === 'compositionend') {
-            ts.addStep(insertTextStep)
-
-            const onInputHandle = path.component.onInput
-            if (typeof onInputHandle === 'function') {
-              onInputHandle.call(path.component, event, range, ts)
-            }
+            if (!event.data) times(1, del, editor, { event, range, ts, force: true })
           }
         })
       })
     } else {
       // 其他键盘事件处理
+      if (inputState.isComposing) return
       const quickEventKey = event.key ? `${event.type}${event.key}` : null
       const nornaleventKey = `${event.type}`
       editor.selection.ranges.forEach((range) => {
         const path = range.container
-        const quickEventHandle = quickEventKey? path.component[`on${titleCase(quickEventKey)}`]: null // 支持简写handle
+        const quickEventHandle = quickEventKey ? path.component[`on${titleCase(quickEventKey)}`] : null // 支持简写handle
         const nornaleventHandle = path.component[`on${titleCase(nornaleventKey)}`]
         if (typeof quickEventHandle === 'function') {
-          quickEventHandle.call(path.component, {event, range,ts})
+          quickEventHandle.call(path.component, { event, range, ts })
         }
 
         if (typeof nornaleventHandle === 'function') {
-          nornaleventHandle.call(path.component, {event, range,ts})
+          nornaleventHandle.call(path.component, { event, range, ts })
         }
       })
       editor.emit(quickEventKey, event)
@@ -135,13 +132,13 @@ function initDispatcher(editor) {
   })
 }
 
-function titleCase(str) {
+function titleCase (str) {
   return str.replace(/( |^)[a-z]/g, (L) => L.toUpperCase())
 }
-function isInput(event) {
+function isInput (event) {
   return event.type.startsWith('composition') || event.type === 'input'
 }
-function input(e, callback) {
+function input (e, callback) {
   const { data, type } = e
   if (type === 'input') {
     let inputData = data === ' ' ? '\u00A0' : data || ''

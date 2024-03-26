@@ -78,7 +78,7 @@ export default class ControlPanel extends Component {
     this.color = `rgba(${R},${G},${B},${A || this.state.A})`
     const [hue] = RGBToHSL(R, G, B)
     const x = 200 - (hue * 5) / 9
-    this.props.paletteRef.current.setPalette(hue, R, G, B)
+    // this.props.paletteRef.current.setPalette(hue, R, G, B)
     this.setState({
       A,
       x2: A * 200 <= 6 ? 6 : A * 200,
