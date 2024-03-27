@@ -60,6 +60,7 @@ function initDispatcher (editor) {
     // 复用未提交的事务 
     else if (!ts.commited) ts.init()
     if (isInput(event)) {
+      console.log(event.type, event.key);
       // 输入处理
       if (event.data === null) return
       input(event, ({ data, prevDataLength, type }) => {
@@ -80,7 +81,8 @@ function initDispatcher (editor) {
       })
     } else {
       // 其他键盘事件处理
-      if (inputState.isComposing) return
+      if (inputState.isComposing || event.key === "Process") return // 阻止在中文输入的时候触发其他键盘事件
+      console.log(event.type, event.key);
       const quickEventKey = event.key ? `${event.type}${event.key}` : null
       const nornaleventKey = `${event.type}`
       editor.selection.ranges.forEach((range) => {
@@ -161,19 +163,18 @@ function input (e, callback) {
     inputState.value = ''
     inputState.isComposing = true
   } else if (type === 'compositionend') {
-    /**
-     * 这里定时器的作用：
-     * 1.解决在chrome中 回车和失焦两个事件，compositionend和input事件的触发先后不一样
-     * 2.改变执行顺序（失焦input事件是微任务，需要在它之后执行） 消除失焦意外插入的bug（腾讯文档和google文档都存在此bug）
-     */
-    setTimeout(() => {
-      callback({
-        data: inputState.value,
-        type: 'compositionend',
-      })
-      inputState.value = ''
-      inputState.isComposing = false
+    callback({
+      data: inputState.value,
+      type: 'compositionend',
     })
     e.target.value = ''
+
+    /**
+     * 这里确保在中文输入法的时候keyup事件不会被触发
+     */
+    setTimeout(() => {
+      inputState.value = ''
+      inputState.isComposing = false
+    }, 200)
   }
 }
