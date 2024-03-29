@@ -1,7 +1,7 @@
 import pluginContext from './pluginContext'
 import emit from 'mitt'
 import Selection from './selection'
-import { usePlugin } from './pluginContext'
+import { initPlugin } from './pluginContext'
 import Formater from './model/formater'
 import History from './history/index'
 import Transaction from './transform/transaction'
@@ -17,25 +17,63 @@ const inputState = {
  * @param {*} ops
  */
 export default function initCore ({ editor, formats, plugins }) {
+  initFormater(editor, formats)
+  initHistory(editor)
+  initPlugin(plugins)
+  initSelection(editor)
+  initIntercept(editor)
+  initDispatcher(editor)
+}
+
+/**
+ * @description 初始事件拦截器
+ * @param {*} editor
+ * @private
+ */
+
+function initIntercept (editor) {
+  Promise.resolve().then(() => {
+    pluginContext.platform.initIntercept(editor)
+  })
+}
+/**
+ * @description 初始化选区
+ * @param {*} editor
+ * @private
+ */
+
+function initSelection (editor) {
+  editor.selection = new Selection(editor)
+}
+
+/**
+ * @description 初始化历史记录
+ * @param {*} editor
+ * @private
+ */
+
+function initHistory (editor) {
+  editor.history = new History({
+    editor,
+  })
+}
+
+/**
+ * @description 初始化格式管理器
+ * @param {*} editor
+ * @private
+ */
+function initFormater (editor, formats) {
   const fmtIns = new Formater()
   fmtIns.register(formats)
   editor.$eventBus = emit()
   fmtIns.inject('editor', editor)
   editor.formater = fmtIns
-  editor.history = new History({
-    editor,
-  })
-  usePlugin(plugins)
-  editor.selection = new Selection(editor)
-  Promise.resolve().then(() => {
-    pluginContext.platform.initIntercept(editor)
-  })
-  initDispatcher(editor)
 }
-
 /**
  * @description 事件拦截到对应的组件
  * @param {*} editor
+ * @private
  */
 function initDispatcher (editor) {
   let ts = null
