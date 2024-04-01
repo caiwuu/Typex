@@ -95,14 +95,14 @@ export default class ControlPanel extends Component {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
     let left = x - (this.hueContainer.current.getBoundingClientRect().left + window.scrollX)
-    left = left >= 200 ? 200 : left <= 0 ? 0 : left
-    const hue = (1 - left / 200) * 360
+    left = left >= 200 ? 200 : left <= 6 ? 6 : left
+    const hue = (1 - (left - 6) / 194) * 360
     const [R, G, B] = coordinatesToRgb(
       hue,
       this.props.paletteRef.current.state.px,
       this.props.paletteRef.current.state.py
     )
-    this.update({ x: left <= 6 ? 6 : left, R, G, B })
+    this.update({ x: left, R, G, B })
     this.props.paletteRef.current.setPalette(hue)
   }, 32)
 
