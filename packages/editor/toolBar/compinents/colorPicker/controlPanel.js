@@ -18,7 +18,7 @@ function pauseEvent (e) {
 export default class ControlPanel extends Component {
   constructor(props) {
     super(props)
-    this.color = this.props.color
+    this.colorBlockStyle = `background:${this.props.color};`
     this.state = { x: 200, x2: 200, R: 255, G: 0, B: 0, A: 1 }
     this.colorBlock = createRef()
     this.hueContainer = createRef()
@@ -48,7 +48,7 @@ export default class ControlPanel extends Component {
         </div>
         <div class='right'>
           <div class='color-block-bg'></div>
-          <div style={`background:${this.color};`} ref={this.colorBlock} class='color-block'></div>
+          <div style={this.colorBlockStyle} ref={this.colorBlock} class='color-block'></div>
         </div>
       </div>
     )
@@ -60,15 +60,15 @@ export default class ControlPanel extends Component {
       let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
       const [hue] = RGBToHSL(R, G, B)
       A = isDef(A) ? A : 1
-      this.props.paletteRef.current.setPalette(hue, R, G, B)
+      // this.props.paletteRef.current.setPalette(hue, R, G, B)
       const x = 200 - (hue * 5) / 9
       this.setState({
-        A,
-        x2: A * 200 <= 6 ? 6 : A * 200,
         x: x <= 6 ? 6 : x,
+        x2: A * 200 <= 6 ? 6 : A * 200,
         R,
         G,
         B,
+        A,
       })
     })
   }
@@ -90,7 +90,19 @@ export default class ControlPanel extends Component {
     this.props.onChange?.({ R, G, B, A: A || this.state.A })
   }
 
-  // hue
+  /**
+   * @description 色块颜色更新
+   * @memberof ControlPanel
+   * @private
+   */
+  updateColorBlockStyle = (R, G, B, A) => {
+    this.colorBlockStyle = `background:rgba(${R},${G},${B},${A});`
+  }
+  /**
+  * @description 色相滑块块滑动事件
+  * @memberof ControlPanel
+  * @private
+  */
   handleHueChange = throttle((e) => {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
@@ -102,11 +114,17 @@ export default class ControlPanel extends Component {
       this.props.paletteRef.current.state.px,
       this.props.paletteRef.current.state.py
     )
-    this.update({ x: left, R, G, B })
-    this.props.paletteRef.current.setPalette(hue)
+    this.updateColorBlockStyle(R, G, B, this.state.A)
+    console.log(R, G, B, this.state.A);
+    this.setState({ x: left, R, G, B })
+    // this.props.paletteRef.current.setPalette(hue)
   }, 32)
 
-  // Transparency
+  /**
+   * @description 透明度滑块块滑动事件
+   * @memberof ControlPanel
+   * @private
+   */
   handleTransparencyChange = throttle((e) => {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
