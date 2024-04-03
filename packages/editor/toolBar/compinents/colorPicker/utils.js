@@ -41,6 +41,8 @@ export function rgbToCoordinates (H, R, G, B) {
   return [round(x, 2), round(y, 2)]
 }
 export function coordinatesToRgb (H, px, py) {
+  px = px < 0 ? 0 : px > 1 ? 1 : px
+  py = py < 0 ? 0 : py > 1 ? 1 : py
   const [PR, PG, PB] = HSLToRGB(H, 100, 50)
   const R = ((255 - PR) * px + PR) * py
   const G = ((255 - PG) * px + PG) * py

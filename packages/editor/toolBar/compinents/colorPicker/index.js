@@ -1,7 +1,7 @@
 import Palette from './palette'
 import ControlPanel from './controlPanel'
 import { createRef, Component } from '@typex/core'
-import { rgbaToHex, hexToRgba } from './utils'
+import { rgbaToHex, hexToRgba, RGBToHSL } from './utils'
 
 const colors = [
   [
@@ -41,7 +41,7 @@ export default class ColorPicker extends Component {
 
   render () {
     return (
-      <div class="color-picker-block">
+      <div class="color-picker-container">
         <div class="colors-block">
           {colors.map(row => <div style="display:flex;flex-wrap: wrap;justify-content:space-between;box-sizing:border-box;margin:4px 0">
             {row.map(ele => {
@@ -67,10 +67,14 @@ export default class ColorPicker extends Component {
     this.setState({
       hexColor: ele
     })
-    // const [R, G, B, A] = hexToRgba(ele)
-    // this.controlPanelRef.current.update({ R, G, B, A })
+    const [R, G, B, A] = hexToRgba(ele)
+    const [H] = RGBToHSL(R, G, B)
+    this.update(H, R, G, B, A)
   }
-
+  update = (H, R, G, B, A) => {
+    this.controlPanelRef.current.update(H, R, G, B, A)
+    this.paletteRef.current.update(H, R, G, B)
+  }
   isSelected = (hc) => {
     return this.state.hexColor === hc
   }
@@ -87,6 +91,6 @@ export default class ColorPicker extends Component {
   }
 
   onCreated () {
-    console.log('-==-');
+    console.log('-=onCreated=-');
   }
 }

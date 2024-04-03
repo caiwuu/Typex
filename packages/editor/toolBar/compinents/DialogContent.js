@@ -4,7 +4,7 @@ import ColorPicker from './colorPicker'
 const comMap = {
   fontColor: (h, self) => (
     <div id="colorPicker">
-      <ColorPicker color='red'></ColorPicker>
+      <ColorPicker color='#666666'></ColorPicker>
     </div>
   )
 }

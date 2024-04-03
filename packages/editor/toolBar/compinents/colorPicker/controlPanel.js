@@ -19,7 +19,7 @@ export default class ControlPanel extends Component {
   constructor(props) {
     super(props)
     this.colorBlockStyle = `background:${this.props.color};`
-    this.state = { x: 200, x2: 200, R: 255, G: 0, B: 0, A: 1 }
+    this.state = { x: 200, x2: 200, H: 0, R: 255, G: 0, B: 0, A: 1 }
     this.colorBlock = createRef()
     this.hueContainer = createRef()
     this.transparencyContainer = createRef()
@@ -58,42 +58,39 @@ export default class ControlPanel extends Component {
     console.log('onMountedonMounted');
     this.$nextTick(() => {
       let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
-      const [hue] = RGBToHSL(R, G, B)
-      A = isDef(A) ? A : 1
-      // this.props.paletteRef.current.setPalette(hue, R, G, B)
-      const x = 200 - (hue * 5) / 9
-      this.setState({
-        x: x <= 6 ? 6 : x,
-        x2: A * 200 <= 6 ? 6 : A * 200,
-        R,
-        G,
-        B,
-        A,
-      })
+      const [H] = RGBToHSL(R, G, B)
+      this.update(H, R, G, B, A)
+      this.props.paletteRef.current.update(H, R, G, B)
     })
   }
 
-  update = (state) => {
-    const { R, G, B, A } = state
-    this.color = `rgba(${R},${G},${B},${A || this.state.A})`
-    const [hue] = RGBToHSL(R, G, B)
-    const x = 200 - (hue * 5) / 9
-    // this.props.paletteRef.current.setPalette(hue, R, G, B)
+  /**
+   * @description 更新
+   * @param {*} H
+   * @param {*} R
+   * @param {*} G
+   * @param {*} B
+   * @param {*} A
+   * @memberof ControlPanel
+   */
+  update = (H, R, G, B, A) => {
+    A = isDef(A) ? A : this.state.A
+    this.updateColorBlockStyle(R, G, B, A)
+    const x = 194 - (H * 5) / 9
     this.setState({
-      A,
-      x2: A * 200 <= 6 ? 6 : A * 200,
-      x: x <= 6 ? 6 : x,
+      x: x,
+      x2: A * 194,
+      H,
       R,
       G,
       B,
+      A,
     })
-    this.props.onChange?.({ R, G, B, A: A || this.state.A })
   }
 
   /**
    * @description 色块颜色更新
    * @memberof ControlPanel
-   * @private
    */
   updateColorBlockStyle = (R, G, B, A) => {
     this.colorBlockStyle = `background:rgba(${R},${G},${B},${A});`
@@ -101,29 +98,26 @@ export default class ControlPanel extends Component {
   /**
   * @description 色相滑块块滑动事件
   * @memberof ControlPanel
-  * @private
   */
   handleHueChange = throttle((e) => {
     pauseEvent(e)
     const x = typeof e.pageX === 'number' ? e.pageX : e.touches[0].pageX
     let left = x - (this.hueContainer.current.getBoundingClientRect().left + window.scrollX)
-    left = left >= 200 ? 200 : left <= 6 ? 6 : left
-    const hue = (1 - (left - 6) / 194) * 360
+    left = left >= 194 ? 194 : left <= 0 ? 0 : left
+    const H = (1 - left / 194) * 360
     const [R, G, B] = coordinatesToRgb(
-      hue,
+      H,
       this.props.paletteRef.current.state.px,
       this.props.paletteRef.current.state.py
     )
-    this.updateColorBlockStyle(R, G, B, this.state.A)
-    console.log(R, G, B, this.state.A);
-    this.setState({ x: left, R, G, B })
-    // this.props.paletteRef.current.setPalette(hue)
+    const A = this.state.A
+    this.update(H, R, G, B, A)
+    this.props.paletteRef.current.update(H, R, G, B, A)
   }, 32)
 
   /**
    * @description 透明度滑块块滑动事件
    * @memberof ControlPanel
-   * @private
    */
   handleTransparencyChange = throttle((e) => {
     pauseEvent(e)
@@ -131,8 +125,8 @@ export default class ControlPanel extends Component {
     let left = x - (this.transparencyContainer.current.getBoundingClientRect().left + window.scrollX)
     left = left >= 200 ? 200 : left <= 0 ? 0 : left
     const A = left / 200
-    const { R, G, B } = this.state
-    this.update({ x2: left <= 6 ? 6 : left, A, R, G, B })
+    const { R, G, B, H } = this.state
+    this.update(H, R, G, B, A)
   }, 32)
 
   handleHueMouseDown = (e) => {
