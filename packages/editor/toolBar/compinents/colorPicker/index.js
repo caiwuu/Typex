@@ -31,7 +31,11 @@ const colors = [
 ];
 export default class ColorPicker extends Component {
   state = {
-    hexColor: ''
+    hexColor: '',
+    R: 0,
+    G: 0,
+    B: 0,
+    A: 0
   }
   constructor(props) {
     super(props)
@@ -59,6 +63,7 @@ export default class ColorPicker extends Component {
           <Palette ref={this.paletteRef} controlPanel={this.controlPanelRef} ></Palette>
           <ControlPanel onChange={this.onChange} ref={this.controlPanelRef} color={this.props.color} paletteRef={this.paletteRef}></ControlPanel>
         </div>
+        <div onClick={this.submit} class="btn submit">确定</div>
       </div>
     )
   }
@@ -79,13 +84,16 @@ export default class ColorPicker extends Component {
     return this.state.hexColor === hc
   }
 
-  onChange = ({ R, G, B, A }) => {
+  onChange = (R, G, B, A) => {
     this.setState({
-      hexColor: rgbaToHex([R, G, B])
+      hexColor: rgbaToHex([R, G, B]),
+      R, G, B, A
     })
-    console.log(rgbaToHex([R, G, B]));
   }
-
+  submit = () => {
+    const { R, G, B, A } = this.state
+    this.props.onOk({ R, G, B, A })
+  }
   onMounted () {
     console.log('ColorPicker')
   }

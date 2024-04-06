@@ -1,9 +1,11 @@
 import { Component, createRef } from '@typex/core'
 import './iconfont'
 import { Dialog, Tooltip, DialogContent } from './compinents'
+
 // 工具栏
 export default class ToolBar extends Component {
-  toolBarItems = []
+  toolBarItemInses = []
+
   constructor(props) {
     super(props)
     this.props.editor.on('selectionchange', (ops) => {
@@ -19,9 +21,11 @@ export default class ToolBar extends Component {
       this.notice(commonKeyValue)
     })
   }
+
   notice (commonKeyValue) {
-    this.toolBarItems.forEach((item) => item.onNotice(commonKeyValue))
+    this.toolBarItemInses.forEach((item) => item.onNotice(commonKeyValue))
   }
+
   render () {
     const { tools } = this.props
     return (
@@ -29,15 +33,16 @@ export default class ToolBar extends Component {
         {tools.map((ele) => (
           <Tooltip width='64' content={ele.tooltip}>
             <ToolBarItem
-              {...{ ...ele, onCommand: this.onCommand, toolBarItems: this.toolBarItems }}
+              {...{ ...ele, onCommand: this.onCommand, toolBarItemInses: this.toolBarItemInses }}
             ></ToolBarItem>
           </Tooltip>
         ))}
       </div>
     )
   }
-  onCommand = (commandName, ...args) => {
-    this.props.onCommand(commandName, ...args)
+
+  onCommand = (name, ...args) => {
+    this.props.onCommand(name, ...args)
   }
 }
 // // 工具栏-元素
@@ -45,17 +50,19 @@ class ToolBarItem extends Component {
   constructor(props) {
     super(props)
     this.state = { active: false }
-    this.props.toolBarItems.push(this)
+    this.props.toolBarItemInses.push(this)
     this.dialogRef = createRef()
     this.barItemRef = createRef()
   }
+
   onNotice (commonKeyValue) {
-    if (commonKeyValue[this.props.commandName] !== this.state.active) {
+    if (commonKeyValue[this.props.name] !== this.state.active) {
       this.setState({
-        active: commonKeyValue[this.props.commandName],
+        active: commonKeyValue[this.props.name],
       })
     }
   }
+
   render () {
     return (
       <span
@@ -67,22 +74,29 @@ class ToolBarItem extends Component {
           <use xlink:href={this.props.icon}></use>
         </svg>
         {
-          this.props.options
+          this.props.showDialog
             ?
             <Dialog ref={this.dialogRef} barItemRef={this.barItemRef}>
-              <DialogContent name={this.props.commandName} options={this.props.options}></DialogContent>
+              <DialogContent onOk={this.onOk} name={this.props.name}></DialogContent>
             </Dialog>
             : ''
         }
       </span>
     )
   }
-  emitComand = () => {
-    this.props.editor.command(this.props.commandName)
+
+  onOk = (val) => {
+    this.dialogRef.current.toggle()
+    this.emitComand(val)
   }
-  clickHandle = (e) => {
+
+  emitComand = (val) => {
+    this.props.editor.command(this.props.name, val)
+  }
+
+  clickHandle = () => {
     if (this.dialogRef.current) {
-      this.dialogRef.current.toggle(e)
+      this.dialogRef.current.toggle()
     } else {
       this.emitComand()
     }

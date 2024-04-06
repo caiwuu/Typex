@@ -94,6 +94,7 @@ export default class ControlPanel extends Component {
    */
   updateColorBlockStyle = (R, G, B, A) => {
     this.colorBlockStyle = `background:rgba(${R},${G},${B},${A});`
+    this.props.onChange(R, G, B, A)
   }
   /**
   * @description 色相滑块块滑动事件

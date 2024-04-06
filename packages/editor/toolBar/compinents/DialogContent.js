@@ -1,10 +1,10 @@
-import { Component, createRef } from '@typex/core'
+import { Component } from '@typex/core'
 import ColorPicker from './colorPicker'
 
 const comMap = {
   fontColor: (h, self) => (
     <div id="colorPicker">
-      <ColorPicker color='#666666'></ColorPicker>
+      <ColorPicker onOk={self.props.onOk} color='#666666'></ColorPicker>
     </div>
   )
 }
@@ -13,7 +13,7 @@ export class DialogContent extends Component {
     super(props)
   }
   render (h) {
-    return comMap[this.props.options.componentName]?.(h, this) || <span>404</span>
+    return comMap[this.props.name]?.(h, this) || <span>404</span>
   }
 }
 
