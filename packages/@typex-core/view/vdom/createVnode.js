@@ -2,16 +2,16 @@ import { isPrimitive, isUndef, styleToObj, uuid, mergeObj, isClass, isFunction }
 import { vnodeType } from '../../constDefine'
 const BUILTINPROPSKEY = ['ref', 'key', 'ns'] //不包含在props中的属性
 const INHERITPROPSKEY = ['ns'] // 需要继承的属性
-const { VFUNCTION, VCOMPONENT,VTEXT, VDOM} =  vnodeType
+const { VFUNCTION, VCOMPONENT, VTEXT, VDOM } = vnodeType
 /**
  * @description 创建虚拟dom
  * @export
- * @param {*} type
+ * @param {*} tag
  * @param {*} [config={}]
  * @param {*} [children=[]]
  * @returns {*}
  */
-export default function createVnode(type, config, children = []) {
+export default function createVnode (tag, config, children = []) {
   config = config || {}
   const props = {}
   const builtinProps = {}
@@ -27,18 +27,18 @@ export default function createVnode(type, config, children = []) {
       }
     }
   }
-  return Element(type, builtinProps, props, children.flat())
+  return Element(tag, builtinProps, props, children.flat())
 }
 
 const _genChildren = (children, inherit) => {
   return children
     // 排除一些内容为''的子元素
-    .filter((ele) => ele!=='')
+    .filter((ele) => ele !== '')
     .map((ele) => {
       if (isPrimitive(ele) || isUndef(ele)) {
         return {
           _uuid: uuid(),
-          type: 'text',
+          tag: 'text',
           vnodeType: VTEXT,
           children: ele,
         }
@@ -49,20 +49,20 @@ const _genChildren = (children, inherit) => {
     })
 }
 
-function Element(type, builtinProps, props, children) {
+function Element (tag, builtinProps, props, children) {
   let element
-  if (type === 'text') {
+  if (tag === 'text') {
     element = {
       _uuid: uuid(),
       vnodeType: VTEXT,
-      type: 'text',
+      tag: 'text',
       children: children.join(''),
     }
   } else {
     element = {
       _uuid: uuid(),
-      vnodeType: isClass(type) ? VCOMPONENT : isFunction(type) ? VFUNCTION : VDOM,
-      type,
+      vnodeType: isClass(tag) ? VCOMPONENT : isFunction(tag) ? VFUNCTION : VDOM,
+      tag,
       ...builtinProps,
       props,
     }

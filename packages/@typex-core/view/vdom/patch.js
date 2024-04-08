@@ -26,7 +26,7 @@ const { VFUNCTION, VCOMPONENT, VTEXT } = vnodeType
  * @returns {*}
  */
 function sameVnode (vnode, oldVnode) {
-  return vnode?.key === oldVnode?.key && vnode?.type === oldVnode?.type
+  return vnode?.key === oldVnode?.key && vnode?.tag === oldVnode?.tag
 }
 
 /**
@@ -208,7 +208,7 @@ function updateChildren (parentElm, newCh, oldCh) {
         execHook(newStartVnode, 'onMounted')
       } else {
         elmToMove = oldCh[idxInOld]
-        if (elmToMove.tagName !== newStartVnode.tagName) {
+        if (elmToMove.tag !== newStartVnode.tag) {
           pluginContext.platform.insertBefore(
             parentElm,
             pluginContext.platform.createElm(newStartVnode),
@@ -260,7 +260,7 @@ function patchVnode (vnode, oldVnode) {
   if (vnode.vnodeType === VFUNCTION) {
     // 函数组件
     const oldVdom = getVdomByVnode(oldVnode)
-    const newVdom = vnode.type(h, vnode.props)
+    const newVdom = vnode.tag(h, vnode.props)
     setVdomOrIns(newVdom, vnode)
     return patchVnode(newVdom, oldVdom)
   } else if (vnode.vnodeType === VCOMPONENT) {

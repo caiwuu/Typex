@@ -10,9 +10,9 @@ import coreContext from '../../coreContext'
  * @return {*}
  */
 export default function updateProps (vnode, oldVnode) {
-  if (typeof vnode.type === 'function') return
+  if (typeof vnode.tag === 'function') return
   const elm = coreContext.core.getVdomOrElm(vnode)
-  if (vnode.type === 'text') {
+  if (vnode.tag === 'text') {
     if (vnode.children !== oldVnode.children) {
       elm.data = vnode.children
     }

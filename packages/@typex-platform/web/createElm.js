@@ -9,14 +9,14 @@ export default function createElm (vnode) {
   } } = coreContext.core
   let elm
   if (vnode.vnodeType === VFUNCTION) {
-    const vdom = vnode.type(createVnode, vnode.props)
+    const vdom = vnode.tag(createVnode, vnode.props)
     elm = createElm(vdom)
     if (vnode.ref) vnode.ref.current = elm
     setVdomOrIns(vdom, vnode)
     setVdomOrElm(elm, vdom)
     updateProps(vdom)
   } else if (vnode.vnodeType === VCOMPONENT) {
-    const ins = new vnode.type(vnode.props)
+    const ins = new vnode.tag(vnode.props)
     // 给ref赋值
     if (vnode.ref) vnode.ref.current = ins
     // 执行 onCreated 钩子
@@ -39,8 +39,8 @@ export default function createElm (vnode) {
     return elm
   } else {
     elm = vnode.ns
-      ? document.createElementNS(vnode.ns, vnode.type)
-      : document.createElement(vnode.type)
+      ? document.createElementNS(vnode.ns, vnode.tag)
+      : document.createElement(vnode.tag)
     if (vnode.ref) vnode.ref.current = elm
     setVdomOrElm(elm, vnode)
     updateProps(vnode)

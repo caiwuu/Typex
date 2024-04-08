@@ -20,6 +20,13 @@ const toolBarOptions = [
         tooltip: '标题',
         name: 'header',
         icon: '#icon-header',
+        showDialog: true,
+        commandHandle: editor => {
+            editor.$path.children[0].node.formats.header = 2
+            editor.$path.component.update().then(() => {
+                console.log(1122);
+            })
+        }
     },
     {
         tooltip: '字体大小',
@@ -100,7 +107,7 @@ const toolBarOptions = [
         tooltip: '清除样式',
         name: 'clearStyle',
         icon: '#icon-clear-style',
-        commandHandle: (editor) => setFormat(editor, path => (path.node.formats = {})),
+        commandHandle: (editor) => setFormat(editor, path => (path.node.formats = {}))
     },
 ]
 export default toolBarOptions
@@ -109,7 +116,6 @@ export default toolBarOptions
 
 function setFormat (editor, callback) {
     editor.selection.ranges.forEach((range) => {
-        const path = range.container
-        path.component.setFormat(range, callback)
+        editor.$path.component.setFormat(range, callback)
     })
 }
