@@ -10,6 +10,7 @@ import coreContext from '../../coreContext'
  * @return {*}
  */
 export default function updateProps (vnode, oldVnode) {
+  console.log(oldVnode);
   if (typeof vnode.tag === 'function') return
   const elm = coreContext.core.getVdomOrElm(vnode)
   if (vnode.tag === 'text') {

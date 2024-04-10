@@ -151,13 +151,13 @@ function updateChildren (parentElm, newCh, oldCh) {
   let elmToMove
   let before
   while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-    if (oldStartVnode == null) {
+    if (oldStartVnode === null) {
       oldStartVnode = oldCh[++oldStartIdx] // Vnode might have been moved left
-    } else if (oldEndVnode == null) {
+    } else if (oldEndVnode === null) {
       oldEndVnode = oldCh[--oldEndIdx]
-    } else if (newStartVnode == null) {
+    } else if (newStartVnode === null) {
       newStartVnode = newCh[++newStartIdx]
-    } else if (newEndVnode == null) {
+    } else if (newEndVnode === null) {
       newEndVnode = newCh[--newEndIdx]
       // 新头=旧头
     } else if (sameVnode(newStartVnode, oldStartVnode)) {
@@ -207,6 +207,7 @@ function updateChildren (parentElm, newCh, oldCh) {
         )
         execHook(newStartVnode, 'onMounted')
       } else {
+        console.log(111);
         elmToMove = oldCh[idxInOld]
         if (elmToMove.tag !== newStartVnode.tag) {
           pluginContext.platform.insertBefore(
@@ -217,7 +218,7 @@ function updateChildren (parentElm, newCh, oldCh) {
           execHook(newStartVnode, 'onMounted')
         } else {
           patchVnode(newStartVnode, elmToMove)
-          oldCh[idxInOld] = undefined
+          oldCh[idxInOld] = null
           pluginContext.platform.insertBefore(
             parentElm,
             getElmByVnode(elmToMove),
@@ -230,7 +231,7 @@ function updateChildren (parentElm, newCh, oldCh) {
   }
 
   if (newStartIdx <= newEndIdx) {
-    before = newCh[newEndIdx + 1] == null ? null : getVdomOrElm(newCh[newEndIdx + 1])
+    before = newCh[newEndIdx + 1] === null ? null : getVdomOrElm(newCh[newEndIdx + 1])
     addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx)
   }
   if (oldStartIdx <= oldEndIdx) {
@@ -282,9 +283,6 @@ function patchVnode (vnode, oldVnode) {
     // 重新映射elm和vn
     const elm = getVdomOrElm(oldVnode)
     setVdomOrElm(elm, vnode)
-    // 如果有ins则重新映射ins
-    // const ins = getVnodeOrIns(oldVnode)
-    // ins && setVnodeOrIns(vnode, ins)
     const oldCh = oldVnode.children
     const ch = vnode.children
     // ins && execHook(ins, 'onBeforeupdate')
