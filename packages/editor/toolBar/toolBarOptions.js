@@ -22,7 +22,7 @@ const toolBarOptions = [
         icon: '#icon-header',
         showDialog: true,
         commandHandle: editor => {
-            editor.$path.children[0].node.formats.header = 2
+            editor.$path.children[1].node.formats.header = 1
             editor.$path.component.update().then(() => {
                 console.log(1122);
             })

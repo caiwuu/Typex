@@ -10,12 +10,12 @@ const vnodeInsMap = new WeakMap() // 记录组件实例和组件虚拟节点的�
 const vdomInsMap = new WeakMap() // 记录组件实例和虚拟dom的映射
 const vdomPathMap = new WeakMap() // 记录虚拟dom和Path的映射
 import { vnodeType } from "./constDefine"
-const { VFUNCTION, VCOMPONENT, VTEXT} =  vnodeType
+const { VFUNCTION, VCOMPONENT, VTEXT } = vnodeType
 
-function getVdomOrIns(key) {
+function getVdomOrIns (key) {
   return vdomInsMap.get(key)
 }
-function getVdomOrPath(key) {
+function getVdomOrPath (key) {
   // 通过vn找path
   if (key.vnodeType) {
     const res = vdomPathMap.get(key)
@@ -37,10 +37,10 @@ function getVdomOrPath(key) {
     return vdom
   }
 }
-function getVnodeOrIns(key) {
+function getVnodeOrIns (key) {
   return vnodeInsMap.get(key)
 }
-function getVdomOrElm(key) {
+function getVdomOrElm (key) {
   if (key.vnodeType === VFUNCTION) {
     return vdomElmMap.get(vdomInsMap.get(key))
   }
@@ -49,16 +49,16 @@ function getVdomOrElm(key) {
   }
   return vdomElmMap.get(key)
 }
-function setVdomOrElm(vn, elm) {
+function setVdomOrElm (vn, elm) {
   vdomElmMap.set(elm, vn).set(vn, elm)
 }
-function setVnodeOrIns(vn, ins) {
+function setVnodeOrIns (vn, ins) {
   vnodeInsMap.set(ins, vn).set(vn, ins)
 }
-function setVdomOrPath(vn, path) {
+function setVdomOrPath (vn, path) {
   vdomPathMap.set(vn, path).set(path, vn)
 }
-function setVdomOrIns(vn, ins) {
+function setVdomOrIns (vn, ins) {
   return vdomInsMap.set(ins, vn).set(vn, ins)
 }
 export {

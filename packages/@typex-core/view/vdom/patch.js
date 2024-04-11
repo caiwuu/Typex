@@ -231,7 +231,7 @@ function updateChildren (parentElm, newCh, oldCh) {
   }
 
   if (newStartIdx <= newEndIdx) {
-    before = newCh[newEndIdx + 1] === null ? null : getVdomOrElm(newCh[newEndIdx + 1])
+    before = isUndef(newCh[newEndIdx + 1]) ? null : getVdomOrElm(newCh[newEndIdx + 1])
     addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx)
   }
   if (oldStartIdx <= oldEndIdx) {
@@ -263,7 +263,7 @@ function patchVnode (vnode, oldVnode) {
     const oldVdom = getVdomByVnode(oldVnode)
     const newVdom = vnode.tag(h, vnode.props)
     setVdomOrIns(newVdom, vnode)
-    return patchVnode(newVdom, oldVdom)
+    return patch(newVdom, oldVdom)
   } else if (vnode.vnodeType === VCOMPONENT) {
     // 常规组件
     const oldVdom = getVdomByVnode(oldVnode)
@@ -273,7 +273,7 @@ function patchVnode (vnode, oldVnode) {
     const newVdom = ins._generateVdom_(h)
     setVdomOrIns(ins, newVdom)
     setVnodeOrIns(ins, vnode)
-    return patchVnode(newVdom, oldVdom)
+    return patch(newVdom, oldVdom)
   } else if (vnode.vnodeType === VTEXT) {
     const elm = getVdomOrElm(oldVnode)
     setVdomOrElm(elm, vnode)
