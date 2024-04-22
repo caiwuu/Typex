@@ -19,7 +19,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  get collapsed() {
+  get collapsed () {
     return this.ranges.every((range) => range.collapsed)
   }
 
@@ -29,7 +29,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  get rangeCount() {
+  get rangeCount () {
     return this.ranges.length
   }
 
@@ -39,7 +39,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  get rangePoints() {
+  get rangePoints () {
     const points = []
     this.ranges.forEach((range) => {
       points.push(
@@ -59,7 +59,7 @@ export default class Selection {
     })
     return points
   }
-  get rangesSnapshot() {
+  get rangesSnapshot () {
     return this.ranges.map((range) => range.snapshot)
   }
 
@@ -68,7 +68,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  clearRanges() {
+  clearRanges () {
     while (this.ranges.length) {
       this.ranges.pop().caret.remove()
     }
@@ -81,7 +81,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  createRange(ops) {
+  createRange (ops) {
     return new Range(ops, this.editor)
   }
 
@@ -92,7 +92,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  createRangeFromNativeRange(nativeRange) {
+  createRangeFromNativeRange (nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset, collapsed } = nativeRange
     const { focusNode, focusOffset } = this.nativeSelection
     let d = 0
@@ -118,7 +118,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  addRange(range) {
+  addRange (range) {
     this.ranges.push(range)
   }
 
@@ -129,7 +129,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  collapse(parentNode, offset) {
+  collapse (parentNode, offset) {
     this.nativeSelection.collapse(parentNode, offset)
     this._resetRangesFromNative()
   }
@@ -142,10 +142,10 @@ export default class Selection {
    * @ignore
    * @instance
    */
-  amendPathOffset(container, offset) {
+  amendPathOffset (container, offset) {
     const path = this.editor.queryPath(container)
     if (path) {
-      if (path.isLeaf && path.pathType !== 3) {
+      if (path.isLeaf && path.dataType !== 'string') {
         return this.amendPathOffset(path.elm.parentNode, path.index + 1)
       }
       return { path, offset }
@@ -162,7 +162,7 @@ export default class Selection {
    * @ignore
    * @instance
    */
-  amendRange(nativeRange) {
+  amendRange (nativeRange) {
     const { startContainer, endContainer, startOffset, endOffset } = nativeRange
     const startPathOffset = this.amendPathOffset(startContainer, startOffset)
     const endPathOffset = this.amendPathOffset(endContainer, endOffset)
@@ -178,7 +178,7 @@ export default class Selection {
    * @private
    * @instance
    */
-  _resetRangesFromNative() {
+  _resetRangesFromNative () {
     this.clearRanges()
     const count = this.nativeSelection.rangeCount
     for (let i = 0; i < count; i++) {
@@ -194,7 +194,7 @@ export default class Selection {
    * @ignore
    * @instance
    */
-  _extendRangesFromNative() {
+  _extendRangesFromNative () {
     const count = this.nativeSelection.rangeCount
     if (count > 0) {
       const nativeRange = this.amendRange(this.nativeSelection.getRangeAt(count - 1))
@@ -221,7 +221,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  getRangeAt(index = 0) {
+  getRangeAt (index = 0) {
     return this.ranges[index]
   }
 
@@ -230,7 +230,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  removeAllRanges() {
+  removeAllRanges () {
     this.nativeSelection.removeAllRanges()
     this.clearRanges()
   }
@@ -242,7 +242,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  createNativeRange({ startContainer, startOffset, endContainer, endOffset }) {
+  createNativeRange ({ startContainer, startOffset, endContainer, endOffset }) {
     const range = document.createRange()
     range.setStart(startContainer, startOffset)
     range.setEnd(endContainer, endOffset)
@@ -258,7 +258,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  updatePoints(container, position, distance, newContainer) {
+  updatePoints (container, position, distance, newContainer) {
     this.rangePoints.forEach((point) => {
       if (point.container === container && position <= point.offset) {
         point.range[point.pointName + 'Offset'] += distance
@@ -273,7 +273,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  updateRangesFromNative(multiple) {
+  updateRangesFromNative (multiple) {
     // 选区的创建结果需要在宏任务中获取.
     setTimeout(() => {
       if (multiple) {
@@ -293,7 +293,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  updateCaret(drawCaret = true) {
+  updateCaret (drawCaret = true) {
     this.ranges.forEach((range) => range.updateCaret(drawCaret))
     this.rangeCount > 1 && this._distinct()
     drawCaret && this.drawRangeBg()
@@ -308,7 +308,7 @@ export default class Selection {
    * @instance
    * @ignore
    */
-  _isCoverd(rectA, rectB) {
+  _isCoverd (rectA, rectB) {
     return rectA.y < rectB.y
       ? rectA.y + rectA.height >= rectB.y + rectB.height
       : rectB.y + rectB.height >= rectA.y + rectA.height
@@ -320,7 +320,7 @@ export default class Selection {
    * @ignore
    * @instance
    */
-  _distinct() {
+  _distinct () {
     let tempObj = {}
     let length = this.ranges.length
     if (length < 2) return
@@ -359,7 +359,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  drawRangeBg(range) {
+  drawRangeBg (range) {
     const currRange = range || this.getRangeAt(0)
     if (!currRange) return
     const { startContainer, startOffset, endContainer, endOffset } = currRange
@@ -378,7 +378,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  getSeletedPath() {
+  getSeletedPath () {
     if (this.collapsed) return []
     const range = this.ranges[0]
     let start,
@@ -433,7 +433,7 @@ export default class Selection {
       },
     }
   }
-  recoverRangesFromSnapshot(rangesSnapshot) {
+  recoverRangesFromSnapshot (rangesSnapshot) {
     this.removeAllRanges()
     this.ranges = rangesSnapshot.map((jsonRange) =>
       this.createRange({

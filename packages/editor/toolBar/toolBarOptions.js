@@ -23,7 +23,7 @@ const toolBarOptions = [
         showDialog: true,
         commandHandle: editor => {
             editor.$path.children[1].node.formats.header = 1
-            editor.$path.component.update().then(() => {
+            editor.$path.currentComponent.update().then(() => {
                 console.log(1122);
             })
         }
@@ -116,6 +116,6 @@ export default toolBarOptions
 
 function setFormat (editor, callback) {
     editor.selection.ranges.forEach((range) => {
-        editor.$path.component.setFormat(range, callback)
+        editor.$path.currentComponent.setFormat(range, callback)
     })
 }

@@ -29,7 +29,7 @@ class Editor extends Typex {
     return this
   }
   setToolBar (options) {
-    if (!toolBarOptions || utils.toRawType(toolBarOptions) !== "array") {
+    if (!toolBarOptions || utils.typeOf(toolBarOptions) !== "array") {
       throw new Error('setToolBar 必须提供一个数组类型的参数')
     }
     this.conamndHandles = {}

@@ -12,7 +12,7 @@ export default class Image extends Content {
   state = {
     initProp: null,
   }
-  render() {
+  render () {
     return (
       <div style='display:inline-block'>
         我是image的一部分
@@ -47,30 +47,30 @@ export default class Image extends Content {
     }
     this.update()
   }
-  onAfterUpdate() {
+  onAfterUpdate () {
     this.$editor.selection.updateCaret()
   }
-  onContentDelete(path, range) {
+  onContentDelete (path, range) {
     const { endOffset, collapsed } = range
     if (collapsed) {
       if (endOffset > 0) {
-        const parent = this.$path.parent.component
+        const parent = this.$path.parent.currentComponent
         path.delete()
         parent.update()
         parent.onCaretEnterPath(this.$path.parent, range, false)
       } else {
         const prevSibling = this.getPrevLeafPath(path)
         if (prevSibling) {
-          prevSibling.component.onCaretEnterPath(prevSibling, range, false)
+          prevSibling.currentComponent.onCaretEnterPath(prevSibling, range, false)
         }
       }
     }
   }
-  onCaretEnterPath(path, range, direction) {
+  onCaretEnterPath (path, range, direction) {
     range.set(path, direction === 'left' ? 0 : 1)
     return { path, range }
   }
-  get contentLength() {
+  get contentLength () {
     return 1
   }
 }

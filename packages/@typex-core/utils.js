@@ -1,10 +1,11 @@
 /*
- * @Author: caiwu
- * @Description:
- * @CreateDate:
- * @LastEditor:
- * @LastEditTime: 2022-08-29 15:07:04
- */
+* @Author: caiwu
+* @Description:
+* @CreateDate:
+* @LastEditor:
+* @LastEditTime: 2022-08-29 15:07:04
+*/
+const _toString = Object.prototype.toString
 export function isUndef (v) {
   return v === undefined || v === null
 }
@@ -63,7 +64,6 @@ export function debounce (fn, ms = 0) {
   }
 }
 
-const _toString = Object.prototype.toString
 
 export function toRawType (value) {
   return _toString.call(value).slice(8, -1).toLowerCase()
@@ -156,7 +156,7 @@ export function positionCompare (a, b) {
 }
 
 export function typeOf (data) {
-  return Object.prototype.toString.call(data).slice(8, -1)
+  return Object.prototype.toString.call(data).slice(8, -1).toLowerCase()
 }
 
 export function classCheck (newTarget, baseClass, abstractMethod) {
