@@ -64,11 +64,6 @@ export function debounce (fn, ms = 0) {
   }
 }
 
-
-export function toRawType (value) {
-  return _toString.call(value).slice(8, -1).toLowerCase()
-}
-
 export function setStyle (dom, style) {
   for (const key in style) {
     dom.style[key] = style[key]
