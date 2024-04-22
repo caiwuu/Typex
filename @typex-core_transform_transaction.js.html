@@ -38,12 +38,12 @@ export default class Transaction {
     this.editor = editor
     this.init()
   }
-  
+
   /**
    * @description 初始化开始状态
    * @memberof Transaction
    */
-  init(){
+  init () {
     // 初始状态
     this.startRanges = this.editor.selection.rangesSnapshot
   }
@@ -54,7 +54,7 @@ export default class Transaction {
    * @returns {*}  
    * @memberof Transaction
    */
-  addAndApplyStep(step) {
+  addAndApplyStep (step) {
     this.steps.push(step)
     return step.apply(this.editor)
   }
@@ -64,7 +64,7 @@ export default class Transaction {
    * @param {*} step
    * @memberof Transaction
    */
-  addStep(...step) {
+  addStep (...step) {
     this.steps.push(...step)
   }
 
@@ -73,7 +73,7 @@ export default class Transaction {
    * @returns {*}  
    * @memberof Transaction
    */
-  commit() {
+  commit () {
     if (this.steps.length === 0) return this
     // 结尾状态
     this.endRanges = this.editor.selection.rangesSnapshot
@@ -85,7 +85,7 @@ export default class Transaction {
    * @description 执行事务
    * @memberof Transaction
    */
-  apply() {
+  apply () {
     for (let index = 0; index &lt; this.steps.length; index++) {
       const step = this.steps[index]
       step.apply(this.editor)
@@ -99,7 +99,7 @@ export default class Transaction {
    * @description 回滚事务
    * @memberof Transaction
    */
-  rollback() {
+  rollback () {
     for (let index = this.steps.length; index > 0; index--) {
       const step = this.steps[index - 1]
       step.invert(this.editor)
@@ -110,7 +110,7 @@ export default class Transaction {
   }
 }
 
-export function setFormat(editor, format) {
+export function setFormat (editor, format) {
   const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const commonPath = range.startContainer.queryCommonPath(range.endContainer)
@@ -120,30 +120,30 @@ export function setFormat(editor, format) {
       ts.addAndApplyStep(setFormatStep)
     }
     ts.commit(commonPath)
-    commonPath.component.update()
+    commonPath.currentComponent.update()
   })
 }
-export function deleteText(editor, count) {
+export function deleteText (editor, count) {
   const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const deleteTextStep = new TextDelete(range.container, range.offset, count)
     ts.addAndApplyStep(deleteTextStep)
     ts.commit(range.container.parent)
-    range.container.parent.component.update()
+    range.container.parent.currentComponent.update()
   })
 }
 
-export function insertText(editor, data) {
+export function insertText (editor, data) {
   const ts = new Transaction(editor)
   editor.selection.ranges.forEach((range) => {
     const deleteTextStep = new TextInsert(range.container, range.offset, data)
     ts.addAndApplyStep(deleteTextStep)
     ts.commit(range.container.parent)
-    range.container.parent.component.update()
+    range.container.parent.currentComponent.update()
   })
 }
 
-function getLeafPathInRange(range, editor, ts) {
+function getLeafPathInRange (range, editor, ts) {
   if (range.collapsed) return []
   let start,
     end,

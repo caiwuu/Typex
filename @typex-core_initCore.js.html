@@ -110,7 +110,7 @@ function initDispatcher (editor) {
           const path = range.container
 
           if (type === 'input' || type === 'compositioning') {
-            insertTextStep = path.component.onInsert({ type: 'text', data, range, ts, event })
+            insertTextStep = path.currentComponent.onInsert({ type: 'text', data, range, ts, event })
             ts.addStep(insertTextStep)
           }
 
@@ -127,14 +127,14 @@ function initDispatcher (editor) {
       const nornaleventKey = `${event.type}`
       editor.selection.ranges.forEach((range) => {
         const path = range.container
-        const quickEventHandle = quickEventKey ? path.component[`on${titleCase(quickEventKey)}`] : null // 支持简写handle
-        const nornaleventHandle = path.component[`on${titleCase(nornaleventKey)}`]
+        const quickEventHandle = quickEventKey ? path.currentComponent[`on${titleCase(quickEventKey)}`] : null // 支持简写handle
+        const nornaleventHandle = path.currentComponent[`on${titleCase(nornaleventKey)}`]
         if (typeof quickEventHandle === 'function') {
-          quickEventHandle.call(path.component, { event, range, ts })
+          quickEventHandle.call(path.currentComponent, { event, range, ts })
         }
 
         if (typeof nornaleventHandle === 'function') {
-          nornaleventHandle.call(path.component, { event, range, ts })
+          nornaleventHandle.call(path.currentComponent, { event, range, ts })
         }
       })
       editor.emit(quickEventKey, event)

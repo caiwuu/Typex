@@ -18,13 +18,13 @@ class Step {
    * @returns {*}  
    * @memberof Step
    */
-  apply() {
+  apply () {
     const path = this.editor.queryPath(this.position)
     const res = this.applyAction({
       path,
       offset: this.offset,
     })
-    path.component.update()
+    path.currentComponent.update()
     return res
   }
 
@@ -32,13 +32,13 @@ class Step {
    * @description 执行逆操作
    * @memberof Step
    */
-  invert() {
+  invert () {
     const path = this.editor.queryPath(this.position)
     this.invertAction({
       path,
       offset: this.offset,
     })
-    path.component.update()
+    path.currentComponent.update()
   }
 
   /**
@@ -47,7 +47,7 @@ class Step {
    * @abstract
    * @memberof Step
    */
-  applyAction() {
+  applyAction () {
     throw Error('Step does not implement a required interface "applyAction"')
   }
 
@@ -57,7 +57,7 @@ class Step {
    * @abstract
    * @memberof Step
    */
-  invertAction() {
+  invertAction () {
     throw Error('Step does not implement a required interface "invertAction"')
   }
 }
@@ -72,12 +72,12 @@ export class SplitText extends Step {
   constructor(path, offset) {
     super(path, offset)
   }
-  applyAction(ops) {
+  applyAction (ops) {
     const res = ops.path.split(ops.offset)
     editor.selection.updatePoints(ops.path, ops.offset + 1, -ops.offset, res[1])
     return res
   }
-  invertAction(ops) {
+  invertAction (ops) {
     mergeTextPath([ops.path, ops.path.nextSibling], ops.editor)
   }
 }
@@ -93,12 +93,12 @@ export class SetFormats extends Step {
     super(path, offset)
     this.format = format
   }
-  applyAction(ops) {
+  applyAction (ops) {
     this.startFormats = { ...ops.path.node.formats }
     Object.assign(ops.path.node.formats, this.format)
     this.endFormats = { ...ops.path.node.formats }
   }
-  invertAction(ops) {
+  invertAction (ops) {
     ops.path.node.formats = this.startFormats
   }
 }
@@ -114,12 +114,12 @@ export class TextDelete extends Step {
     super(range)
     this.count = count
   }
-  applyAction({ path, offset }) {
-    this.deleteText = path.textDelete(offset,this.count)
+  applyAction ({ path, offset }) {
+    this.deleteText = path.textDelete(offset, this.count)
     editor.selection.updatePoints(path, offset, -this.count)
   }
-  invertAction({ path, offset }) {
-    path.textInsert(offset - this.count,this.deleteText)
+  invertAction ({ path, offset }) {
+    path.textInsert(offset - this.count, this.deleteText)
     // path.node.data =
     //   path.node.data.slice(0, offset - this.count) +
     //   this.deleteText +
@@ -139,11 +139,11 @@ export class TextInsert extends Step {
     super(range)
     this.data = data
   }
-  applyAction({ path, offset }) {
+  applyAction ({ path, offset }) {
     path.textInsert(offset, this.data)
     this.editor.selection.updatePoints(path, offset, this.data.length)
   }
-  invertAction({ path, offset }) {
+  invertAction ({ path, offset }) {
     path.textDelete(offset + this.data.length, this.data.length)
     this.editor.selection.updatePoints(path, offset + this.data.length, -this.data.length)
   }
