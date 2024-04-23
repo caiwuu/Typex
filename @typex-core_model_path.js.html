@@ -9,6 +9,7 @@ import { computeLen, typeOf, positionCompare, isPrimitive, uuid } from '../utils
  * @class Path
  */
 const currentComponent = Symbol('currentComponent');
+const $editor = Symbol('$editor');
 export class Path {
   /**
    * @description 重建标记 
@@ -104,9 +105,17 @@ export class Path {
    * @memberof Path
    */
   get $editor () {
-    return this._editor || this.parent.$editor
+    return this[$editor] || this.parent.$editor
   }
 
+  /**
+   * @description 设置编辑器对象
+   * @readonly
+   * @memberof Path
+   */
+  set $editor (value) {
+    this[$editor] = value
+  }
   /**
    * @description path所属组件的实例
    * @readonly
