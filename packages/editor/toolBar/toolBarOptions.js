@@ -24,7 +24,6 @@ const toolBarOptions = [
         commandHandle: editor => {
             editor.$path.children[1].node.formats.header = 1
             editor.$path.currentComponent.update().then(() => {
-                console.log(1122);
             })
         }
     },

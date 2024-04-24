@@ -26,12 +26,10 @@ export default class Paragraph extends Block {
     )
   }
   onMounted () {
-    console.log('Paragraph  onMounted');
+    console.log(111);
   }
   onCreated () {
-    console.log('Paragraph  onCreated');
   }
   onUnmounted () {
-    console.log('Paragraph onUnmounted');
   }
 }

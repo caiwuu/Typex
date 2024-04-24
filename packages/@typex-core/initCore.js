@@ -98,7 +98,6 @@ function initDispatcher (editor) {
     // 复用未提交的事务 
     else if (!ts.commited) ts.init()
     if (isInput(event)) {
-      console.log(event.type, event.key);
       // 输入处理
       if (event.data === null) return
       input(event, ({ data, prevDataLength, type }) => {
@@ -120,7 +119,6 @@ function initDispatcher (editor) {
     } else {
       // 其他键盘事件处理
       if (inputState.isComposing || event.key === "Process") return // 阻止在中文输入的时候触发其他键盘事件
-      console.log(event.type, event.key);
       const quickEventKey = event.key ? `${event.type}${event.key}` : null
       const nornaleventKey = `${event.type}`
       editor.selection.ranges.forEach((range) => {

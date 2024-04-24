@@ -55,7 +55,6 @@ export default class ControlPanel extends Component {
   }
 
   onMounted () {
-    console.log('onMountedonMounted');
     this.$nextTick(() => {
       let [R, G, B, A] = toRGBArray(getComputedStyle(this.colorBlock.current).backgroundColor)
       const [H] = RGBToHSL(R, G, B)

@@ -75,6 +75,7 @@ function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
       const elm = pluginContext.platform.createElm(ch)
+      console.log(23);
       // TODO
       setVdomOrElm(elm, ch)
       pluginContext.platform.insertBefore(parentElm, elm, before)
@@ -207,7 +208,6 @@ function updateChildren (parentElm, newCh, oldCh) {
         )
         execHook(newStartVnode, 'onMounted')
       } else {
-        console.log(111);
         elmToMove = oldCh[idxInOld]
         if (elmToMove.tag !== newStartVnode.tag) {
           pluginContext.platform.insertBefore(
@@ -336,6 +336,7 @@ export default function patch (vnode, oldVnode) {
 }
 
 function execHook (vnode, hookName) {
+  console.log(vnode);
   if (vnode.vnodeType !== VCOMPONENT) return
   const ins = getVnodeOrIns(vnode)
   if (!ins) return

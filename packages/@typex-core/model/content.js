@@ -185,7 +185,6 @@ export default class Content extends Component {
         )
       }
       range.collapse(true)
-      console.log(range.startOffset, range.endOffset, range)
     }
     commonPath.currentComponent.update(commonPath, range).then(() => {
       range.updateCaret()
@@ -282,7 +281,6 @@ export default class Content extends Component {
    * @memberof Content
    */
   onLinefeed (event, range) {
-    console.log(1)
     if (range.inputState.isComposing) return
     event?.preventDefault?.()
     if (!range.collapsed) {
