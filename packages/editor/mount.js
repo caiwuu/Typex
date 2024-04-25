@@ -5,7 +5,7 @@
  * @LastEditor:
  * @LastEditTime: 2022-11-22 16:21:18
  */
-import { createVnode as h, patch } from '@typex/core'
+import { createVnode as h, patch, pluginContext } from '@typex/core'
 import ToolBar from './toolBar'
 /**
  * @desc: 渲染根节点
@@ -27,6 +27,6 @@ function renderRoot (editor) {
  * @return {*}
  */
 export default function mount (id) {
-  document.getElementById(id).appendChild(patch(renderRoot(this, h)))
+  pluginContext.platform.appendChild(document.getElementById(id), patch(renderRoot(this, h)))
   return this
 }

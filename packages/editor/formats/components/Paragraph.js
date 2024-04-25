@@ -25,11 +25,4 @@ export default class Paragraph extends Block {
       </p>
     )
   }
-  onMounted () {
-    console.log(111);
-  }
-  onCreated () {
-  }
-  onUnmounted () {
-  }
 }

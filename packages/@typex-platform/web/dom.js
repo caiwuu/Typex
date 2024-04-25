@@ -6,23 +6,30 @@
  * @LastEditTime: 2022-09-26 13:58:43
  */
 import coreContext from '../coreContext'
+import { execHook } from './utils'
 export const nativeDocument = document
 export const nativeWindow = window
 export const nativeSelection = document.getSelection()
-export function insertBefore(parentNode, newNode, referenceNode) {
+export const mountQueue = []
+export function insertBefore (parentNode, newNode, referenceNode) {
+  enqueueMount()
   return parentNode.insertBefore(newNode, referenceNode)
 }
-export function replaceChild(parentNode, newNode, oldNode) {
+export function replaceChild (parentNode, newNode, oldNode) {
+  enqueueMount()
+  onDestoryed(coreContext.core.getVdomOrElm(oldNode))
   return parentNode.replaceChild(newNode, oldNode)
 }
-export function appendChild(parentNode, newNode) {
+export function appendChild (parentNode, newNode) {
+  enqueueMount()
   return parentNode.appendChild(newNode)
 }
-export function removeChild(parentNode, referenceNode) {
+export function removeChild (parentNode, referenceNode) {
+  onDestoryed(coreContext.core.getVdomOrElm(referenceNode))
   return parentNode.removeChild(referenceNode)
 }
 
-export function domToVNode(node) {
+export function domToVNode (node) {
   const type = node.tagName.toLowerCase() || 'text'
   if (type === 'text') {
     return coreContext.core.createVnode(type)
@@ -43,4 +50,29 @@ export function domToVNode(node) {
     children.push(domToVNode(elmChildren[i]))
   }
   return coreContext.core.createVnode(type, config, children)
+}
+
+function enqueueMount () {
+  let ins
+  while (ins = mountQueue.pop()) {
+    execHook(ins, 'onMounted')
+  }
+}
+
+function onDestoryed (oldVnode) {
+  if (oldVnode.vnodeType === coreContext.core.vnodeType.VTEXT) return
+  if (oldVnode.children?.length) {
+    console.log(oldVnode.children?.length, [oldVnode]);
+    oldVnode.children.forEach(ch => {
+      onDestoryed(ch)
+    })
+  }
+  if (oldVnode.vnodeType === coreContext.core.vnodeType.VCOMPONENT) {
+    const ins = coreContext.core.getVnodeOrIns(oldVnode)
+    if (!ins) return
+    const vdom = coreContext.core.getVdomOrIns(ins)
+    if (!vdom) return
+    onDestoryed(vdom)
+    execHook(ins, 'onDestoryed')
+  }
 }

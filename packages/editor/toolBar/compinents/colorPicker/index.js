@@ -94,11 +94,4 @@ export default class ColorPicker extends Component {
     const { R, G, B, A } = this.state
     this.props.onOk({ R, G, B, A })
   }
-  onMounted () {
-    console.log('ColorPicker')
-  }
-
-  onCreated () {
-    console.log('-=onCreated=-');
-  }
 }

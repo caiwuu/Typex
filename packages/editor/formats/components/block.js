@@ -7,10 +7,10 @@
  */
 import { Content } from '@typex/core'
 export default class Block extends Content {
-  get displayType() {
+  get displayType () {
     return 'block'
   }
-  onKeydownb(event, range) {
+  onKeydownb (event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
@@ -18,7 +18,7 @@ export default class Block extends Content {
       })
     }
   }
-  onKeydownd(event, range) {
+  onKeydownd (event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
@@ -26,7 +26,7 @@ export default class Block extends Content {
       })
     }
   }
-  onKeydowns(event, range) {
+  onKeydowns (event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {
@@ -38,7 +38,7 @@ export default class Block extends Content {
       })
     }
   }
-  onKeydownu(event, range) {
+  onKeydownu (event, range) {
     if (event?.ctrlKey) {
       event?.preventDefault?.()
       this.setFormat(range, (path) => {

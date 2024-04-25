@@ -75,11 +75,10 @@ function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
       const elm = pluginContext.platform.createElm(ch)
-      console.log(23);
       // TODO
       setVdomOrElm(elm, ch)
       pluginContext.platform.insertBefore(parentElm, elm, before)
-      execHook(ch, 'onMounted')
+      // execHook(ch, 'onMounted')
     }
   }
 }
@@ -206,7 +205,7 @@ function updateChildren (parentElm, newCh, oldCh) {
           pluginContext.platform.createElm(newStartVnode),
           getElmByVnode(oldStartVnode)
         )
-        execHook(newStartVnode, 'onMounted')
+        // execHook(newStartVnode, 'onMounted')
       } else {
         elmToMove = oldCh[idxInOld]
         if (elmToMove.tag !== newStartVnode.tag) {
@@ -215,7 +214,7 @@ function updateChildren (parentElm, newCh, oldCh) {
             pluginContext.platform.createElm(newStartVnode),
             getElmByVnode(oldStartVnode)
           )
-          execHook(newStartVnode, 'onMounted')
+          // execHook(newStartVnode, 'onMounted')
         } else {
           patchVnode(newStartVnode, elmToMove)
           oldCh[idxInOld] = null
@@ -329,8 +328,8 @@ export default function patch (vnode, oldVnode) {
     let oldElm = getElmByVnode(oldVnode)
     const newElm = pluginContext.platform.createElm(vnode)
     pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
-    execHook(oldVnode, 'onUnmounted')
-    execHook(vnode, 'onMounted')
+    // execHook(oldVnode, 'onUnmounted')
+    // execHook(vnode, 'onMounted')
   }
   return getElmByVnode(vnode)
 }
@@ -343,12 +342,12 @@ function execHook (vnode, hookName) {
   if (typeof ins[hookName] !== 'function') return
   ins[hookName]()
 }
-function replaceVnode (vnode, oldVnode) {
-  let oldElm = getVdomOrElm(
-    [VFUNCTION, VCOMPONENT].includes(oldVnode.vnodeType) ? getVdomByVnode(oldVnode) : oldVnode
-  )
-  const newElm = pluginContext.platform.createElm(vnode)
-  pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
-  execHook(oldVnode, 'onUnmounted')
-  execHook(vnode, 'onMounted')
-}
+// function replaceVnode (vnode, oldVnode) {
+//   let oldElm = getVdomOrElm(
+//     [VFUNCTION, VCOMPONENT].includes(oldVnode.vnodeType) ? getVdomByVnode(oldVnode) : oldVnode
+//   )
+//   const newElm = pluginContext.platform.createElm(vnode)
+//   pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
+//   execHook(oldVnode, 'onUnmounted')
+//   execHook(vnode, 'onMounted')
+// }

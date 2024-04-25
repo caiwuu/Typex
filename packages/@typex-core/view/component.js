@@ -106,4 +106,14 @@ export default class Component {
   shouldComponentUpdate () {
     return true
   }
+
+  onMounted () {
+    console.log('%c======onMounted', 'color: blue; font-size: 16px;', this);
+  }
+  onCreated () {
+    console.log('%c======onCreated', 'color: green; font-size: 16px;', this);
+  }
+  onDestoryed () {
+    console.log('%c======onDestoryed', 'color: gray; font-size: 16px;', this);
+  }
 }
