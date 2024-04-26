@@ -78,7 +78,8 @@ function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
     if (ch != null) {
       const elm = pluginContext.platform.createElm(ch)
       // TODO
-      setVdomOrElm(elm, ch)
+      console.log(ch.tag);
+      setVdomOrElm(ch, getVdomOrElm(elm))
       pluginContext.platform.insertBefore(parentElm, elm, before)
       // execHook(ch, 'onMounted')
     }
