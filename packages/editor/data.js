@@ -20,6 +20,24 @@ export const mockData = {
     {
       data: [
         {
+          data: '这是1121一个基于Typex编写的简单富文本编辑器demo',
+          formats: { color: '#666', bold: true, fontSize: '20px' },
+        },
+      ],
+      formats: { paragraph: true },
+    },
+    {
+      data: [
+        {
+          data: '这是1121一个基于Typex编写的简单富文本编辑器demo',
+          formats: { color: '#666', bold: true, fontSize: '20px' },
+        },
+      ],
+      formats: { paragraph: true },
+    },
+    {
+      data: [
+        {
           data: '这是一个基于Typex编写的简单富文本编辑器demo',
         },
       ],

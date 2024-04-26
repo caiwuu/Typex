@@ -7,7 +7,12 @@
  */
 import Block from './block'
 export default class Header extends Block {
-  render(h) {
-    return h(`h${this.props.level}`, null, this.$path.render())
+  render (h) {
+    // return h(`h${this.props.level}`, null, this.$path.render())
+    return (
+      <p>
+        {this.$path.render()}
+      </p>
+    )
   }
 }

@@ -50,6 +50,15 @@ function getVdomOrElm (key) {
   return vdomElmMap.get(key)
 }
 function setVdomOrElm (vn, elm) {
+  // console.log(vn.vnodeType, elm.vnodeType);
+  // if (vn.vnodeType === 2 || elm.vnodeType === 2) {
+  //   console.trace()
+  // }
+  if (vn === elm) {
+    debugger
+    console.log(1213);
+    console.trace()
+  }
   vdomElmMap.set(elm, vn).set(vn, elm)
 }
 function setVnodeOrIns (vn, ins) {

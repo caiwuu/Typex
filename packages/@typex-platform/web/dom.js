@@ -17,7 +17,7 @@ export function insertBefore (parentNode, newNode, referenceNode) {
 }
 export function replaceChild (parentNode, newNode, oldNode) {
   enqueueMount()
-  onDestoryed(coreContext.core.getVdomOrElm(oldNode))
+  execDestory(oldNode)
   return parentNode.replaceChild(newNode, oldNode)
 }
 export function appendChild (parentNode, newNode) {
@@ -25,7 +25,8 @@ export function appendChild (parentNode, newNode) {
   return parentNode.appendChild(newNode)
 }
 export function removeChild (parentNode, referenceNode) {
-  onDestoryed(coreContext.core.getVdomOrElm(referenceNode))
+  execDestory(referenceNode)
+  console.log(1);
   return parentNode.removeChild(referenceNode)
 }
 
@@ -59,20 +60,49 @@ function enqueueMount () {
   }
 }
 
-function onDestoryed (oldVnode) {
-  if (oldVnode.vnodeType === coreContext.core.vnodeType.VTEXT) return
-  if (oldVnode.children?.length) {
-    console.log(oldVnode.children?.length, [oldVnode]);
-    oldVnode.children.forEach(ch => {
-      onDestoryed(ch)
-    })
-  }
-  if (oldVnode.vnodeType === coreContext.core.vnodeType.VCOMPONENT) {
-    const ins = coreContext.core.getVnodeOrIns(oldVnode)
-    if (!ins) return
-    const vdom = coreContext.core.getVdomOrIns(ins)
-    if (!vdom) return
-    onDestoryed(vdom)
+function execDestory (oldElm) {
+  const oldVdom = coreContext.core.getVdomOrElm(oldElm)
+  const ins = coreContext.core.getVdomOrIns(oldVdom)
+  if (ins) {
     execHook(ins, 'onDestoryed')
   }
+  traverseAndDestroy(oldVdom)
+}
+function traverseAndDestroy (oldVdom) {
+  switch (oldVdom.vnodeType) {
+    case coreContext.core.vnodeType.VTEXT:
+    case coreContext.core.vnodeType.VFUNCTION:
+      break;
+
+    case coreContext.core.vnodeType.VCOMPONENT:
+      const ins = coreContext.core.getVnodeOrIns(oldVdom)
+      if (!ins) return
+      const vdom = coreContext.core.getVdomOrIns(ins)
+      if (!vdom) return
+      traverseAndDestroy(vdom)
+      execHook(ins, 'onDestoryed')
+      break
+
+    case coreContext.core.vnodeType.VDOM:
+      oldVdom.children?.forEach(ch => {
+        traverseAndDestroy(ch)
+      })
+      break;
+  }
+  // console.log(11);
+  // if (oldVnode.vnodeType === coreContext.core.vnodeType.VTEXT) return
+
+  // if (oldVnode.children?.length) {
+  //   oldVnode.children.forEach(ch => {
+  //     traverseAndDestroy(ch)
+  //   })
+  // }
+  // if (oldVnode.vnodeType === coreContext.core.vnodeType.VCOMPONENT) {
+  //   const ins = coreContext.core.getVnodeOrIns(oldVnode)
+  //   if (!ins) return
+  //   const vdom = coreContext.core.getVdomOrIns(ins)
+  //   if (!vdom) return
+  //   traverseAndDestroy(vdom)
+  //   execHook(ins, 'onDestoryed')
+  // }
 }
