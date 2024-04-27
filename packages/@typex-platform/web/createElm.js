@@ -39,7 +39,7 @@ export default function createElm (vnode) {
 
     // 创建 ins vnode vdom elm 关系映射
     setVdomOrIns(vdom, ins)
-    // setVdomOrElm(elm, getVdomOrElm(elm))
+    setVdomOrElm(elm, vdom)
 
     // 把vdom上面的属性添加到真实dom
     updateProps(vdom)
