@@ -79,7 +79,7 @@ function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
       const elm = pluginContext.platform.createElm(ch)
       // TODO
       console.log(ch.tag);
-      setVdomOrElm(ch, getVdomOrElm(elm))
+      // setVdomOrElm(ch, getVdomOrElm(elm))
       pluginContext.platform.insertBefore(parentElm, elm, before)
       // execHook(ch, 'onMounted')
     }
@@ -264,7 +264,7 @@ function patchVnode (vnode, oldVnode) {
     // 函数组件
     const oldVdom = getVdomByVnode(oldVnode)
     const newVdom = vnode.tag(h, vnode.props)
-    setVdomOrIns(newVdom, vnode)
+    // setVdomOrIns(newVdom, vnode)
     return patch(newVdom, oldVdom)
   } else if (vnode.vnodeType === VCOMPONENT) {
     // 常规组件
