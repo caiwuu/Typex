@@ -1,38 +1,35 @@
-src
-├─index.js
-├─style.styl
-├─platform
-|    ├─coreContext.js
-|    ├─index.js
-|    ├─web
-|    |  ├─caret.js
-|    |  ├─createElm.js
-|    |  ├─dom.js
-|    |  ├─index.js
-|    |  ├─utils.js
-|    |  ├─updateProps
-|    |  |      ├─index.js
-|    |  |      ├─modules
-|    |  |      |    ├─attributes.js
-|    |  |      |    ├─classes.js
-|    |  |      |    ├─listeners.js
-|    |  |      |    └styles.js
-|    |  ├─intercept
-|    |  |     ├─index.js
-|    |  |     ├─keyboardIntercept.js
-|    |  |     └mouseIntercept.js
+packages/
 ├─editor
+|   ├─babel.config.json
 |   ├─data.js
 |   ├─index.js
 |   ├─mount.js
+|   ├─package.json
 |   ├─toolBar
 |   |    ├─iconfont.js
 |   |    ├─index.js
-|   |    └toolBar.styl
+|   |    ├─toolBarOptions.js
+|   |    ├─compinents
+|   |    |     ├─Dialog.js
+|   |    |     ├─DialogContent.js
+|   |    |     ├─index.js
+|   |    |     ├─toolBar.styl
+|   |    |     ├─Tooltip.js
+|   |    |     ├─colorPicker
+|   |    |     |      ├─controlPanel.js
+|   |    |     |      ├─index.js
+|   |    |     |      ├─palette.js
+|   |    |     |      └utils.js
+|   ├─node_modules
+|   |      ├─babel-plugin-transform-typex-jsx
+|   |      ├─@typex
+|   |      |   ├─core
+|   |      |   └platform
 |   ├─formats
 |   |    ├─index.js
 |   |    ├─components
-|   |    |     ├─Block.js
+|   |    |     ├─block.js
+|   |    |     ├─Header.js
 |   |    |     ├─Image.js
 |   |    |     ├─index.js
 |   |    |     ├─Inline.js
@@ -40,36 +37,79 @@ src
 |   |    |     ├─Root.js
 |   |    |     ├─Static.js
 |   |    |     └Table.js
-├─core
-|  ├─core.js
-|  ├─index.js
-|  ├─initCore.js
-|  ├─mappings.js
-|  ├─pluginContext.js
-|  ├─utils.js
-|  ├─view
-|  |  ├─component.js
-|  |  ├─index.js
-|  |  ├─vdom
-|  |  |  ├─createRef.js
-|  |  |  ├─createVnode.js
-|  |  |  ├─enqueueSetState.js
-|  |  |  └patch.js
-|  ├─selection
-|  |     ├─index.js
-|  |     ├─style.css
-|  |     ├─range
-|  |     |   └index.js
-|  ├─ot
-|  | └operation.js
-|  ├─model
-|  |   ├─content.js
-|  |   ├─formater.js
-|  |   ├─index.js
-|  |   └path.js
-|  ├─history
-|  |    └index.js
-|  ├─defaultActions
-|  |       ├─caretMove.js
-|  |       ├─delete.js
-|  |       └input.js
+|   ├─config
+|   |   ├─webpack.config.base.js
+|   |   └webpack.config.prod.js
+├─babel-plugin-transform-typex-jsx
+|                ├─index.js
+|                └package.json
+├─@typex-platform
+|        ├─coreContext.js
+|        ├─index.js
+|        ├─package.json
+|        ├─web
+|        |  ├─caret.js
+|        |  ├─createElm.js
+|        |  ├─dom.js
+|        |  ├─index.js
+|        |  ├─utils.js
+|        |  ├─updateProps
+|        |  |      ├─index.js
+|        |  |      ├─modules
+|        |  |      |    ├─attributes.js
+|        |  |      |    ├─classes.js
+|        |  |      |    ├─listeners.js
+|        |  |      |    └styles.js
+|        |  ├─intercept
+|        |  |     ├─index.js
+|        |  |     ├─keyboardIntercept.js
+|        |  |     └mouseIntercept.js
+|        ├─config
+|        |   ├─webpack.config.base.js
+|        |   └webpack.config.prod.js
+├─@typex-core
+|      ├─.babelrc.js
+|      ├─constDefine.js
+|      ├─core.js
+|      ├─index.js
+|      ├─initCore.js
+|      ├─mappings.js
+|      ├─package.json
+|      ├─pluginContext.js
+|      ├─Typex.js
+|      ├─utils.js
+|      ├─view
+|      |  ├─component.js
+|      |  ├─index.js
+|      |  ├─vdom
+|      |  |  ├─createRef.js
+|      |  |  ├─createVnode.js
+|      |  |  ├─enqueueSetState.js
+|      |  |  └patch.js
+|      ├─transform
+|      |     ├─step.js
+|      |     └transaction.js
+|      ├─selection
+|      |     ├─index.js
+|      |     ├─range
+|      |     |   └index.js
+|      ├─ot
+|      | └operation.js
+|      ├─node_modules
+|      |      ├─babel-plugin-transform-typex-jsx
+|      |      ├─mitt
+|      |      ├─@babel
+|      |      |   └plugin-syntax-jsx
+|      ├─model
+|      |   ├─content.js
+|      |   ├─formater.js
+|      |   ├─index.js
+|      |   └path.js
+|      ├─history
+|      |    └index.js
+|      ├─defaultActions
+|      |       ├─caretMove.js
+|      |       └delete.js
+|      ├─config
+|      |   ├─webpack.config.base.js
+|      |   └webpack.config.prod.js

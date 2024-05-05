@@ -4,13 +4,13 @@
     "test": "jest --coverage",
     "build": "webpack --config config/webpack.config.prod.js",
     "dev": "webpack-dev-server  --config config/webpack.config.dev.js",
-    "tree": "npx treer -d ./src -i modelTestDemo  -e tree.txt",
+    "tree": "npx treer -d ./packages/ -i modelTestDemo  -e tree.txt",
     "jsdoc": "npx jsdoc -r -c jsdoc.config.json -R README.md -d deploy",
     "deploy": "npm run build && npm run jsdoc",
-    "pack:core":"pnpm  --filter @typex/core run build",
-    "pack:platform":"pnpm  --filter @typex/platform run build",
-    "pack:editor":"pnpm  --filter editor run build",
-    "pack":"npm run pack:core && npm run pack:platform && npm run pack:editor"
+    "pack:core": "pnpm  --filter @typex/core run build",
+    "pack:platform": "pnpm  --filter @typex/platform run build",
+    "pack:editor": "pnpm  --filter editor run build",
+    "pack": "npm run pack:core && npm run pack:platform && npm run pack:editor"
   },
   "version": "1.0.0",
   "description": "",
@@ -23,7 +23,9 @@
     "pnpm": ">=7"
   },
   "workspaces": {
-    "packages": ["packages/*"]
+    "packages": [
+      "packages/*"
+    ]
   },
   "private": true,
   "devDependencies": {
