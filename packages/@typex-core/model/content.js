@@ -439,18 +439,37 @@ export default class Content extends Component {
 
   /**
    * @description 格式设置
-   * @param {*} range
+   * @param {Range} range
    * @param {function} callback 格式处理回调
    * @memberof Content
    * @instance
    */
   setFormat (range, callback) {
     const commonPath = range.startContainer.queryCommonPath(range.endContainer)
-    const selectedPath = this.$editor.selection.getSeletedPath()
+    const selectedPath = this.$editor.selection.getLeafPaths()
     for (const path of selectedPath) {
       callback(path)
     }
     commonPath.currentComponent.update().then(() => {
+      range.updateCaret()
+      this.$editor.selection.drawRangeBg()
+    })
+  }
+
+  /**
+   * @description 组件设置
+   *  @param {Range} range
+   * @param {function} callback 格式处理回调
+   * @memberof Content
+   * @instance
+   */
+  setComponent (range, callback) {
+    const commonPath = range.startContainer.queryCommonPath(range.endContainer)
+    const selectedPath = this.$editor.selection.getPeerPaths()
+    for (const path of selectedPath) {
+      callback(path)
+    }
+    commonPath.currentComponent.$path.parent.currentComponent.update().then(() => {
       range.updateCaret()
       this.$editor.selection.drawRangeBg()
     })

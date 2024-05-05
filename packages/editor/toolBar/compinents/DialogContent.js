@@ -23,7 +23,8 @@ const comMap = {
   header: (h, self) => {
     return <div onClick={(e) => headerClickHandle(e, self)} style="color:#666">
       {
-        headerOps.map(ele => <div data-headervalue={ele[0]}>{ele[1]}</div>)
+        // headerOps.map(ele => <div data-headervalue={ele[0]}>{ele[1]}</div>)
+        headerOps.map(ele => h(ele[1], { "data-headervalue": ele[0], style: { margin: '2px 0' }, class: 'header-selector-item' }, [ele[1]]))
       }
     </div>
   }

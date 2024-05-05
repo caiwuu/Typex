@@ -9,7 +9,7 @@ export class Dialog extends Component {
     return (
       <div ref={this.dialogRef}>
         {this.state.visiable ? (
-          <div style='background:#ddd;position:absolute;top:35px;z-index:1'>
+          <div style='background:#efefef;position:absolute;top:35px;z-index:1'>
             {this.props.children.length ? this.props.children : 'dialog'}
           </div>
         ) : (

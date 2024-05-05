@@ -26,7 +26,6 @@ export function appendChild (parentNode, newNode) {
 }
 export function removeChild (parentNode, referenceNode) {
   execDestory(referenceNode)
-  console.log(1);
   return parentNode.removeChild(referenceNode)
 }
 

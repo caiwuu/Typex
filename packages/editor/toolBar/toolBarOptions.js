@@ -21,11 +21,10 @@ const toolBarOptions = [
         name: 'header',
         icon: '#icon-header',
         showDialog: true,
-        commandHandle: editor => {
-            editor.$path.children[1].node.formats.header = 1
-            editor.$path.currentComponent.update().then(() => {
-            })
-        }
+        commandHandle: (editor, level) => setComponent(editor, path => {
+            console.log(path);
+            path.node.formats = { header: level }
+        })
     },
     {
         tooltip: '字体大小',
@@ -116,5 +115,10 @@ export default toolBarOptions
 function setFormat (editor, callback) {
     editor.selection.ranges.forEach((range) => {
         editor.$path.currentComponent.setFormat(range, callback)
+    })
+}
+function setComponent (editor, callback) {
+    editor.selection.ranges.forEach((range) => {
+        editor.$path.currentComponent.setComponent(range, callback)
     })
 }
