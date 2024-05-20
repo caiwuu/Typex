@@ -23,6 +23,7 @@ export default class Paragraph extends Block {
         {this.$path.render()}
         {/* </editor-content> */}
       </p>
+
     )
   }
 }

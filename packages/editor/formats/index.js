@@ -2,166 +2,108 @@ import { Table, Row, Col, Image, Paragraph, Root, Header } from './components'
 const root = {
   name: 'root',
   type: 'component',
-  render (parentVnode, props) {
+  render (value, props) {
     return <Root {...props}></Root>
   },
 }
 const paragraph = {
   name: 'paragraph',
   type: 'component',
-  render (parentVnode, props) {
-    const vn = <Paragraph {...props} key={props.path._uuid}></Paragraph>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render (value, props) {
+    return <Paragraph {...props} key={props.path._uuid}></Paragraph>
   },
 }
 const header = {
   name: 'header',
   type: 'component',
-  render (parentVnode, props, value) {
-    const vn = <Header {...props} level={value} key={props.path._uuid}></Header>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render (value, props) {
+    return <Header {...props} level={value} key={props.path._uuid}></Header>
   },
 }
 
 const bold = {
   name: 'bold',
   type: 'tag',
-  render (parentVnode) {
-    const vn = <strong></strong>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render () {
+    return <strong></strong>
   },
 }
 const underline = {
   name: 'underline',
   type: 'tag',
-  render (parentVnode) {
-    const vn = <u></u>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render () {
+    return <u></u>
   },
 }
 const fontSize = {
   name: 'fontSize',
   type: 'attribute',
-  render (parentVnode, value) {
-    if (parentVnode) {
-      if (!parentVnode.props.style) parentVnode.props.style = {}
-      parentVnode.props.style['fontSize'] = value
-    } else {
-      return <span style={{ fontSize: value }}></span>
-    }
+  render (value) {
+    return <span style={{ fontSize: value }}></span>
   },
 }
 const background = {
   name: 'background',
   type: 'attribute',
-  render (parentVnode, value) {
-    if (parentVnode) {
-      if (!parentVnode.props.style) parentVnode.props.style = {}
-      parentVnode.props.style['background'] = value
-    } else {
-      return <span style={{ background: value }}></span>
-    }
+  render (value) {
+    return <span style={{ background: value }}></span>
   },
 }
 const color = {
   name: 'color',
   type: 'attribute',
-  render (parentVnode, value) {
-    if (parentVnode) {
-      if (!parentVnode.props.style) parentVnode.props.style = {}
-      parentVnode.props.style['color'] = value
-    } else {
-      return <span style={{ color: value }}></span>
-    }
+  attrName: 'style.color',
+  render (value) {
+    return <span style={{ color: value }}></span>
   },
 }
 const deleteline = {
   name: 'deleteline',
   type: 'tag',
-  render (parentVnode) {
-    const vn = <del></del>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render () {
+    return <del></del>
   },
 }
 const sup = {
   name: 'sup',
   type: 'tag',
-  render (parentVnode) {
-    const vn = <sup></sup>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render () {
+    return <sup></sup>
   },
 }
 const sub = {
   name: 'sub',
   type: 'tag',
-  render (parentVnode) {
-    const vn = <sub></sub>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render () {
+    return <sub></sub>
   },
 }
 const table = {
   name: 'table',
   type: 'component',
-  render (parentVnode, props) {
-    const vn = <Table {...props}></Table>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render (pvalue, props) {
+    return <Table {...props}></Table>
   },
 }
 const row = {
   name: 'row',
   type: 'component',
-  render (parentVnode, props) {
-    const vn = <Row {...props}></Row>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render (value, props) {
+    return <Row {...props}></Row>
   },
 }
 const col = {
   name: 'col',
   type: 'component',
-  render (parentVnode, props) {
-    const vn = <Col {...props}></Col>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render (value, props) {
+    return <Col {...props}></Col>
   },
 }
 const image = {
   name: 'image',
   type: 'component',
-  render (parentVnode, props) {
-    const vn = <Image {...props}></Image>
-    if (parentVnode) {
-      parentVnode.children.push(vn)
-    }
-    return vn
+  render (value, props) {
+    return <Image {...props}></Image>
   },
 }
 export default [

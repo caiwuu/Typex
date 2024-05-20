@@ -14,7 +14,7 @@ class Formater {
    * @param {*} formats
    * @memberof Formater
    */
-  register(formats) {
+  register (formats) {
     formats.forEach((format) => {
       this.formatMap.set(format.name, format)
     })
@@ -26,10 +26,10 @@ class Formater {
    * @param {*} prop
    * @memberof Formater
    */
-  inject(propName, prop) {
+  inject (propName, prop) {
     this[propName] = prop
   }
-  renderRoot(rootPath) {
+  renderRoot (rootPath) {
     return this.render({ children: [rootPath] })
   }
   /**
@@ -38,7 +38,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  render(path) {
+  render (path) {
     const gs = this._group(
       {
         paths: path.children,
@@ -57,8 +57,32 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _invokeRender(vn, current) {
-    return current.fmt.render(vn, current.value, h)
+  _invokeRender (current, pv, ...others) {
+    const fmt = current.fmt
+    if (typeof fmt.nativeRender === 'function') {
+      return fmt.nativeRender(pv, current.value, ...others, h)
+    }
+    const vn = fmt.render(current.value, ...others, h)
+    if (!pv) return vn
+    switch (fmt.type) {
+      case "component":
+      case "tag": {
+        pv.children.push(vn)
+        return vn
+      }
+      case 'attribute': {
+        const attrNameArr = (fmt.attrName || `style.${fmt.name}`).split('.')
+        attrNameArr.reduce((init, currProp, index) => {
+          if (index === attrNameArr.length - 1) {
+            init[currProp] = current.value
+          } else {
+            if (!init[currProp]) init[currProp] = {}
+            return init[currProp]
+          }
+        }, pv.props)
+        return undefined
+      }
+    }
   }
 
   /**
@@ -68,7 +92,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  _generateGroups(gs, isEmptyBlock) {
+  _generateGroups (gs, isEmptyBlock) {
     return gs
       .map((g) => {
         let componentQuene
@@ -104,8 +128,8 @@ class Formater {
         ) {
           // 组件类型单独占一个分组
           const path = g.children[0]
-          const fmt = componentQuene[0].fmt
-          const pv = fmt.render(null, { path, editor: this.editor }, componentQuene[0].value, h)
+          const current = componentQuene[0]
+          const pv = this._invokeRender(current, null, { path, editor: this.editor })
           // 为所有component类型的path映射vnode
           setVdomOrPath(path, pv)
           return pv
@@ -123,7 +147,7 @@ class Formater {
               continue
             }
             // 处理标签格式 嵌套处理
-            vn = this._invokeRender(vn, current)
+            vn = this._invokeRender(current, vn)
             if (!pv) pv = vn
           }
           // 处理属性格式
@@ -131,7 +155,7 @@ class Formater {
           // 如果不存在属性格式（vn）则创建一个span
           for (let index = 0; index < attributeQueue.length; index++) {
             const current = attributeQueue[index]
-            const res = this._invokeRender(vn, current)
+            const res = this._invokeRender(current, vn)
             if (res) vn = res
             if (!pv) pv = res
           }
@@ -164,7 +188,7 @@ class Formater {
    * @readonly
    * @memberof Formater
    */
-  get types() {
+  get types () {
     return [...this.formatMap.keys()]
   }
 
@@ -175,7 +199,7 @@ class Formater {
    * @memberof Formater
    * @private
    */
-  _getFormats(objs) {
+  _getFormats (objs) {
     return objs.map((obj) => {
       const key = Object.keys(obj)[0]
       return {
@@ -191,7 +215,7 @@ class Formater {
    * @returns {*}
    * @memberof Formater
    */
-  get(key) {
+  get (key) {
     return this.formatMap.get(key) || {}
   }
 
@@ -204,7 +228,7 @@ class Formater {
    * @memberof Formater
    * @private
    */
-  _canAdd(path, prevPath, key) {
+  _canAdd (path, prevPath, key) {
     /**
      * 当前无格式
      */
@@ -228,7 +252,7 @@ class Formater {
    * @memberof Formater
    * @private
    */
-  _group(group, index, r = []) {
+  _group (group, index, r = []) {
     const grouped = { commonFormats: [], children: [] }
     let restFormats = []
     let prevPath = null

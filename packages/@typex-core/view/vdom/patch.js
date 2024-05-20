@@ -75,36 +75,8 @@ function addVnodes (parentElm, before = null, vnodes, startIdx, endIdx) {
     const ch = vnodes[startIdx]
     if (ch != null) {
       const elm = pluginContext.platform.createElm(ch)
-      // TODO
-      console.log(ch.tag);
-      // setVdomOrElm(ch, getVdomOrElm(elm))
       pluginContext.platform.insertBefore(parentElm, elm, before)
-      // execHook(ch, 'onMounted')
     }
-  }
-}
-
-/**
- * @description 销毁钩子调用
- * @param {*} vnode
- * @param {*} destoryQueue
- */
-function invokeDestroyHook (vnode, destoryQueue) {
-  if (![1, 2].includes(vnode.vnodeType)) return
-  const ins = getVnodeOrIns(vnode)
-  const oldVdom = getVdomOrIns(ins)
-  ins?.onBeforeUnmount?.()
-  if (oldVdom.children !== undefined) {
-    for (let j = 0; j < oldVdom.children.length; ++j) {
-      const child = oldVdom.children[j]
-      if (child != null && typeof child !== 'string') {
-        invokeDestroyHook(child, destoryQueue)
-      }
-    }
-  }
-  // 销毁映射
-  if (ins) {
-    destoryQueue.push(ins)
   }
 }
 
@@ -119,15 +91,8 @@ function removeVnodes (parentElm, oldCh, startIdx, endIdx) {
   for (; startIdx <= endIdx; ++startIdx) {
     const vnode = oldCh[startIdx]
     if (vnode != null) {
-      let destoryQueue = []
       let dom = getElmByVnode(vnode)
-      const isComponentVnode = [1, 2].includes(vnode.vnodeType)
       dom && pluginContext.platform.removeChild(parentElm, dom)
-      isComponentVnode && invokeDestroyHook(vnode, destoryQueue)
-      destoryQueue.forEach((ins) => {
-        if (typeof ins.onUnmounted === 'function') ins.onUnmounted()
-      })
-      destoryQueue = null
     }
   }
 }
@@ -206,7 +171,6 @@ function updateChildren (parentElm, newCh, oldCh) {
           pluginContext.platform.createElm(newStartVnode),
           getElmByVnode(oldStartVnode)
         )
-        // execHook(newStartVnode, 'onMounted')
       } else {
         elmToMove = oldCh[idxInOld]
         if (elmToMove.tag !== newStartVnode.tag) {
@@ -215,7 +179,6 @@ function updateChildren (parentElm, newCh, oldCh) {
             pluginContext.platform.createElm(newStartVnode),
             getElmByVnode(oldStartVnode)
           )
-          // execHook(newStartVnode, 'onMounted')
         } else {
           patchVnode(newStartVnode, elmToMove)
           oldCh[idxInOld] = null
@@ -262,7 +225,6 @@ function patchVnode (vnode, oldVnode) {
     // 函数组件
     const oldVdom = getVdomByVnode(oldVnode)
     const newVdom = vnode.tag(h, vnode.props)
-    // setVdomOrIns(newVdom, vnode)
     return patch(newVdom, oldVdom)
   } else if (vnode.vnodeType === VCOMPONENT) {
     // 常规组件
@@ -285,10 +247,8 @@ function patchVnode (vnode, oldVnode) {
     setVdomOrElm(elm, vnode)
     const oldCh = oldVnode.children
     const ch = vnode.children
-    // ins && execHook(ins, 'onBeforeupdate')
     pluginContext.platform.updateProps(vnode, oldVnode)
     if (oldCh !== ch) updateChildren(elm, ch, oldCh)
-    // ins && execHook(ins, 'onUpdated')
     return elm
   }
 }
@@ -329,26 +289,6 @@ export default function patch (vnode, oldVnode) {
     let oldElm = getElmByVnode(oldVnode)
     const newElm = pluginContext.platform.createElm(vnode)
     pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
-    // execHook(oldVnode, 'onUnmounted')
-    // execHook(vnode, 'onMounted')
   }
   return getElmByVnode(vnode)
 }
-
-function execHook (vnode, hookName) {
-  console.log(vnode);
-  if (vnode.vnodeType !== VCOMPONENT) return
-  const ins = getVnodeOrIns(vnode)
-  if (!ins) return
-  if (typeof ins[hookName] !== 'function') return
-  ins[hookName]()
-}
-// function replaceVnode (vnode, oldVnode) {
-//   let oldElm = getVdomOrElm(
-//     [VFUNCTION, VCOMPONENT].includes(oldVnode.vnodeType) ? getVdomByVnode(oldVnode) : oldVnode
-//   )
-//   const newElm = pluginContext.platform.createElm(vnode)
-//   pluginContext.platform.replaceChild(oldElm.parentNode, newElm, oldElm)
-//   execHook(oldVnode, 'onUnmounted')
-//   execHook(vnode, 'onMounted')
-// }
