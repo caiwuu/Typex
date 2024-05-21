@@ -466,12 +466,23 @@ export default class Content extends Component {
    * @instance
    */
   setComponent (range, callback) {
-    const commonPath = range.startContainer.queryCommonPath(range.endContainer)
-    const selectedPath = this.$editor.selection.getPeerPaths()
-    for (const path of selectedPath) {
+    let commonPath, blockPaths
+    if (range.collapsed) {
+      commonPath = range.startContainer.block.$path.parent
+      blockPaths = [range.startContainer.block.$path]
+    } else {
+      commonPath = range.startContainer.queryCommonPath(range.endContainer)
+      if (range.startContainer.block === range.endContainer.block) {
+        commonPath = range.startContainer.block.$path.parent
+      }
+      const selectedPath = this.$editor.selection.getLeafPaths(false)
+      blockPaths = [...(new Set([...selectedPath].map(path => path.block.$path)))]
+    }
+    for (const path of blockPaths) {
       callback(path)
     }
-    commonPath.currentComponent.$path.parent.currentComponent.update().then(() => {
+    console.log(commonPath.currentComponent);
+    commonPath.currentComponent.update().then(() => {
       range.updateCaret()
       this.$editor.selection.drawRangeBg()
     })
