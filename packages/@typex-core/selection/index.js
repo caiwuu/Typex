@@ -378,7 +378,7 @@ export default class Selection {
    * @memberof Selection
    * @instance
    */
-  getLeafPaths () {
+  getLeafPaths (splitPath = true) {
     if (this.collapsed) return []
     const range = this.ranges[0]
     let start,
@@ -392,6 +392,8 @@ export default class Selection {
         start = range.startContainer
       } else if (range.startOffset === range.startContainer.length) {
         start = range.startContainer.nextLeaf
+      } else if (!splitPath) {
+        start = range.startContainer
       } else {
         const startSplits = range.startContainer.split(range.startOffset)
         this.updatePoints(
@@ -406,6 +408,8 @@ export default class Selection {
       if (range.endOffset === 0) {
         end = range.endContainer.prevLeaf
       } else if (range.endOffset === range.endContainer.length) {
+        end = range.endContainer
+      } else if (!splitPath) {
         end = range.endContainer
       } else {
         const endSplits = range.endContainer.split(range.endOffset)

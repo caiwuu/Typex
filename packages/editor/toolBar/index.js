@@ -17,12 +17,15 @@ export default class ToolBar extends Component {
         if (current === endContainer) break
         current = current.nextLeaf
       }
-      const commonKeyValue = findCommonKeyValuePairs(selectLeafs.map((ele) => ele.node.formats))
-      this.notice(commonKeyValue)
+      const seletBlocks = [...new Set(selectLeafs.map(ele => ele.block.$path))]
+      const commonKeyValueWithLeaf = findCommonKeyValuePairs(selectLeafs.map((ele) => ele.node.formats))
+      const commonKeyValueWithBlock = findCommonKeyValuePairs(seletBlocks.map((ele) => ele.node.formats))
+      this.notice(Object.assign({}, commonKeyValueWithLeaf, commonKeyValueWithBlock))
     })
   }
 
   notice (commonKeyValue) {
+    console.log(commonKeyValue);
     this.toolBarItemInses.forEach((item) => item.onNotice(commonKeyValue))
   }
 
