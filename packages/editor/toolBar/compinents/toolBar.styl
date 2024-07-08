@@ -16,10 +16,15 @@
         overflow hidden
     .editor-tool-bar-item
         padding 4px 10px
-        display inline-block
+        display flex
+        flex-direction column
         border-radius 4px
         cursor pointer
         user-select none
+        .color-line
+            width 70%
+            height 3px
+            margin -3px auto 0 auto
 
     .editor-tooltip
         position relative

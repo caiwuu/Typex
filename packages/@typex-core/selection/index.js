@@ -438,16 +438,6 @@ export default class Selection {
     }
   }
 
-  /**
-   * @description 获取同级path
-   * @memberof Selection
-   */
-  getPeerPaths () {
-    if (this.collapse) {
-      return [this.ranges[0].container.currentComponent.$path]
-    }
-  }
-
   recoverRangesFromSnapshot (rangesSnapshot) {
     this.removeAllRanges()
     this.ranges = rangesSnapshot.map((jsonRange) =>

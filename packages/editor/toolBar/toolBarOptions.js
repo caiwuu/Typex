@@ -33,7 +33,7 @@ const toolBarOptions = [
     },
     {
         tooltip: '字体颜色',
-        name: 'fontColor',
+        name: 'color',
         icon: '#icon-color',
         showDialog: true,
         commandHandle: (editor, { R, G, B, A }) => setFormat(editor, path => (path.node.formats.color = `rgba(${R},${G},${B},${A})`)),

@@ -13,7 +13,7 @@ const toolBar = [
   'redo',
   'header',
   'fontSize',
-  'fontColor',
+  'color',
   'bold',
   'underline',
   'deleteline',

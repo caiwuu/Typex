@@ -1,6 +1,6 @@
 import { Component, createRef } from '@typex/core'
 import './iconfont'
-import { Dialog, Tooltip, DialogContent } from './compinents'
+import { Tooltip, DialogContent } from './compinents'
 
 // 工具栏
 export default class ToolBar extends Component {
@@ -25,7 +25,6 @@ export default class ToolBar extends Component {
   }
 
   notice (commonKeyValue) {
-    console.log(commonKeyValue);
     this.toolBarItemInses.forEach((item) => item.onNotice(commonKeyValue))
   }
 
@@ -52,7 +51,7 @@ export default class ToolBar extends Component {
 class ToolBarItem extends Component {
   constructor(props) {
     super(props)
-    this.state = { active: false }
+    this.state = { active: false, dialogVisiable: false }
     this.props.toolBarItemInses.push(this)
     this.dialogRef = createRef()
     this.barItemRef = createRef()
@@ -65,41 +64,58 @@ class ToolBarItem extends Component {
       })
     }
   }
-
+  getStyleColor () {
+    if (!this.state.active) return 'rgb(227 227 227);'
+    if (this.props.name === 'color') return 'rgb(227 227 227);'
+    return 'rgb(42 201 249)'
+  }
   render () {
     return (
-      <span
+      <div
         class='editor-tool-bar-item'
         ref={this.barItemRef}
-        style={`color: ${!this.state.active ? 'rgb(227 227 227);' : 'rgb(42 201 249)'};`}
+        style={`color: ${this.getStyleColor()}`}
       >
         <svg onClick={this.clickHandle} class='icon' aria-hidden ns='http://www.w3.org/2000/svg'>
           <use xlink:href={this.props.icon}></use>
         </svg>
         {
-          this.props.showDialog
+          this.props.name === 'color' ? <span class="color-line" style={`background:${this.state.active ? this.state.active : '#000'}`}></span> : ''
+        }
+        {
+          this.props.showDialog && this.state.dialogVisiable
             ?
-            <Dialog ref={this.dialogRef} barItemRef={this.barItemRef}>
+            <div style='background:#efefef;position:absolute;top:35px;z-index:1'>
               <DialogContent onOk={this.onOk} name={this.props.name}></DialogContent>
-            </Dialog>
+            </div>
             : ''
         }
-      </span>
+      </div>
     )
   }
 
   onOk = (val) => {
-    this.dialogRef.current.toggle()
+    this.toggle()
     this.emitComand(val)
   }
-
+  outClickHandle = (e) => {
+    if (this.barItemRef.current.contains(e.target)) return
+    this.setState({ dialogVisiable: false })
+    document.removeEventListener('click', this.outClickHandle)
+  }
+  toggle () {
+    if (!this.state.dialogVisiable) {
+      document.addEventListener('click', this.outClickHandle)
+    }
+    this.setState({ dialogVisiable: !this.state.dialogVisiable })
+  }
   emitComand = (val) => {
     this.props.editor.command(this.props.name, val)
   }
 
   clickHandle = () => {
-    if (this.dialogRef.current) {
-      this.dialogRef.current.toggle()
+    if (this.props.showDialog) {
+      this.toggle()
     } else {
       this.emitComand()
     }
