@@ -22,7 +22,6 @@ const toolBarOptions = [
         icon: '#icon-header',
         showDialog: true,
         commandHandle: (editor, level) => setComponent(editor, path => {
-            console.log(path);
             path.node.formats = { header: level }
         })
     },
@@ -30,6 +29,8 @@ const toolBarOptions = [
         tooltip: '字体大小',
         name: 'fontSize',
         icon: '#icon-font-size',
+        showDialog: true,
+        commandHandle: (editor, fontSize) => setFormat(editor, path => (path.node.formats.fontSize = `${fontSize}px`))
     },
     {
         tooltip: '字体颜色',
@@ -60,6 +61,8 @@ const toolBarOptions = [
         tooltip: '背景填充',
         name: 'background',
         icon: '#icon-fill',
+        showDialog: true,
+        commandHandle: (editor, { R, G, B, A }) => setFormat(editor, path => (path.node.formats.background = `rgba(${R},${G},${B},${A})`)),
     },
     {
         tooltip: '左对齐',

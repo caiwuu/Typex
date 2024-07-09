@@ -51,21 +51,21 @@ export default class ToolBar extends Component {
 class ToolBarItem extends Component {
   constructor(props) {
     super(props)
-    this.state = { active: false, dialogVisiable: false }
+    this.state = { currValue: false, dialogVisiable: false }
     this.props.toolBarItemInses.push(this)
     this.dialogRef = createRef()
     this.barItemRef = createRef()
   }
 
   onNotice (commonKeyValue) {
-    if (commonKeyValue[this.props.name] !== this.state.active) {
+    if (commonKeyValue[this.props.name] !== this.state.currValue) {
       this.setState({
-        active: commonKeyValue[this.props.name],
+        currValue: commonKeyValue[this.props.name],
       })
     }
   }
   getStyleColor () {
-    if (!this.state.active) return 'rgb(227 227 227);'
+    if (!this.state.currValue) return 'rgb(227 227 227);'
     if (this.props.name === 'color') return 'rgb(227 227 227);'
     return 'rgb(42 201 249)'
   }
@@ -80,13 +80,13 @@ class ToolBarItem extends Component {
           <use xlink:href={this.props.icon}></use>
         </svg>
         {
-          this.props.name === 'color' ? <span class="color-line" style={`background:${this.state.active ? this.state.active : '#000'}`}></span> : ''
+          this.props.name === 'color' ? <span class="color-line" style={`background:${this.state.currValue ? this.state.currValue : '#000'}`}></span> : ''
         }
         {
           this.props.showDialog && this.state.dialogVisiable
             ?
             <div style='background:#efefef;position:absolute;top:35px;z-index:1'>
-              <DialogContent onOk={this.onOk} name={this.props.name}></DialogContent>
+              <DialogContent value={this.state.currValue || '#000'} onOk={this.onOk} name={this.props.name}></DialogContent>
             </div>
             : ''
         }
