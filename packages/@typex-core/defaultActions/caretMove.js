@@ -21,12 +21,14 @@ export function horizontalMove (direction, range, event) {
     range.collapse(direction === 'left')
     return
   }
-  const { shiftKey } = event
-  if (!range.collapsed && !shiftKey) {
-    range.collapse(direction === 'left')
-  } else {
-    return range.container.currentComponent.onCaretMove(direction, range, event)
-  }
+  console.log(11111111111);
+
+  // const { shiftKey } = event
+  // if (!range.collapsed && !shiftKey) {
+  //   range.collapse(direction === 'left')
+  // } else {
+  return range.container.currentComponent.onCaretMove(direction, range, event)
+  // }
 }
 /**
  * 垂直移动 垂直移动等效于水平移动N步的结果，关键点在于确定N

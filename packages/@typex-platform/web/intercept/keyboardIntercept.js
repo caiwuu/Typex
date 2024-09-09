@@ -41,6 +41,8 @@ export default class KeyboardIntercept {
     this.input.removeEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.removeEventListener('keydown', this._handGolobalKeydown.bind(this))
     this.iframe.contentDocument.removeEventListener('keyup', this._handGolobalKeydown.bind(this))
+    this.input.removeEventListener('focus', this._focusEvent.bind(this))
+    this.input.removeEventListener('blur', this._blurEvent.bind(this))
   }
   _initEvent () {
     this.input.addEventListener('compositionstart', this._inputEvent.bind(this))
@@ -48,6 +50,8 @@ export default class KeyboardIntercept {
     this.input.addEventListener('input', this._inputEvent.bind(this))
     this.iframe.contentDocument.addEventListener('keydown', this._handGolobalKeydown.bind(this))
     this.iframe.contentDocument.addEventListener('keyup', this._handGolobalKeydown.bind(this))
+    this.input.addEventListener('focus', this._focusEvent.bind(this))
+    this.input.addEventListener('blur', this._blurEvent.bind(this))
   }
   _handGolobalKeydown (event) {
     this.editor.emit('keyboardEvents', event)
@@ -55,4 +59,11 @@ export default class KeyboardIntercept {
   _inputEvent (event) {
     this.editor.emit('keyboardEvents', event)
   }
+  _focusEvent (event) {
+    this.editor.emit('focusEvent', event)
+  }
+  _blurEvent (event) {
+    this.editor.emit('blurEvent', event)
+  }
+
 }

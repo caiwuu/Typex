@@ -10,40 +10,35 @@ export default class Block extends Content {
   get displayType () {
     return 'block'
   }
-  onKeydownb (event, range) {
-    if (event?.ctrlKey) {
-      event?.preventDefault?.()
-      this.setFormat(range, (path) => {
-        path.node.formats.bold = !path.node.formats.bold
-      })
-    }
+  onKeydownb ({ event, range }) {
+    keydownHandle.call(this, event, range, (path) => {
+      path.node.formats.bold = !path.node.formats.bold
+    })
   }
-  onKeydownd (event, range) {
-    if (event?.ctrlKey) {
-      event?.preventDefault?.()
-      this.setFormat(range, (path) => {
-        path.node.formats.deleteline = !path.node.formats.deleteline
-      })
-    }
+  onKeydownd ({ event, range }) {
+    keydownHandle.call(this, event, range, (path) => {
+      path.node.formats.deleteline = !path.node.formats.deleteline
+    })
   }
-  onKeydowns (event, range) {
-    if (event?.ctrlKey) {
-      event?.preventDefault?.()
-      this.setFormat(range, (path) => {
-        if (event.shiftKey) {
-          path.node.formats.sub = !path.node.formats.sub
-        } else {
-          path.node.formats.sup = !path.node.formats.sup
-        }
-      })
-    }
+  onKeydowns ({ event, range }) {
+    keydownHandle.call(this, event, range, (path) => {
+      path.node.formats.sup = !path.node.formats.sup
+    })
   }
-  onKeydownu (event, range) {
-    if (event?.ctrlKey) {
-      event?.preventDefault?.()
-      this.setFormat(range, (path) => {
-        path.node.formats.underline = !path.node.formats.underline
-      })
-    }
+  onKeydownS ({ event, range }) {
+    keydownHandle.call(this, event, range, (path) => {
+      path.node.formats.sub = !path.node.formats.sub
+    })
+  }
+  onKeydownu ({ event, range }) {
+    keydownHandle.call(this, event, range, (path) => {
+      path.node.formats.underline = !path.node.formats.underline
+    })
+  }
+}
+function keydownHandle (event, range, callback) {
+  if (event?.ctrlKey) {
+    event?.preventDefault?.()
+    this.setFormat(range, callback)
   }
 }

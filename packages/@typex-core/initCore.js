@@ -10,6 +10,8 @@ import { times } from './utils'
 const inputState = {
   value: '',
   isComposing: false,
+  compositionCanceled: false
+
 }
 /**
  * @description 内核初始化
@@ -99,10 +101,13 @@ function initDispatcher (editor) {
     else if (!ts.commited) ts.init()
     if (isInput(event)) {
       // 输入处理
+
       if (event.data === null) return
       input(event, ({ data, prevDataLength, type }) => {
         editor.selection.ranges.forEach((range) => {
           if (!range.collapsed) del({ event, range, ts, force: true })
+          console.log(prevDataLength);
+
           if (prevDataLength) times(prevDataLength, del, editor, { event, range, ts, force: true })
           const path = range.container
 
@@ -111,9 +116,9 @@ function initDispatcher (editor) {
             ts.addStep(insertTextStep)
           }
 
-          if (type === 'input' || type === 'compositionend') {
-            if (!event.data) times(1, del, editor, { event, range, ts, force: true })
-          }
+          // if (type === 'compositionend') {
+          //   if (!event.data) times(1, del, editor, { event, range, ts, force: true })
+          // }
         })
       })
     } else {
@@ -168,6 +173,11 @@ function initDispatcher (editor) {
       editor.history.redo()
     }
   })
+
+  // 处理输入框失去焦点时合成结束
+  editor.on('blurEvent', () => {
+    inputState.compositionCanceled = true
+  });
 }
 
 function titleCase (str) {
@@ -176,9 +186,19 @@ function titleCase (str) {
 function isInput (event) {
   return event.type.startsWith('composition') || event.type === 'input'
 }
+
+
+/*
+以中文输入ww为例：
+case1 普通输入            input(w) input(w)
+case2 正常中文输入        compositionstart   input(w)  input(w'w)           input(外网)            compositionend(外网)
+case3 点击页面空白取消    compositionstart   input(w)  input(w'w)           compositionend(w'w)    input(ww)  blur
+case4 点击页面之外取消    compositionstart   input(w)  input(w'w)    blur   compositionend(w'w)    
+*/
 function input (e, callback) {
   const { data, type } = e
   if (type === 'input') {
+    inputState.compositionCanceled = false
     let inputData = data === ' ' ? '\u00A0' : data || ''
     // 键盘字符输入
     if (!inputState.isComposing && data) {
@@ -196,21 +216,24 @@ function input (e, callback) {
       })
     }
   } else if (type === 'compositionstart') {
+    inputState.compositionCanceled = false
     inputState.value = ''
     inputState.isComposing = true
   } else if (type === 'compositionend') {
+    const prevDataLength = inputState.value.length
     callback({
       data: inputState.value,
       type: 'compositionend',
+      prevDataLength: inputState.compositionCanceled ? prevDataLength : 0,
     })
     e.target.value = ''
-
     /**
-     * 这里确保在中文输入法的时候keyup事件不会被触发
+     * 这里解决case3  compositionend(w'w) 和 input(ww) 的顺序问题
      */
     setTimeout(() => {
       inputState.value = ''
       inputState.isComposing = false
-    }, 200)
+    }, 16)
   }
 }
+

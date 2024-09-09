@@ -119,6 +119,7 @@ export default class Content extends Component {
         // 执行删除
         const deleteTextStep = new TextDelete({ range, count: 1 })
         ts.addAndApplyStep(deleteTextStep)
+        debugger
         if (startContainer.block.contentLength === 0) {
           // 块级内容被清空
           range.setStart(startContainer, 0).collapse()
@@ -134,8 +135,6 @@ export default class Content extends Component {
           }
         } else {
           // 容器不为空
-          // 平移其他range
-          this._updatePoints(endContainer, endOffset, -1)
           // 行内跨标签
           if (prevLeaf?.block === startContainer.block && endOffset === 1) {
             range.setStart(prevLeaf, prevLeaf.length).collapse()
@@ -162,7 +161,7 @@ export default class Content extends Component {
           }
         } else {
           range.setStart(prevLeaf, prevLeaf.length).collapse()
-          this.onContentDelete(range)
+          this.onContentDelete({ range, ts })
         }
       }
     } else if (startContainer === endContainer) {
@@ -202,15 +201,13 @@ export default class Content extends Component {
   enterPath (range, direction) {
     let path = null
     if (direction === 'left') {
-      const formPath = range.endContainer
+      const formPath = range.container
       path = formPath.nextLeaf
-      if (!path) return null
       const isSameBlock = formPath.block === path.block
       range.set(path, isSameBlock ? 1 : 0)
     } else {
-      const formPath = range.startContainer
+      const formPath = range.container
       path = formPath.prevLeaf
-      if (!path) return null
       range.set(path, path.length)
     }
     return { path, range }
@@ -227,12 +224,11 @@ export default class Content extends Component {
    */
   leavePath (range, direction) {
     if (direction === 'left') {
-      const path = range.startContainer
+      const path = range.container
       let toPath = path.prevLeaf
       if (!toPath) return null
       if (!path) return null
       range.set(path, path.length)
-
       return toPath.currentComponent.enterPath(range, 'right')
     } else {
       const path = range.endContainer
