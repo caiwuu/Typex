@@ -365,7 +365,7 @@ export const mockData = {
     {
       "data": [
         {
-          "data": "最后热烈欢迎对富文本编辑器内核的同学参与开发",
+          "data": "最后热烈欢迎对富文本感兴趣的同学参与开发",
           "formats": {
             "bold": true,
             "fontSize": "36px",
